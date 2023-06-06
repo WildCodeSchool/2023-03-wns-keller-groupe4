@@ -30,7 +30,6 @@ const start = async (): Promise<void> => {
   const server = new ApolloServer({
     schema: typeGraphQLgeneratedSchema,
     context: ({ req }) => {
-      console.log("req", req.headers.authorization);
       if (
         req.headers.authorization !== undefined &&
         req.headers.authorization !== ""
