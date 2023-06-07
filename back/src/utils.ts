@@ -1,7 +1,7 @@
 import {DataSource} from "typeorm";
 import {User} from "./entity/User";
-import {Product} from "./entity/Product";
-import {Category} from "./entity/Category";
+import {Category} from "./category/entity/Category";
+import {Product} from "./product/entity/Product";
 
 const dataSource = new DataSource({
 	type: "postgres",
