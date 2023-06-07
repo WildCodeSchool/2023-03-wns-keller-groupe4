@@ -12,11 +12,4 @@ export class Category {
 	@Field()
 	@Column()
 	name: string;
-
-	// @Field({nullable: true})
-	// @Column({nullable: true})
-	// description?: string;
-
-	@ManyToMany(() => Product, (product) => product.categories)
-	products: Product[];
 }
