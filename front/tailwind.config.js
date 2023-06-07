@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        primary: ["Rubik"],
+      },
       colors: {
         main: "#FF810A",
         second: "#221B1C",
