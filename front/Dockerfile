@@ -9,6 +9,7 @@ COPY package-lock.json package-lock.json
 
 RUN npm install
 
+COPY tailwind.config.js tailwind.config.js
 COPY src src
 
 CMD npm start
