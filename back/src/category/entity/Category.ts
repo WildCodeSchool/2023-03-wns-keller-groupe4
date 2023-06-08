@@ -11,4 +11,8 @@ export class Category {
 	@Field()
 	@Column()
 	name: string;
+
+	@Field()
+	@Column({nullable: true})
+	description?: string;
 }
