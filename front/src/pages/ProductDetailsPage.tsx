@@ -10,6 +10,7 @@ export interface IProductFromAPI {
   description: string;
   quantity: number;
   price: number;
+  picture: string;
 }
 
 type ProductIdType = {
@@ -27,12 +28,7 @@ const ProductDetails = () => {
 
   return (
     <div>
-      <header>
-        <div className="container">
-          <h1>FICHE PRODUIT</h1>
-        </div>
-      </header>
-      <main className="container">
+      <main className="container mx-auto p-8">
         <section className="card-row">
           <Products
             key = {product.id}
@@ -42,14 +38,10 @@ const ProductDetails = () => {
             description = {product.description}
             quantity = {product.quantity}
             price = {product.price}
+            picture = {product.picture}
           />
         </section>
       </main>
-      <footer>
-        <div className="container">
-          <p>&copy; 2023 Wild Rent by Wild Code School</p>
-        </div>
-      </footer>
     </div>
   );
 };
