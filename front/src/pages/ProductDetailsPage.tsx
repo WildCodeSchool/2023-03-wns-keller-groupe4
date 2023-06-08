@@ -1,18 +1,30 @@
-import { Navigate, useParams } from "react-router-dom";
-// import { useQuery, gql } from "@apollo/client";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import ProductsData from "../data/products";
-import Products, { IProductProps } from "../components/ProductsDetails";
+import Products from "../components/ProductsDetails";
 
-// interface IProductFromAPI {
-//   id: number;
-//   name: string;
-//   reference: string;
-//   description: string;
-//   quantity: number;
-//   price: number;
-// }
+export interface IProductFromAPI {
+  id: number;
+  name: string;
+  reference: string;
+  description: string;
+  quantity: number;
+  price: number;
+}
+
+type ProductIdType = {
+  productId: string;
+}
 
 const ProductDetails = () => {
+  let pid = 0;
+  const { productId } = useParams<ProductIdType>();
+  if (productId)
+    pid = parseInt(productId);
+
+  const [product, setProduct] = useState<IProductFromAPI>(ProductsData[pid]);
+  console.log(product);
+
   return (
     <div>
       <header>
@@ -22,20 +34,15 @@ const ProductDetails = () => {
       </header>
       <main className="container">
         <section className="card-row">
-
-          {ProductsData.map((product) => {
-            return (
-              <Products
-                key = {product.id}
-                id = {product.id}
-                name = {product.name}
-                reference = {product.reference}
-                description = {product.description}
-                quantity = {product.quantity}
-                price = {product.price}
-              />
-            );
-          })}
+          <Products
+            key = {product.id}
+            id = {product.id}
+            name = {product.name}
+            reference = {product.reference}
+            description = {product.description}
+            quantity = {product.quantity}
+            price = {product.price}
+          />
         </section>
       </main>
       <footer>

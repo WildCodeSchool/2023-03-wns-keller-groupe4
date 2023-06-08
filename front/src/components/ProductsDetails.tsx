@@ -12,7 +12,7 @@ const Product = ({ id, name, reference, description, quantity, price }: IProduct
         <article className="card">
             <span>product id: {id}</span>
             <img src="" alt="" />
-            <h3>{name} ({reference})</h3>
+            <h1 className="text-3xl font-bold">{name} ({reference})</h1>
             <p>{description}</p>
             <h4>{price}€ - Quantity : {quantity}</h4>
         </article>
