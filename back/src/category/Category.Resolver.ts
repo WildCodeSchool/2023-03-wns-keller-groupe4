@@ -1,19 +1,34 @@
-import {Arg, Mutation, Resolver} from "type-graphql";
+import {Arg, Mutation, Query, Resolver} from "type-graphql";
 
 import {Category} from "./entity/Category";
 import {CategoryService} from "./Category.Service";
 import {UpdateCategoryInput} from "./inputs/UpdateCategoryInput";
+import {CreateCategoryInput} from "./inputs/CreateCategoryInput";
 
 @Resolver()
-export class CategoryResolver {
+export default class CategoryResolver {
 	service;
 	constructor() {
 		this.service = new CategoryService();
 	}
 
+	@Query(() => [Category])
+	async getCategories(): Promise<Category[]> {
+		return await this.service.getAllCategories();
+	}
+
+	@Query(() => Category)
+	async getCategory(@Arg("id") id: string): Promise<Category> {
+		return await this.service.getOneCategory(id);
+	}
+
 	@Mutation(() => Category)
-	async createCategory(@Arg("name") name: string): Promise<Category> {
-		return await this.service.createNewCategory(name);
+	async createCategory(
+		@Arg("createCategorieInput") createCategoryInput: CreateCategoryInput
+	): Promise<Category> {
+		console.log(createCategoryInput);
+
+		return await this.service.createNewCategory(createCategoryInput);
 	}
 
 	@Mutation(() => Boolean)
@@ -25,7 +40,7 @@ export class CategoryResolver {
 	async updateCategory(
 		@Arg("id") id: string,
 		@Arg("updateCategorieInput") updateCategorieInput: UpdateCategoryInput
-	): Promise<any> {
+	): Promise<Category> {
 		console.log(updateCategorieInput);
 
 		return await this.service.updateOneCategory(id, updateCategorieInput);

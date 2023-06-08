@@ -4,8 +4,9 @@ import * as jwt from "jsonwebtoken";
 import dataSource from "./utils";
 import {buildSchema} from "type-graphql";
 import {ApolloServer} from "apollo-server";
-import UserResolver from "./resolver/UserResolver";
-import {CategoryResolver} from "./category/CategoryResolver";
+
+import UserResolver from "./user/UserResolver";
+import CategoryResolver from "./category/Category.Resolver";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ if (JWT_SECRET === undefined) {
 const start = async (): Promise<void> => {
 	await dataSource.initialize();
 	const typeGraphQLgeneratedSchema = await buildSchema({
+		validate: {forbidUnknownValues: false},
 		resolvers: [UserResolver, CategoryResolver],
 		authChecker: ({context}) => {
 			if (context.email !== undefined) {
