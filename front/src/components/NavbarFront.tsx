@@ -23,7 +23,7 @@ function NavbarFront() {
         type="text"
         name="search"
         id="search"
-        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-gray-400 focus:border-transparent"
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-main focus:border-transparent"
         placeholder="Chercher un matériel"
       />
     </div>
@@ -31,7 +31,7 @@ function NavbarFront() {
 
   return (
     <Navbar className="sticky inset-0 z-10 h-max max-w-full rounded-none bg-white py-2 px-4 shadow-sm lg:px-8 lg:py-4">
-      <div className="flex items-center justify-between text-blue-gray-900">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
