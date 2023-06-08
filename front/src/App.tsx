@@ -11,6 +11,8 @@ function App() {
     <Routes>
       <Route path="/" element={<LayoutFront />}>
         <Route index element={<HomePage />} />
+        <Route path="profile" element={<h1>Profile</h1>} />
+        <Route path="cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
       </Route>
       <Route path="/admin" element={<LayoutFront />}>

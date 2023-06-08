@@ -1,37 +1,18 @@
-import { useEffect, useState } from "react";
-import { Navbar, IconButton, Collapse } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 
 import { GoPerson } from "react-icons/go";
 import { FaShoppingCart } from "react-icons/fa";
 
-function NavbarFront() {
-  const [openNav, setOpenNav] = useState(false);
+interface INavbarFrontProps {
+  openNav: boolean;
+  setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-  useEffect(() => {
-    window.addEventListener(
-      "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false)
-    );
-  }, []);
-
-  const navList = (
-    <div className="w-full md:mt-2">
-      <label htmlFor="search" className="md:sr-only">
-        Tous nos matériels
-      </label>
-      <input
-        type="text"
-        name="search"
-        id="search"
-        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-main focus:border-transparent"
-        placeholder="Chercher un matériel"
-      />
-    </div>
-  );
-
+function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
   return (
-    <Navbar className="sticky inset-0 z-10 h-max max-w-full rounded-none bg-white py-2 px-4 shadow-sm lg:px-8 lg:py-4">
-      <div className="flex items-center justify-between">
+    <header className="sticky inset-0 z-10 h-max max-w-full rounded-none bg-white py-2 px-4 shadow-sm lg:px-8 lg:py-4">
+      <nav className="flex items-center justify-between">
+        {/* Open Menu Toggle */}
         <div className="flex items-center gap-4">
           <button
             className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
@@ -39,10 +20,10 @@ function NavbarFront() {
           >
             Tous nos matériels
           </button>
-          <IconButton
-            variant="text"
+          <button
+            type="button"
+            aria-label="Open Menu"
             className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent md:hidden"
-            ripple={false}
             onClick={() => setOpenNav(!openNav)}
           >
             {openNav ? (
@@ -75,21 +56,36 @@ function NavbarFront() {
                 />
               </svg>
             )}
-          </IconButton>
+          </button>
         </div>
-        <a
-          href="/"
+
+        {/* Logo */}
+        <Link
+          to="/"
           className="cursor-pointer py-1.5 text-lg ml-8 md:ml-0 md:mr-24"
         >
           Wildrent
-        </a>
+        </Link>
+
+        {/* User */}
         <div className="flex gap-4">
-          <GoPerson className="cursor-pointer" size="1.5rem" />
-          <FaShoppingCart className="cursor-pointer" size="1.5rem" />
+          <Link to="/profile">
+            <GoPerson
+              aria-label="Go to profile page"
+              className="cursor-pointer"
+              size="1.5rem"
+            />
+          </Link>
+          <Link to="/cart">
+            <FaShoppingCart
+              aria-label="Go to cart page"
+              className="cursor-pointer"
+              size="1.5rem"
+            />
+          </Link>
         </div>
-      </div>
-      <Collapse open={openNav}>{navList}</Collapse>
-    </Navbar>
+      </nav>
+    </header>
   );
 }
 
