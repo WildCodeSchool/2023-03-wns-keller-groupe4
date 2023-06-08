@@ -13,7 +13,7 @@ export class Category {
 	@Column()
 	name: string;
 
-	@Field()
+	@Field({nullable: true})
 	@Column({nullable: true})
 	description?: string;
 }
