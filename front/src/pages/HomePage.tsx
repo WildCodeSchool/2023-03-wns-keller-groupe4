@@ -38,8 +38,8 @@ function HomePage() {
   }, [selected]);
 
   return (
-    <div className="flex flex-col items-center justify-around w-4/5 mx-auto h-[calc(100vh-58px)] lg:h-[calc(100vh-74px)]">
-      <div className="fixed top-20 w-4/5 sm:w-96 lg:top-24">
+    <div className="relative flex flex-col items-center justify-around w-4/5 mx-auto h-[calc(100vh-58px)] lg:h-[calc(100vh-74px)]">
+      <div className="absolute top-8 w-4/5 sm:w-96 lg:top-24">
         <Combobox value={selected} onChange={setSelected}>
           <div className="relative mt-1">
             <Combobox.Label className="opacity-50">
