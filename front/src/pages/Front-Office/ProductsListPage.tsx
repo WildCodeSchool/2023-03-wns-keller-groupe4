@@ -29,10 +29,10 @@ const ProductsList = () => {
   // }, []);
 
   return (
-    <div className="bg-white mt-10">
+    <div className="bg-white my-10">
       <div className="mx-10">
         <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Your search result for: (keyword)</h2>
-        <div className="grid grid-cols-4 gap-10 mt-10 items-center place-items-stretch h-64">
+        <div className="grid grid-cols-5 gap-5 mt-10 items-center place-items-stretch h-50">
           {products.map((product) => (
             <ProductsListComponent
               key = {product.id}
