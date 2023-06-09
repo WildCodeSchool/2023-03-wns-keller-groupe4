@@ -4,6 +4,7 @@ import {Category} from "./category/entity/Category";
 import {Product} from "./product/entity/Product";
 
 const dataSource = new DataSource({
+	logging: ["query", "error"],
 	type: "postgres",
 	host: "db",
 	port: 5432,

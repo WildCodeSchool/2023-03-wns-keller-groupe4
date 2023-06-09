@@ -14,11 +14,13 @@ export default class CategoryResolver {
 
 	@Query(() => [Category])
 	async getCategories(): Promise<Category[]> {
+		// TODO Write validation classes for the queries input
 		return await this.service.getAllCategories();
 	}
 
 	@Query(() => Category)
 	async getCategory(@Arg("id") id: string): Promise<Category> {
+		// TODO Write validation classes for the queries input
 		return await this.service.getOneCategory(id);
 	}
 
@@ -31,11 +33,6 @@ export default class CategoryResolver {
 		return await this.service.createNewCategory(createCategoryInput);
 	}
 
-	@Mutation(() => Boolean)
-	async deleteCategory(@Arg("id") id: string): Promise<boolean> {
-		return await this.service.deleteOneCategory(id);
-	}
-
 	@Mutation(() => Category)
 	async updateCategory(
 		@Arg("id") id: string,
@@ -44,5 +41,10 @@ export default class CategoryResolver {
 		console.log(updateCategorieInput);
 
 		return await this.service.updateOneCategory(id, updateCategorieInput);
+	}
+
+	@Mutation(() => Boolean)
+	async deleteCategory(@Arg("id") id: string): Promise<boolean> {
+		return await this.service.deleteOneCategory(id);
 	}
 }

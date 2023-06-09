@@ -34,22 +34,7 @@ export class CategoryService {
 
 			category.name = createCategoryInput.name;
 
-			if (createCategoryInput.description !== null) {
-				category.description = createCategoryInput.description;
-			}
-
-			return await dataSource.getRepository(Category).save(category);
-		} catch (err: any) {
-			throw new Error(err.message);
-		}
-	}
-
-	async deleteOneCategory(id: string): Promise<boolean> {
-		try {
-			await this.categoryRepository.delete({id});
-			console.log(await this.categoryRepository.delete({id}));
-
-			return true;
+			return await this.categoryRepository.save(category);
 		} catch (err: any) {
 			throw new Error(err.message);
 		}
@@ -63,11 +48,26 @@ export class CategoryService {
 			console.log(id);
 
 			await this.categoryRepository.update({id}, updateCategorieInput);
+
 			const foundCategory = await this.categoryRepository.findOneOrFail({
 				where: {id},
 			});
 
+			// TODO check the UpdateResult Obj to verify that the update took place before returning Category
+
 			return foundCategory;
+		} catch (err: any) {
+			throw new Error(err.message);
+		}
+	}
+
+	async deleteOneCategory(id: string): Promise<boolean> {
+		try {
+			await this.categoryRepository.delete({id});
+			console.log(await this.categoryRepository.delete({id}));
+			// TODO check the DeleteResult Obj to verify that the deletion took place before returning true
+
+			return true;
 		} catch (err: any) {
 			throw new Error(err.message);
 		}
