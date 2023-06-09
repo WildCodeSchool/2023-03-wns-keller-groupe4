@@ -5,7 +5,4 @@ import {Category} from "../entity/Category";
 export class UpdateCategoryInput implements Partial<Category> {
 	@Field()
 	name?: string;
-
-	@Field({nullable: true})
-	description?: string;
 }

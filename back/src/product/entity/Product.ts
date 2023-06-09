@@ -40,10 +40,18 @@ export class Product {
 	picture: string;
 
 	@Field()
-	@Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+	@Column({type: "timestamptz", default: () => "CURRENT_TIMESTAMP"})
 	created_at: Date;
 
-	@ManyToMany(() => Category)
+	@Field()
+	@Column({type: "timestamptz", nullable: true})
+	updated_at: Date;
+
+	@Field()
+	@Column({nullable: true})
+	updated_by: string;
+
+	@ManyToMany(() => Category, (categorie) => categorie.products)
 	@JoinTable()
 	categories: Category[];
 }

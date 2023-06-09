@@ -6,6 +6,6 @@ export class CreateCategoryInput implements Partial<Category> {
 	@Field()
 	name: string;
 
-	@Field({nullable: true})
-	description?: string;
+	// @Field({nullable: true})
+	// description?: string;
 }

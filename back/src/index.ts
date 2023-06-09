@@ -7,6 +7,7 @@ import {ApolloServer} from "apollo-server";
 
 import UserResolver from "./user/UserResolver";
 import CategoryResolver from "./category/Category.Resolver";
+import ProductResolver from "./product/Product.Resolver";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const start = async (): Promise<void> => {
 	await dataSource.initialize();
 	const typeGraphQLgeneratedSchema = await buildSchema({
 		validate: {forbidUnknownValues: false},
-		resolvers: [UserResolver, CategoryResolver],
+		resolvers: [UserResolver, CategoryResolver, ProductResolver],
 		authChecker: ({context}) => {
 			if (context.email !== undefined) {
 				return true;
