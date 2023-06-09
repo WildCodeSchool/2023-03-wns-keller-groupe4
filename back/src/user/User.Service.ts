@@ -10,21 +10,12 @@ import { UserProfile } from "./entity/UserProfile";
 export default class UserService {
     async createOneUser(createUserInput: CreateUserInput): Promise<User> {
         try {
-            const newUserProfile = new UserProfile();
-            newUserProfile.firstname = "firsname testus";
-            newUserProfile.lastname = "lastname testus";
-            newUserProfile.birthday = new Date();
-            newUserProfile.crountry = "France testus";
-            newUserProfile.postal_code = "77140";
-            newUserProfile.street = "streety testus";
-            newUserProfile.lang = "eeeeeee testus";
-
-            await dataSource.getRepository(UserProfile).save(newUserProfile);
-
             createUserInput.hashedPassword = await argon2.hash(
-                createUserInput.hashedPassword
+                createUserInput.password
             );
 
+            // pour pouvoir faire l'ajout en cascade de userProfile
+            const newUserProfile = new UserProfile();
             return await dataSource
                 .getRepository(User)
                 .save({ ...createUserInput, user_profile: newUserProfile });
@@ -52,12 +43,14 @@ export default class UserService {
     }
 
     async getAllUsers(): Promise<User[]> {
-        return await dataSource.getRepository(User).find();
+        return await dataSource.getRepository(User).find({
+            relations: ["user_profile", "user_profile.lang"],
+        });
     }
 
     async getOneUserById(id: string): Promise<User> {
         return await dataSource.getRepository(User).findOneOrFail({
-            relations: { user_profile: true },
+            relations: ["user_profile", "user_profile.lang"],
             where: { id },
         });
     }

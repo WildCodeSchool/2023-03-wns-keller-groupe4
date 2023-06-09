@@ -38,8 +38,8 @@ export class User {
     @Column()
     role: EnumRoles;
 
-    @Field()
-    @OneToOne((type) => UserProfile)
+    @Field({ nullable: true })
+    @OneToOne((type) => UserProfile, { cascade: true, nullable: true })
     @JoinColumn()
     user_profile: UserProfile;
 

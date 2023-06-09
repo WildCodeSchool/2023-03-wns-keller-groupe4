@@ -3,6 +3,7 @@ import { User } from "./user/entity/User";
 import { Category } from "./category/entity/Category";
 import { Product } from "./product/entity/Product";
 import { UserProfile } from "./user/entity/UserProfile";
+import { Lang } from "./lang/entity/Lang";
 
 const dataSource = new DataSource({
     type: "postgres",
@@ -12,7 +13,7 @@ const dataSource = new DataSource({
     password: process.env.POSTGRES_PASSWORD,
     database: "postgres",
     synchronize: true,
-    entities: [User, UserProfile, Product, Category],
+    entities: [User, UserProfile, Lang, Product, Category],
 });
 
 export default dataSource;

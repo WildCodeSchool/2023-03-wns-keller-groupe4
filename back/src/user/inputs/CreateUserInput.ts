@@ -10,5 +10,7 @@ export default class CreateUserInput {
     role: EnumRoles;
 
     @Field()
+    password: string;
+
     hashedPassword: string;
 }
