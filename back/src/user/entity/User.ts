@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    OneToOne,
+    PrimaryGeneratedColumn,
+} from "typeorm";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
+import { UserProfile } from "./UserProfile";
 
 export enum EnumRoles {
     SUPERADMIN = "superAdmin",
@@ -30,6 +37,11 @@ export class User {
     @Field()
     @Column()
     role: EnumRoles;
+
+    @Field()
+    @OneToOne((type) => UserProfile)
+    @JoinColumn()
+    user_profile: UserProfile;
 
     @Field()
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })

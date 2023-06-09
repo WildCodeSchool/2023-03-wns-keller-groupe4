@@ -1,5 +1,5 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { EnumRoles, User } from "./entity/User";
+import { User } from "./entity/User";
 import UserService from "./User.Service";
 import CreateUserInput from "./inputs/CreateUserInput";
 
@@ -30,5 +30,12 @@ export default class UserResolver {
     @Query(() => [User])
     async getUsers(): Promise<User[]> {
         return await this.service.getAllUsers();
+    }
+
+    // pour activer l'autorisation par token
+    // @Authorized()
+    @Query(() => User)
+    async getUserById(@Arg("id") id: string): Promise<User> {
+        return await this.service.getOneUserById(id);
     }
 }
