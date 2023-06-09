@@ -5,7 +5,7 @@ interface IFormLogin {
   password: string;
 }
 
-function LoginForm() {
+function LoginForm({ admin = false }) {
   const {
     register,
     handleSubmit,
@@ -13,7 +13,11 @@ function LoginForm() {
   } = useForm<IFormLogin>();
 
   const login = async (data: IFormLogin) => {
-    console.log(data);
+    if (admin) {
+      console.log("login admin", data);
+    } else {
+      console.log("login user", data);
+    }
   };
 
   return (

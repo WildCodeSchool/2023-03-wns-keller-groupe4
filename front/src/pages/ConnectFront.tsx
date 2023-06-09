@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
 
-function Connect() {
+function ConnectFront() {
   return (
     <div className="relative flex justify-center items-center min-h-[calc(100vh-58px)] lg:min-h-[calc(100vh-74px)]">
       <Tab.Group>
@@ -49,4 +49,4 @@ function Connect() {
   );
 }
 
-export default Connect;
+export default ConnectFront;
