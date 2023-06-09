@@ -15,6 +15,7 @@ function App() {
         <Route path="profile" element={<h1>Profile</h1>} />
         <Route path="cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
+        <Route path="/products/list" element={<ProductsListPage />} />
       </Route>
       <Route path="/admin" element={<Layout isFrontOffice={false} />}>
         <Route index element={<h1>Admin</h1>} />
@@ -22,7 +23,6 @@ function App() {
         <Route path="/admin/stock" element={<h1>Stock</h1>} />
         <Route path="/admin/reservations" element={<h1>Reservations</h1>} />
         <Route path="/admin/profile" element={<h1>Admin Profile</h1>} />
-        <Route path="/products/list" element={<ProductsListPage />} />
       </Route>
     </Routes>
   );
