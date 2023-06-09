@@ -4,6 +4,7 @@ import "./App.css";
 import Layout from "./components/Layout";
 
 import HomePage from "./pages/HomePage";
+import ProductsListPage from "./pages/Front-Office/ProductsListPage";
 import CreateProduct from "./pages/CreateProduct";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/admin/stock" element={<h1>Stock</h1>} />
         <Route path="/admin/reservations" element={<h1>Reservations</h1>} />
         <Route path="/admin/profile" element={<h1>Admin Profile</h1>} />
+        <Route path="/products/list" element={<ProductsListPage />} />
       </Route>
     </Routes>
   );
