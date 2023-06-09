@@ -4,14 +4,16 @@ import Layout from "./components/Layout";
 
 import HomePage from "./pages/HomePage";
 import CreateProduct from "./pages/CreateProduct";
+import Connect from "./pages/Connect";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout isFrontOffice={true} />}>
         <Route index element={<HomePage />} />
-        <Route path="profile" element={<h1>Profile</h1>} />
-        <Route path="cart" element={<h1>Cart</h1>} />
+        <Route path="/connect" element={<Connect />} />
+        <Route path="/profile" element={<h1>Profile</h1>} />
+        <Route path="/cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
       </Route>
       <Route path="/admin" element={<Layout isFrontOffice={false} />}>
