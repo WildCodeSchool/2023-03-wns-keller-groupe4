@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
-// import axios from "axios";
 import ProductsListComponent, { IProductProps } from "./../../components/Front-Office/ProductListComponent";
 
 export interface IProductFromAPI {
@@ -39,7 +38,6 @@ const ProductsList = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
-  console.log(data);
 
   return (
     <div className="bg-white my-10">
@@ -54,8 +52,7 @@ const ProductsList = () => {
               // reference = {product.reference}
               price = {product.price}
               stock = {product.stock}
-              // picture = {product.picture}
-              picture = 'product-1.jpg'
+              picture = {product.picture}
             />
           ))}
         </div>
