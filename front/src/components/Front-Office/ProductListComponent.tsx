@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom";
+import { tryRequire } from "../../components/TryRequire";
 export interface IProductProps {
     id: number;
     name: string;
@@ -10,11 +11,16 @@ export interface IProductProps {
 }
 
 const Product = ({ id, name, price, stock, picture }: IProductProps) => {
-    const [image, setImage] = useState("");
+    // Product image
+    const defaultImage = "product-1.jpg";
+    const tryImage = tryRequire('./../../assets/products/${picture}')
+        ? tryRequire('./../../assets/products/${picture}')
+        : defaultImage;
+    const [image, setImage] = useState();
 
     (function (imageName) {
         import(
-          './../../assets/products/'+picture
+          './../../assets/products/' + tryImage
         ).then((image) => setImage(image.default));
     })();
 
@@ -34,7 +40,7 @@ const Product = ({ id, name, price, stock, picture }: IProductProps) => {
                 </div>
                 <div className="text-sm font-bold text-white">
                     <button className="flex justify-evenly bg-gray-600 py-1 px-2 rounded items-center comp-background">
-                        <span className="me-1"><Link to={"/products/item/"+id}>Details</Link></span>
+                        <span className="me-1"><Link to={"/product/"+id}>Details</Link></span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>

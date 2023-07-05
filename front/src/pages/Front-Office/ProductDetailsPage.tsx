@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
-import Products from "../components/ProductsDetailsComponent";
+import Products from "../../components/Front-Office/ProductsDetailsComponent";
 
 export interface IProductFromAPI {
   id: string;
@@ -33,14 +33,11 @@ export const GET_ONE_PRODUCT = gql`
 `;
 
 const ProductDetails = () => {
-  // Get the product id from the url
-  // let id = 0;
+
   const { productId } = useParams<ProductIdType>();
   const getProductId = productId;
-  // if (productId)
-  //   id = parseInt(productId);
 
-  // Données via API
+  // Products data from API
   const { loading, error, data } = useQuery(GET_ONE_PRODUCT, {
     variables: { getProductId },
   });
