@@ -1,15 +1,18 @@
 import React, {useState} from "react"
+import { Link } from "react-router-dom";
+
 export interface IProductProps {
-    id: number;
+    id: string;
     name: string;
-    reference: string;
+    // reference: string;
     description: string;
-    quantity: number;
     price: number;
+    stock: number;
     picture: string;
+    available: boolean;
 }
 
-const Product = ({ id, name, reference, description, quantity, price, picture }: IProductProps) => {
+const Product = ({ id, name, description, price, stock, picture, available }: IProductProps) => {
     const [image, setImage] = useState("");
     (function (imageName) {
         import(

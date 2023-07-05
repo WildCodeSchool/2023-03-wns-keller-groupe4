@@ -1,30 +1,54 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import ProductsData from "../data/products";
-import Products from "../components/ProductsDetails";
+import { useQuery, gql } from "@apollo/client";
+import Products from "../components/ProductsDetailsComponent";
 
 export interface IProductFromAPI {
-  id: number;
+  id: string;
   name: string;
-  reference: string;
+  // reference: string;
   description: string;
-  quantity: number;
   price: number;
+  stock: number;
+  available: boolean;
   picture: string;
 }
 
 type ProductIdType = {
   productId: string;
-}
+};
+
+export const GET_ONE_PRODUCT = gql`
+  query getProduct($getProductId: String!) {
+    getProduct(id: $getProductId) {
+      id
+      name
+      price
+      stock
+      available
+      description
+      picture
+    }
+  }
+`;
 
 const ProductDetails = () => {
-  let pid = 0;
+  // Get the product id from the url
+  // let id = 0;
   const { productId } = useParams<ProductIdType>();
-  if (productId)
-    pid = parseInt(productId);
+  const getProductId = productId;
+  // if (productId)
+  //   id = parseInt(productId);
 
-  const [product, setProduct] = useState<IProductFromAPI>(ProductsData[pid]);
-  console.log(product);
+  // Données via API
+  const { loading, error, data } = useQuery(GET_ONE_PRODUCT, {
+    variables: { getProductId },
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error : {error.message}</p>;
+
+  const product = data.getProduct;
 
   return (
     <div>
@@ -34,11 +58,12 @@ const ProductDetails = () => {
             key = {product.id}
             id = {product.id}
             name = {product.name}
-            reference = {product.reference}
+            // reference = {product.reference}
             description = {product.description}
-            quantity = {product.quantity}
+            stock = {product.stock}
             price = {product.price}
             picture = {product.picture}
+            available = {product.available}
           />
         </section>
       </main>

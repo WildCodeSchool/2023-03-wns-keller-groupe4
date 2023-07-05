@@ -9,8 +9,6 @@ import ConnectBack from "./pages/ConnectBack";
 import CreateProduct from "./pages/CreateProduct";
 
 function App() {
-  // return <ProductDetails />;
-
   return (
     <Routes>
       <Route path="/" element={<Layout isFrontOffice={true} />}>
