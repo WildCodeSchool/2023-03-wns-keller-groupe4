@@ -23,4 +23,6 @@ export class CreateProductInput implements Partial<Product> {
 
 	@Field()
 	category: string;
+
+	// categories cause they can be several categories for a product it's type is a category array
 }
