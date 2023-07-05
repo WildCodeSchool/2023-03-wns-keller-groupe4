@@ -1,3 +1,13 @@
+export interface IProductFromAPI {
+    id: number;
+    name: string;
+    // reference: string;
+    price: number;
+    stock: number;
+    available: boolean;
+    picture: string;
+}
+
 const ProductsData = [
     {
         id: 1,

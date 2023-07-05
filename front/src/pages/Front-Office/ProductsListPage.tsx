@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import ProductsData from "./../../data/productsData";
+import ProductsData, {IProductFromAPI} from "./../../data/productsData";
 import ProductsListComponent, {IProductProps} from "./../../components/Front-Office/ProductListComponent";
 
 type ProductIdType = {
@@ -14,19 +14,22 @@ const ProductsList = () => {
   if (productId)
     pid = parseInt(productId);
 
-  const [products, setProducts] = useState<IProductProps[]>([]);
-  useEffect(() => {
-    setProducts(ProductsData);
-  },[]);
-
-  // Une fois l'API créee :
+  // Données en dur
+  // const [products, setProducts] = useState<IProductProps[]>([]);
   // useEffect(() => {
-  //   const fetchData = async() => {
-  //     const apiProducts = await axios.get<IProductFromAPI[]>(api_url); 
-  //     setProducts(apiProducts.data);
-  //   };
-  //   fetchData();
-  // }, []);
+  //   setProducts(ProductsData);
+  // },[]);
+
+  // Données via API
+  const [products, setProducts] = useState<IProductFromAPI[]>([]);
+  useEffect(() => {
+    const fetchData = async() => {
+      const apiProducts = await axios.get<IProductFromAPI[]>('http://localhost:4000/getProducts');
+      console.log(apiProducts); 
+      setProducts(apiProducts.data);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="bg-white my-10">
@@ -38,7 +41,7 @@ const ProductsList = () => {
               key = {product.id}
               id = {product.id}
               name = {product.name}
-              reference = {product.reference}
+              // reference = {product.reference}
               price = {product.price}
               picture = {product.picture}
             />

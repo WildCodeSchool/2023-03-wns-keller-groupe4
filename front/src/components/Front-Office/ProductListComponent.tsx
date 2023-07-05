@@ -2,12 +2,12 @@ import React, {useState} from "react"
 export interface IProductProps {
     id: number;
     name: string;
-    reference: string;
+    // reference: string;
     price: number;
     picture: string;
 }
 
-const Product = ({ id, name, reference, price, picture }: IProductProps) => {
+const Product = ({ id, name, price, picture }: IProductProps) => {
     const [image, setImage] = useState("");
     (function (imageName) {
         import(
