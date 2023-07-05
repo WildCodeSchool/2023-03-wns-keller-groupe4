@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery, gql } from "@apollo/client";
 import axios from "axios";
 import ProductsData, {IProductFromAPI} from "./../../data/productsData";
 import ProductsListComponent, {IProductProps} from "./../../components/Front-Office/ProductListComponent";
