@@ -16,7 +16,7 @@ export interface IProductProps {
 const Product = ({ id, name, description, price, stock, picture, available }: IProductProps) => {
     
     // Availability
-    const availability = available ? "Available" : "Unavailable";
+    const availability = available ? " Available" : " Unavailable";
     const buttonState = available ? false : true;
     
     // Image
