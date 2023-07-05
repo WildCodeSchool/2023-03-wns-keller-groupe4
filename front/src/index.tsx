@@ -1,16 +1,10 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 import "./index.css";
 import App from "./App";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-
-const client = new ApolloClient({
-  uri: "http://localhost:4000/",
-  cache: new InMemoryCache(),
-});
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -20,18 +14,19 @@ const httpLink = createHttpLink({
   uri: "http://localhost:4000",
 });
 
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token");
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `${token}` : "",
-    },
-  };
-});
+// const authLink = setContext((_, { headers }) => {
+//   const token = localStorage.getItem("token");
+//   return {
+//     headers: {
+//       ...headers,
+//       authorization: token ? `${token}` : "",
+//     },
+//   };
+// });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  uri: "http://localhost:4000",
+  // link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 

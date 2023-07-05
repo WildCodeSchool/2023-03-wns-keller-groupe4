@@ -16,6 +16,11 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
         <div className="flex items-center gap-4">
           <button
             className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
+          >
+            <Link to={"products/list"}>Liste des produits</Link>
+          </button>
+          <button
+            className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
             onClick={() => setOpenNav(!openNav)}
           >
             Tous nos matériels
