@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
-import { checkImage } from "./../CheckImage";
+import defaultImage from "./../../assets/products/default.jpg";
 export interface IProductProps {
     id: number;
     name: string;
@@ -9,16 +9,17 @@ export interface IProductProps {
 }
 
 const Product = ({ id, name, price, picture }: IProductProps) => {
-    // Product image
-    const [image, setImage] = useState("default.jpg");
-    const tryImage = checkImage('./../../assets/products/${picture}')
-        ? picture
-        : image;
 
+    const [image, setImage] = useState("default.jpg");
     (function () {
         import(
-          './../../assets/products/' + tryImage
-        ).then((image) => setImage(image.default));
+          './../../assets/products/' + picture
+        ).then((image) => {
+            setImage(image.default)}
+        )
+        .catch((image) => { 
+            setImage(defaultImage)
+        })
     })();
 
     return (

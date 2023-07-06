@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { checkImage } from "./../CheckImage";
+import defaultImage from "./../../assets/products/default.jpg";
 
 export interface IProductProps {
     id: string;
@@ -21,16 +21,17 @@ const Product = ({ id, name, description, price, stock, picture, available }: IP
     const buttonState = available ? false : true;
     
     // Image
-    const defaultImage = "default.jpg";
-    const [image, setImage] = useState("default.jpg");
-    const tryImage = checkImage('./../../assets/products/${picture}')
-        ? picture
-        : image;
+    const [image, setImage] = useState(defaultImage);
 
     (function () {
         import(
-          './../../assets/products/' + tryImage
-        ).then((image) => setImage(image.default));
+          './../../assets/products/' + picture
+        ).then((image) => {
+            setImage(image.default)}
+        )
+        .catch((image) => { 
+            setImage(defaultImage)
+        })
     })();
 
     return (
@@ -65,7 +66,7 @@ const Product = ({ id, name, description, price, stock, picture, available }: IP
                         className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
                     />
                     <img
-                        src={image}
+                        src={picture}
                         alt={name}
                         className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
                     />
