@@ -40,11 +40,10 @@ export default class LangService {
      * @param name le nouveau nom/alias à attribuer
      * @returns
      */
-    async updateOneLangById(id: string, name: string): Promise<any> {
+    async updateOneLangById(id: string, name: string): Promise<boolean> {
         try {
             await dataSource.getRepository(Lang).update({ id }, { name });
-
-            return "Yes";
+            return true;
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -55,8 +54,13 @@ export default class LangService {
      * @param id uuid de la ligne bdd de la lang à supprimer
      * @returns Promise< bool> : si la suppression a bien réussi
      */
-    async deleteOneLangById(id: string): Promise<Lang> {
-        // @ts-expect-error
-        return await new Promise<Lang>();
+    async deleteOneLangById(id: string): Promise<Boolean> {
+        try {
+            const langToDelete = await this.getOneLangById(id);
+            await dataSource.getRepository(Lang).remove(langToDelete);
+            return true;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
     }
 }

@@ -2,6 +2,7 @@ import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "./entity/User";
 import UserService from "./User.Service";
 import CreateUserInput from "./inputs/CreateUserInput";
+import UpdateUserInput from "./inputs/UpdateUserInput";
 
 @Resolver()
 export default class UserResolver {
@@ -37,5 +38,20 @@ export default class UserResolver {
     @Query(() => User)
     async getUserById(@Arg("id") id: string): Promise<User> {
         return await this.service.getOneUserById(id);
+    }
+
+    @Mutation(() => Boolean)
+    async updateUser(
+        @Arg("id") id: string,
+        @Arg("updateUserInput") updateUserInput: UpdateUserInput
+    ): Promise<Boolean> {
+        return await this.service.updateOneUser(id, updateUserInput);
+    }
+
+    @Mutation(() => Boolean)
+    async deleteUserById(
+        @Arg("id") id: string
+    ): Promise<Boolean> {
+        return await this.service.deleteOneUserById(id);
     }
 }

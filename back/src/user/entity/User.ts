@@ -39,7 +39,9 @@ export class User {
     role: EnumRoles;
 
     @Field({ nullable: true })
-    @OneToOne((type) => UserProfile, { cascade: true, nullable: true })
+    @OneToOne((type) => UserProfile, { 
+        cascade: true, nullable: true, onDelete: 'CASCADE' 
+    })
     @JoinColumn()
     user_profile: UserProfile;
 

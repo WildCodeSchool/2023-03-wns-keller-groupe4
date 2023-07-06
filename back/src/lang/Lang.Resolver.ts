@@ -28,11 +28,18 @@ export default class LangResolver {
         return await this.service.getOneLangById(id);
     }
 
-    @Mutation(() => String)
+    @Mutation(() => Boolean)
     async updateLangById(
         @Arg("id") id: string,
         @Arg("name") name: string
-    ): Promise<Lang> {
+    ): Promise<boolean> {
         return await this.service.updateOneLangById(id, name);
+    }
+
+    @Mutation(() => Boolean)
+    async deleteLangById(
+        @Arg("id") id: string
+    ): Promise<Boolean> {
+        return await this.service.deleteOneLangById(id);
     }
 }
