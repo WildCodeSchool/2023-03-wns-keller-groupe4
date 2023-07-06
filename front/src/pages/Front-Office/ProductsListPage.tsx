@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
+import Pagination from "../../components/Pagination";
 import ProductsListComponent, { IProductProps } from "./../../components/Front-Office/ProductListComponent";
 
 export interface IProductFromAPI {
@@ -17,9 +18,13 @@ type ProductIdType = {
   productId: string;
 };
 
+type Query = {
+  getProducts(limit: number, offset: number): [IProductFromAPI]
+}
+
 export const GET_ALL_PRODUCTS = gql`
   query getAllProducts {
-    getProducts {
+    getProducts(limit:20, offset:0) {
       id
       name
       price
@@ -33,8 +38,18 @@ export const GET_ALL_PRODUCTS = gql`
 
 const ProductsList = () => {
 
-  // Données via API
-  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
+  // Products data from API with pagination
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const { loading, error, data, fetchMore } = useQuery(GET_ALL_PRODUCTS, 
+  {
+    variables: { 
+      offset,
+      limit, 
+    },
+  });
+
+  // console.log(data);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;

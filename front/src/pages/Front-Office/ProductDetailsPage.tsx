@@ -48,9 +48,9 @@ const ProductDetails = () => {
   const product = data.getProduct;
 
   return (
-    <div>
-      <main className="container mx-auto p-8">
-        <section className="card-row">
+    <div className="relative flex flex-wrap">
+      <main className="container mx-auto">
+        <section className="card-row mx-10">
           <Products
             key = {product.id}
             id = {product.id}

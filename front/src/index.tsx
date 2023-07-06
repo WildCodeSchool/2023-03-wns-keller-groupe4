@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { offsetLimitPagination } from "@apollo/client/utilities";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -27,7 +28,15 @@ const httpLink = createHttpLink({
 const client = new ApolloClient({
   uri: "http://localhost:4000",
   // link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          feed: offsetLimitPagination()
+        },
+      },
+    },
+  }),
 });
 
 root.render(
