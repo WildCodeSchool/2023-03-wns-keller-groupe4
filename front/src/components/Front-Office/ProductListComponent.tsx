@@ -1,24 +1,21 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
-import { tryRequire } from "../../components/TryRequire";
+import { checkImage } from "./../CheckImage";
 export interface IProductProps {
     id: number;
     name: string;
-    // reference: string;
     price: number;
-    stock: number;
     picture: string;
 }
 
-const Product = ({ id, name, price, stock, picture }: IProductProps) => {
+const Product = ({ id, name, price, picture }: IProductProps) => {
     // Product image
-    const defaultImage = "product-1.jpg";
-    const tryImage = tryRequire('./../../assets/products/${picture}')
-        ? tryRequire('./../../assets/products/${picture}')
-        : defaultImage;
-    const [image, setImage] = useState();
+    const [image, setImage] = useState("default.jpg");
+    const tryImage = checkImage('./../../assets/products/${picture}')
+        ? picture
+        : image;
 
-    (function (imageName) {
+    (function () {
         import(
           './../../assets/products/' + tryImage
         ).then((image) => setImage(image.default));

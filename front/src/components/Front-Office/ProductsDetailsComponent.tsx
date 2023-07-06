@@ -1,11 +1,9 @@
-import React, {useState} from "react"
-import { Link } from "react-router-dom";
-import { tryRequire } from "../../components/TryRequire";
+import { useState } from "react"
+import { checkImage } from "./../CheckImage";
 
 export interface IProductProps {
     id: string;
     name: string;
-    // reference: string;
     description: string;
     price: number;
     stock: number;
@@ -15,18 +13,21 @@ export interface IProductProps {
 
 const Product = ({ id, name, description, price, stock, picture, available }: IProductProps) => {
     
+    // Description
+    description = description !=='' ? description : "No description available";
+    
     // Availability
     const availability = available ? " Available" : " Unavailable";
     const buttonState = available ? false : true;
     
     // Image
-    const defaultImage = "product-1.jpg";
-    const tryImage = tryRequire('./../../assets/products/${picture}')
-        ? tryRequire('./../../assets/products/${picture}')
-        : defaultImage;
-    const [image, setImage] = useState();
+    const defaultImage = "default.jpg";
+    const [image, setImage] = useState("default.jpg");
+    const tryImage = checkImage('./../../assets/products/${picture}')
+        ? picture
+        : image;
 
-    (function (imageName) {
+    (function () {
         import(
           './../../assets/products/' + tryImage
         ).then((image) => setImage(image.default));
@@ -77,19 +78,19 @@ const Product = ({ id, name, description, price, stock, picture, available }: IP
             >
                 <h1 className="mb-1 text-3xl font-bold text-white">{name}</h1>
                 <span className="block my-3 text-xl font-bold text-white">{price} €/day</span>
-                <p className="mb-6 text-lg font-normal text-gray-500 dark:text-gray-400">Here at Wildrent we focus on markets where technology, innovation, and capital can unlock long-term value and drive economic growth.</p>
+                <p className="mb-6 text-lg font-normal text-gray-500 dark:text-gray-400">{ description }</p>
                 <hr className="text-gray-500" />
                     <div className="grid grid-cols-2 py-5 text-yellow-500">
                         <div className=""><span className="font-bold">Status :</span>{ availability }</div>
                         <div className=""><span className="font-bold">Stock :</span> {stock}</div>
                     </div>
                 <hr />
-                <a href="#" className="inline-flex items-center justify-center mt-10 mb-5 px-5 py-3 text-base font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
+                <button className="inline-flex items-center justify-center mt-10 mb-5 px-5 py-3 text-base font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900" disabled={buttonState}>
                     Add To Cart
                     <svg className="w-6 h-6 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
                     </svg>
-                </a>
+                </button>
             </div>
         </div>
     );

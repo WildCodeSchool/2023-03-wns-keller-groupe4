@@ -5,7 +5,6 @@ import Products from "../../components/Front-Office/ProductsDetailsComponent";
 export interface IProductFromAPI {
   id: string;
   name: string;
-  // reference: string;
   description: string;
   price: number;
   stock: number;
@@ -54,7 +53,6 @@ const ProductDetails = () => {
             key = {product.id}
             id = {product.id}
             name = {product.name}
-            // reference = {product.reference}
             description = {product.description}
             stock = {product.stock}
             price = {product.price}
