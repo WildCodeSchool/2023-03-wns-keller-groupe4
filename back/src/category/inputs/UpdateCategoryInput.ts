@@ -1,16 +1,8 @@
 import {Field, InputType} from "type-graphql";
+import {Category} from "../entity/Category";
 
 @InputType()
-export class UpdateCategoryInput {
+export class UpdateCategoryInput implements Partial<Category> {
 	@Field()
-	name: string;
-
-	@Field()
-	description: string;
+	name?: string;
 }
-
-// export interface UpdateCategoryInput {
-// 	id: string;
-// 	name: string;
-
-// }

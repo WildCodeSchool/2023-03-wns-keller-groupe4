@@ -6,6 +6,7 @@ import { UserProfile } from "./user/entity/UserProfile";
 import { Lang } from "./lang/entity/Lang";
 
 const dataSource = new DataSource({
+    logging: ["query", "error"],
     type: "postgres",
     host: "db",
     port: 5432,
