@@ -39,12 +39,14 @@ const Product = ({ id, name, price, stock, picture }: IProductProps) => {
                     <p className="mt-1 text-sm text-gray-500">{ price } €/day</p>
                 </div>
                 <div className="text-sm font-bold text-white">
-                    <button className="flex justify-evenly bg-gray-600 py-1 px-2 rounded items-center comp-background">
-                        <span className="me-1"><Link to={"/product/"+id}>Details</Link></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </button>
+                    <Link to={"/product/"+id}>
+                        <button className="flex justify-evenly bg-gray-600 py-1 px-2 rounded items-center comp-background">
+                            <span className="me-1">Details</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div> 
