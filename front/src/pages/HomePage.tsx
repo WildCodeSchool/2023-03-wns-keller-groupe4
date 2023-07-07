@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { RxMagnifyingGlass } from "react-icons/rx";
 import { gql } from "../__generated__";
+import { useQuery } from "@apollo/client";
 
 const GET_CATEGORIES = gql(`
   query GetCategories {
@@ -11,30 +12,18 @@ const GET_CATEGORIES = gql(`
       name
     }
   }
-`); 
-
-const product = [
-  { id: 1, name: "Pelle" },
-  { id: 2, name: "Truelle" },
-  { id: 3, name: "Betonneuse" },
-  { id: 4, name: "Ciment" },
-  { id: 5, name: "Casque de chantier" },
-  { id: 6, name: "Marteau" },
-];
-
-interface ISelected {
-  id: number;
-  name: string;
-}
+`);
 
 function HomePage() {
-  const [selected, setSelected] = useState<ISelected | {}>({});
+  const [selected, setSelected] = useState({});
   const [query, setQuery] = useState("");
+
+  const { data } = useQuery(GET_CATEGORIES);
 
   const filteredProduct =
     query === ""
-      ? product
-      : product.filter((product) =>
+      ? data?.getCategories
+      : data?.getCategories.filter((product) =>
           product.name
             .toLowerCase()
             .replace(/\s+/g, "")
@@ -43,7 +32,7 @@ function HomePage() {
 
   useEffect(() => {
     if (selected && "id" in selected) {
-      window.location.href = `/product/${selected.id}`;
+      window.location.href = `/products/list?category=${selected.id}`;
     }
   }, [selected]);
 
@@ -58,7 +47,6 @@ function HomePage() {
             <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
               <Combobox.Input
                 className="w-full border-none py-2 pl-3 pr-10 text-sm rounded-lg leading-5 text-gray-900 focus:outline-main"
-                displayValue={(product: ISelected) => product.name}
                 onChange={(event) => setQuery(event.target.value)}
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -76,12 +64,12 @@ function HomePage() {
               afterLeave={() => setQuery("")}
             >
               <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {filteredProduct.length === 0 && query !== "" ? (
+                {filteredProduct?.length === 0 && query !== "" ? (
                   <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                     Aucun produit ne correspond à votre recherche
                   </div>
                 ) : (
-                  filteredProduct.map((product) => (
+                  filteredProduct?.map((product) => (
                     <Combobox.Option
                       key={product.id}
                       className={({ active }) =>
