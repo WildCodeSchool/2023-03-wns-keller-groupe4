@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
-import defaultImage from "./../../assets/products/default.jpg";
+import defaultImage from "./../assets/products/default.jpg";
 export interface IProductProps {
     id: number;
     name: string;
@@ -13,7 +13,7 @@ const Product = ({ id, name, price, picture }: IProductProps) => {
     const [image, setImage] = useState("default.jpg");
     (function () {
         import(
-          './../../assets/products/' + picture
+          './../assets/products/' + picture
         ).then((image) => {
             setImage(image.default)}
         )

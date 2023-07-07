@@ -1,5 +1,5 @@
 import { useState } from "react"
-import defaultImage from "./../../assets/products/default.jpg";
+import defaultImage from "./../assets/products/default.jpg";
 
 export interface IProductProps {
     id: string;
@@ -25,7 +25,7 @@ const Product = ({ name, description, price, stock, picture, available }: IProdu
 
     (function () {
         import(
-          './../../assets/products/' + picture
+          './../assets/products/' + picture
         ).then((image) => {
             setImage(image.default)}
         )

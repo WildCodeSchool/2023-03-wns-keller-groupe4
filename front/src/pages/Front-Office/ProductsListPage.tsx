@@ -1,5 +1,5 @@
 import { useQuery, gql } from "@apollo/client";
-import ProductsListComponent from "./../../components/Front-Office/ProductListComponent";
+import ProductsListComponent from "../../components/ProductListComponent";
 
 export interface IProductFromAPI {
   id: number;

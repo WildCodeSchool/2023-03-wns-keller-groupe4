@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
-import Products from "../../components/Front-Office/ProductsDetailsComponent";
+import Products from "../../components/ProductsDetailsComponent";
 
 export interface IProductFromAPI {
   id: string;
