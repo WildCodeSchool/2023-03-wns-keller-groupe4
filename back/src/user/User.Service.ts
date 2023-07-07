@@ -90,18 +90,18 @@ export default class UserService {
     async updateOneUser(id: string, updateUserInput: UpdateUserInput): Promise<Boolean> {
         try {
             const userToUpdate = await this.getOneUserById(id);
-            // userToUpdate.user_profile = Object.assign(userToUpdate.user_profile, updateUserInput);
+
             if(updateUserInput.lang_id !== undefined){
                 updateUserInput.lang = await (new LangResolver().getLangById(updateUserInput.lang_id));
             } 
             // on supprimme détruit la propriété lang_id poiur ne pas 
             // qu'elle soit pris en compte par la class UserProfile, sinon une erreur apollo apparait 
             // @ts-expect-error
-            delete updateUserInput.lang_id; 
+            delete updateUserInput.lang_id;
 
             await dataSource
                 .getRepository(UserProfile)
-                .update({id: userToUpdate.user_profile.id}, {});
+                .update({id: userToUpdate.user_profile.id}, updateUserInput);
 
             return true;
         } catch (err: any) {
