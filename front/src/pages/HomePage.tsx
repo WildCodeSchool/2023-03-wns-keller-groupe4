@@ -1,9 +1,9 @@
 import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
-import { AiOutlineCheck } from "react-icons/ai";
 import { RxMagnifyingGlass } from "react-icons/rx";
 import { gql } from "../__generated__";
 import { useQuery } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
 const GET_CATEGORIES = gql(`
   query GetCategories {
@@ -15,6 +15,8 @@ const GET_CATEGORIES = gql(`
 `);
 
 function HomePage() {
+  const navigate = useNavigate();
+  
   const [selected, setSelected] = useState({});
   const [query, setQuery] = useState("");
 
@@ -32,9 +34,9 @@ function HomePage() {
 
   useEffect(() => {
     if (selected && "id" in selected) {
-      window.location.href = `/products/list?category=${selected.id}`;
+      navigate(`/products/list?category=${selected.id}`);
     }
-  }, [selected]);
+  }, [navigate, selected]);
 
   return (
     <div className="relative flex flex-col items-center justify-around w-4/5 mx-auto h-[calc(100vh-58px)] lg:h-[calc(100vh-74px)]">
@@ -79,29 +81,9 @@ function HomePage() {
                       }
                       value={product}
                     >
-                      {({ selected, active }) => (
-                        <>
-                          <span
-                            className={`block truncate ${
-                              selected ? "font-medium" : "font-normal"
-                            }`}
-                          >
-                            {product.name}
-                          </span>
-                          {selected ? (
-                            <span
-                              className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                active ? "text-white" : "text-main"
-                              }`}
-                            >
-                              <AiOutlineCheck
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          ) : null}
-                        </>
-                      )}
+                      <span className={`block truncate font-normal`}>
+                        {product.name}
+                      </span>
                     </Combobox.Option>
                   ))
                 )}
