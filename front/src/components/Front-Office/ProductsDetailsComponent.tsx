@@ -11,7 +11,7 @@ export interface IProductProps {
     available: boolean;
 }
 
-const Product = ({ id, name, description, price, stock, picture, available }: IProductProps) => {
+const Product = ({ name, description, price, stock, picture, available }: IProductProps) => {
     
     // Description
     description = description !=='' ? description : "No description available";
@@ -35,65 +35,76 @@ const Product = ({ id, name, description, price, stock, picture, available }: IP
     })();
 
     return (
-        <div className="min-h-screen">
-            <div className="w-2/3 fill-height">
-            
-                {/* Main image */}
-                <div className="flex justify-center">
-                    <img className="md:w-48 lg:w-72" src={image} alt={name} />
-                </div>
-
-                {/* Image gallery */}
-                <div className="grid gap-4 grid-cols-5 grid-rows-1 my-5">
-                    <img
-                        src={image}
-                        alt={name}
-                        className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
-                    />
-                    <img
-                        src={image}
-                        alt={name}
-                        className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
-                    />
-                    <img
-                        src={image}
-                        alt={name}
-                        className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
-                    />
-                    <img
-                        src={image}
-                        alt={name}
-                        className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
-                    />
-                    <img
-                        src={picture}
-                        alt={name}
-                        className="sm:w-24 md:w-32 lg:w-32 border border-gray-300 hover:border-gray-500 rounded"
-                    />
-                </div>
-            </div>
-
-            {/* Product details */}
-            <div className="text-center absolute w-1/3 top-0 right-0 bottom-0 p-10 bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.07),_0_2px_4px_rgba(0,0,0,0.05)] data-[te-sidenav-hidden='false']:translate-x-0 dark:bg-zinc-800"
-                data-te-sidenav-init data-te-sidenav-hidden="false" data-te-sidenav-position="absolute"
-            >
-                <h1 className="mb-1 text-3xl font-bold text-white">{name}</h1>
-                <span className="block my-3 text-xl font-bold text-white">{price} €/day</span>
-                <p className="mb-6 text-lg font-normal text-gray-500 dark:text-gray-400">{ description }</p>
-                <hr className="text-gray-500" />
-                    <div className="grid grid-cols-2 py-5 text-yellow-500">
-                        <div className=""><span className="font-bold">Status :</span>{ availability }</div>
-                        <div className=""><span className="font-bold">Stock :</span> {stock}</div>
+        <section className="text-gray-700 body-font overflow-hidden bg-white">
+        <div className="container px-5 py-12 mx-auto">
+            <div className="lg:w-5/6 mx-auto flex flex-wrap">
+                <img alt="ecommerce" className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200" src={ image } />
+                <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
+                    {/* Brand */}
+                    <div className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative" role="alert">
+                        <h2 className="text-sm title-font text-gray-500 tracking-widest">BRAND NAME</h2>
                     </div>
-                <hr />
-                <button className="inline-flex items-center justify-center mt-10 mb-5 px-5 py-3 text-base font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900" disabled={buttonState}>
-                    Add To Cart
-                    <svg className="w-6 h-6 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                    </svg>
-                </button>
+                    {/* Name */}
+                    <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">{ name }</h1>
+                    <div className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative" role="alert">
+                        <div className="flex mb-4">
+                            {/* Rating */}
+                            <span className="flex items-center">
+                                <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 text-red-500" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 text-red-500" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 text-red-500" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 text-red-500" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-4 h-4 text-red-500" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                <span className="text-gray-600 ml-3">4 Reviews</span>
+                            </span>
+                            {/* Social Networks */}
+                            <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200">
+                                <a className="text-gray-500">
+                                <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-5 h-5" viewBox="0 0 24 24">
+                                    <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                                </svg>
+                                </a>
+                                <a className="ml-2 text-gray-500">
+                                <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-5 h-5" viewBox="0 0 24 24">
+                                    <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+                                </svg>
+                                </a>
+                                <a className="ml-2 text-gray-500">
+                                <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" className="w-5 h-5" viewBox="0 0 24 24">
+                                    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
+                                </svg>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    {/* Description */}
+                    <p className="leading-relaxed">{ description }</p>
+                    <div className="flex mt-2 items-center pb-5 border-b-2 border-gray-200 mb-5"></div>
+                    <div className="flex">
+                        {/* Stocks and availability */}
+                        <div className="title-font text-gray-900"><span className="font-medium">Availability:</span> { availability }</div>
+                        <div className="flex ml-auto title-font text-gray-900"><span className="font-medium block md:inline">Quantity: </span><span className="block md:inline"> { stock } pieces</span></div>
+                    </div>
+                    <div className="flex mt-2 items-center pb-5 border-b-2 border-gray-200 mb-5"></div>
+                    <div className="flex">
+                        {/* Price */}
+                        <span className="title-font font-medium text-3xl text-gray-900">{ price } €</span>
+                        <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 py-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded" disabled={buttonState}>Reservation</button>
+                    </div>
+                </div>
             </div>
         </div>
+        </section>
     );
 };
 

@@ -33,10 +33,10 @@ const ProductsList = () => {
   if (error) return <p>Error : {error.message}</p>;
 
   return (
-    <div className="bg-white my-10">
-      <div className="mx-10">
+    <div className="my-10">
+      <div className="mx-2 md:mx-5 lg:mx-10">
         <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">All Products</h2>
-        <div className="grid grid-cols-5 gap-5 mt-10 items-center place-items-stretch h-50">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-5 mt-10 items-center place-items-stretch">
           {data.getProducts.map((product:any) => (
             <ProductsListComponent
               key = {product.id}

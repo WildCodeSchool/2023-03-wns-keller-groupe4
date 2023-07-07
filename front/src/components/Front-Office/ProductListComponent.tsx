@@ -24,19 +24,19 @@ const Product = ({ id, name, price, picture }: IProductProps) => {
 
     return (
         <div key={id} className="component group relative border border-gray-300 hover:border-gray-500 rounded">
-            <div className="flex flex-col justify-center sm:w-24 md:w-32 lg:w-48 h-64 overflow-hidden align-middle mx-auto rounded-md lg:aspect-none opacity-70 group-hover:opacity-100">
+            <div className="flex flex-col justify-center sm:w-10 md:w-32 lg:w-48 h-32 lg:h-64 overflow-hidden align-middle mx-auto rounded-md lg:aspect-none opacity-70 group-hover:opacity-100">
                 <img
                     src={image}
                     alt={name}
-                    className="sm:w-24 md:w-32 lg:w-48"
+                    className="sm:w-10 md:w-32 lg:w-48"
                 />
             </div>
-            <div className="flex justify-between items-center border-t mt-4 px-2 py-1 comp-border">
+            <div className="flex-none md:flex justify-between items-center border-t mt-4 px-2 py-1 comp-border text-center md:text-left">
                 <div>
                     <h3 className="text-sm text-gray-700">{name}</h3>
                     <p className="mt-1 text-sm text-gray-500">{ price } €/day</p>
                 </div>
-                <div className="text-sm font-bold text-white">
+                <div className="flex justify-center m-2 md:m-0 text-sm font-bold text-white">
                     <Link to={"/product/"+id}>
                         <button className="flex justify-evenly bg-gray-600 py-1 px-2 rounded items-center comp-background">
                             <span className="me-1">Details</span>
