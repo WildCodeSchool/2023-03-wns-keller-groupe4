@@ -13,7 +13,9 @@ export class ProductService {
 
 	async getAllProducts(): Promise<Product[]> {
 		try {
-			const products = await this.productRepository.find();
+			const products = await this.productRepository.find({
+				relations: {categories: true},
+			});
 
 			return products;
 		} catch (err: any) {
@@ -23,7 +25,10 @@ export class ProductService {
 
 	async getOneProducts(id: string): Promise<Product> {
 		try {
-			const product = await this.productRepository.findOneOrFail({where: {id}});
+			const product = await this.productRepository.findOneOrFail({
+				where: {id},
+				relations: {categories: true},
+			});
 
 			return product;
 		} catch (err: any) {
@@ -38,10 +43,6 @@ export class ProductService {
 			const {name, price, stock, available, description, picture, category} =
 				createCategoryInput;
 
-			const foundCategory = await this.categoryService.getOneCategory(category);
-
-			console.log(foundCategory);
-
 			const newProduct = this.productRepository.create({
 				name,
 				price,
@@ -55,8 +56,14 @@ export class ProductService {
 			 * method above doesn't work as categories is not an array yet
 			 */
 
-			newProduct.categories = [];
-			newProduct.categories = [...newProduct.categories, foundCategory];
+			if (category !== undefined) {
+				const foundCategory = await this.categoryService.getOneCategory(
+					category
+				);
+
+				newProduct.categories = [];
+				newProduct.categories = [...newProduct.categories, foundCategory];
+			}
 
 			await this.productRepository.save(newProduct);
 
