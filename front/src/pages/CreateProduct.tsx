@@ -1,23 +1,71 @@
 import { useForm } from "react-hook-form";
+import { useMutation, useQuery } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+
+import convertBase64 from "../utils/convertBase64";
+import { gql } from "../__generated__";
 
 // INTERFACES
 interface IFormCreateProduct {
   name: string;
   description: string;
-  price: number;
+  price: string;
   category: string;
   image: FileList;
 }
 
+// QUERIES & MUTATIONS
+const GET_CATEGORIES = gql(`
+  query GetCategories {
+    getCategories {
+      id
+      name
+    }
+  }
+`)
+
+const CREATE_PRODUCT = gql(`
+  mutation Mutation($createProductInput: CreateProductInput!) {
+    createProduct(createProductInput: $createProductInput) {
+      id
+    }
+  }
+`)
+
+// COMPONENT
 function CreateProduct() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<IFormCreateProduct>();
 
-  const createProduct = async (data: IFormCreateProduct) => {
-    console.log(data);
+  const { data } = useQuery(GET_CATEGORIES);
+  const [createProduct] = useMutation(CREATE_PRODUCT);
+
+  const sortedData = data?.getCategories && Array.from(data.getCategories).sort((a, b) => a.name.localeCompare(b.name));
+
+  const submitCreateProduct = async (data: IFormCreateProduct) => {
+    const imgBase64 = await convertBase64(data.image[0]);
+
+    const createProductInput = {
+      name: data.name,
+      description: data.description,
+      price: parseInt(data.price),
+      category: data.category,
+      picture: imgBase64,
+      stock: 0,
+      available: false,
+    };
+
+    const newProduct = await createProduct({ variables: { createProductInput } });
+
+    if (newProduct.data) {
+      navigate(`/admin/stock/${newProduct.data.createProduct.id}`);
+    }
+    // TODO: handle error (toast ?)
   };
 
   return (
@@ -25,7 +73,7 @@ function CreateProduct() {
       <h1 className="text-2xl my-4 text-center">Créer une fiche produit</h1>
       <form
         className="flex flex-col gap-4"
-        onSubmit={handleSubmit(createProduct)}
+        onSubmit={handleSubmit(submitCreateProduct)}
       >
         {/* Name */}
         <div>
@@ -99,15 +147,10 @@ function CreateProduct() {
             className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
             {...register("category", { required: true })}
           >
-            <option value="1">Pelle</option>
-            <option value="2">Bétonnière</option>
-            <option value="3">Perforateur</option>
-            <option value="4">Scie</option>
-            <option value="5">Echafaudage</option>
-            <option value="6">Echelle</option>
-            <option value="7">Compresseur</option>
-            <option value="8">Groupe électrogène</option>
-            <option value="9">Tronçonneuse</option>
+            <option value="" selected disabled >Choisir une catégorie</option>
+            {sortedData?.map((category) => (
+              <option value={category.id} key={category.id}>{category.name}</option>
+            ))}
           </select>
           {errors.category && (
             <p className="text-sm text-red-400 text-right">
