@@ -22,10 +22,12 @@ function HomePage() {
 
   const { data } = useQuery(GET_CATEGORIES);
 
+  const sortedData = data?.getCategories && Array.from(data?.getCategories).sort((a, b) => a.name.localeCompare(b.name));
+
   const filteredProduct =
     query === ""
-      ? data?.getCategories
-      : data?.getCategories.filter((product) =>
+      ? sortedData
+      : sortedData?.filter((product) =>
           product.name
             .toLowerCase()
             .replace(/\s+/g, "")
