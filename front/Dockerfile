@@ -13,4 +13,4 @@ COPY tailwind.config.js tailwind.config.js
 COPY codegen.ts codegen.ts
 COPY src src
 
-CMD npm run compile && npm start
+CMD npm run compile-watch && npm start
