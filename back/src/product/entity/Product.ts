@@ -16,7 +16,7 @@ export class Product {
 	id: string;
 
 	@Field()
-	@Column()
+	@Column({unique: true})
 	name: string;
 
 	@Field()
