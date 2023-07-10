@@ -115,7 +115,7 @@ const Stock = () => {
       </form>
 
       {/* Table */}
-      <div className="overflow-scroll h-full text-sm sm:text-base">
+      <div className="h-full text-sm sm:text-base">
         <table className="table-auto text-left max-w-screen-sm sm:mx-auto sm:w-4/5">
           <thead>
             <tr>
