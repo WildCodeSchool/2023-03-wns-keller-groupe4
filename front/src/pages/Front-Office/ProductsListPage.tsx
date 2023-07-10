@@ -1,5 +1,5 @@
 import { useQuery, gql } from "@apollo/client";
-import ProductsListComponent from "../../components/ProductListComponent";
+import ProductsListComponent from "../../components/ProductsListComponent";
 
 export interface IProductFromAPI {
   id: number;
@@ -24,7 +24,7 @@ export const GET_ALL_PRODUCTS = gql`
   }
 `;
 
-const ProductsList = () => {
+const ProductsListPage = () => {
 
   // Products data from API with pagination
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
@@ -57,4 +57,4 @@ const ProductsList = () => {
   );
 };
 
-export default ProductsList;
+export default ProductsListPage;
