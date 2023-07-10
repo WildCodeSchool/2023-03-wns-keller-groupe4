@@ -70,7 +70,6 @@ const start = async (): Promise<void> => {
 					name: categoriesNames[index],
 				});
 			}
-			console.log("Categories Created");
 		}
 
 		// This is getting all the categories previously created so we can bind them to the products in next steps
@@ -79,8 +78,6 @@ const start = async (): Promise<void> => {
 		let resultArray = [];
 		// The issue is all the mock data for products doesn't have category provided. In the case where the category property of a product is a null array this aims to finds the matching category using the products name
 		if (DATA_FIXTURE_PRODUCTS === "true") {
-			console.log(`mockproduct array ${mockProducts.length}`);
-
 			mockProducts.forEach((product) => {
 				const CategoryNameFromProduct = product.name.slice(
 					0,
@@ -91,17 +88,13 @@ const start = async (): Promise<void> => {
 				const foundMatchingCategory = categories.find((category) => {
 					return category.name === CategoryNameFromProduct;
 				});
-				console.log(foundMatchingCategory?.id);
 
 				// This checks if no category is provided for a product, if it's the case we check if we found it using the products name and finaly if the products doesn't already belong to the category
-				// console.log(product.categories.length === 0);
 
 				const needingToInferCategory =
 					product.categories.length === 0 &&
 					foundMatchingCategory !== undefined &&
 					!product.categories.includes(foundMatchingCategory.id);
-
-				// console.log(needingToInferCategory);
 
 				// If all that is true , we are going to add the infered category to our product
 				if (needingToInferCategory) {
@@ -115,8 +108,6 @@ const start = async (): Promise<void> => {
 
 				resultArray.push(product);
 			});
-
-			console.log(`result array ${resultArray.length}`);
 
 			// At this stage our products have categories so we can insert them in our database using a method from our productService
 			const allDbProducts = await productService.getAllProducts();
@@ -149,7 +140,6 @@ const start = async (): Promise<void> => {
 					await productRepository.save(newProduct);
 				}
 			}
-			console.log("Products Created");
 		}
 	};
 
@@ -160,8 +150,6 @@ const start = async (): Promise<void> => {
 	}
 	console.log(`🚀  Server ready at ${url}`);
 	// console.log(JWT_SECRET);
-	console.log(`DATA_FIXTURE_CATEGORIES ${DATA_FIXTURE_CATEGORIES}`);
-	// console.log(DATA_FIXTURE_PRODUCTS);
 };
 
 void start();
