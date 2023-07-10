@@ -12,33 +12,33 @@ export class ProductService {
 		this.categoryService = new CategoryService();
 	}
 
-	async getAllProducts(): Promise<Product[]> {
-		try {
-			const products = await this.productRepository.find();
-
-			return products;
-		} catch (err: any) {
-			throw new Error(err.message);
-		}
+	async getProducts(limit: number | undefined, offset: number | undefined, name: string | undefined): Promise<Product[]> {
+        try {
+            if (name === undefined) {
+                const products = await this.productRepository.find({
+                    take: limit,
+                    skip: offset,
+                });
+                return products;
+            }
+            
+            const products = await this.productRepository.find({
+                take: limit,
+                skip: offset,
+                where: { name: ILike(`%${name}%`) },
+            });
+            return products;
+            
+        } catch (err: any) {
+          throw new Error(err.message);
+        }
 	}
 
-	async getOneProducts(id: string): Promise<Product> {
+	async getOneProduct(id: string): Promise<Product> {
 		try {
 			const product = await this.productRepository.findOneOrFail({where: {id}});
 
 			return product;
-		} catch (err: any) {
-			throw new Error(err.message);
-		}
-	}
-
-	async getProductsByName(name: string): Promise<Product[]> {
-		try {
-			const products = await this.productRepository.findBy({
-				name: ILike(`%${name}%`),
-			});
-
-			return products;
 		} catch (err: any) {
 			throw new Error(err.message);
 		}

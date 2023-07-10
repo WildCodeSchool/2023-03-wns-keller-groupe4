@@ -11,30 +11,21 @@ import { VscBlank } from "react-icons/vsc";
 
 // QUERIES
 const GET_PRODUCTS = gql(`
-  query Query {
-    getProducts {
-      id
-      name
-      stock
-      available
-    }
-}`);
-
-const GET_PRODUCT_BY_NAME = gql(`
-  query GetProductsByName($name: String!) {
-    getProductsByName(name: $name) {
+  query GetProducts($limit: Float, $offset: Float, $name: String) {
+    getProducts(limit: $limit, offset: $offset, name: $name) {
       id
       name
       stock
       available
     }
   }
-`) 
+`);
+
 
 // COMPONENT
 const Stock = () => {
-  const { data, loading } = useQuery(GET_PRODUCTS);
-  const [getProductsByName, { data: dataByName }] = useLazyQuery(GET_PRODUCT_BY_NAME);
+  const { data: initialData, loading } = useQuery(GET_PRODUCTS);
+  const [getLazyProducts, { data: lazyData }] = useLazyQuery(GET_PRODUCTS);
 
   const { register, handleSubmit } = useForm();
 
@@ -42,9 +33,9 @@ const Stock = () => {
   const [sortDirection, setSortDirection] = useState("desc");
 
   if (loading) return <p>Loading...</p>;
-  if (data?.getProducts === undefined || data.getProducts.length === 0) return <p>Aucun produit</p>;
+  if (initialData?.getProducts === undefined || initialData.getProducts.length === 0) return <p>Aucun produit</p>;
 
-  const sortProducts = (products: typeof data.getProducts, sortColumn: string, sortOrder: string ) => {
+  const sortProducts = (products: typeof initialData.getProducts, sortColumn: string, sortOrder: string ) => {
     return [...products].sort((a, b) => {
       if (sortColumn === "product") {
         if (sortOrder === "desc") {
@@ -85,10 +76,10 @@ const Stock = () => {
   };
 
   const searchProducts = (data: any) => {
-    getProductsByName({ variables: { name: data.search } });
+    getLazyProducts({ variables: { name: data.search } });
   }
 
-  const sortedProducts = sortProducts(dataByName ? dataByName.getProductsByName : data?.getProducts, sortColumn, sortDirection);
+  const sortedProducts = sortProducts(lazyData ? lazyData.getProducts : initialData.getProducts, sortColumn, sortDirection);
 
   return (
     <div>
@@ -116,7 +107,7 @@ const Stock = () => {
 
       {/* Table */}
       <div className="h-full text-sm sm:text-base">
-        <table className="table-auto text-left max-w-screen-sm sm:mx-auto sm:w-4/5">
+        <table className="table-auto text-left max-w-screen-sm mx-auto sm:w-4/5">
           <thead>
             <tr>
               <th className="border-b p-4">
