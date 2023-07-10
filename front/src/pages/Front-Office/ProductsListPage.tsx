@@ -30,7 +30,7 @@ export const GET_ALL_PRODUCTS = gql`
   }
 `;
 
-const ProductsList = () => {
+const ProductsListPage = () => {
 
   const { cat } = useParams<ProductCategory>();
 
@@ -42,6 +42,8 @@ const ProductsList = () => {
       setCategory(cat);
     }
   }, []);
+
+  useEffect(() => { console.log("category => "+category); }, [category])
 
   console.log("SelectedCategory => "+cat, " / Category => "+category);
 
@@ -79,4 +81,4 @@ const ProductsList = () => {
   );
 };
 
-export default ProductsList;
+export default ProductsListPage;

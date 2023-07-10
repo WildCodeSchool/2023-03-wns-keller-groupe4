@@ -30,7 +30,7 @@ export const GET_ONE_PRODUCT = gql`
   }
 `;
 
-const ProductDetails = () => {
+const ProductDetailsPage = () => {
 
   const { productId } = useParams<ProductIdType>();
   const getProductId = productId;
@@ -65,4 +65,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails;
+export default ProductDetailsPage;
