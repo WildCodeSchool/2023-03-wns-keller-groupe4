@@ -33,7 +33,7 @@ const CREATE_PRODUCT = gql(`
 `)
 
 // COMPONENT
-function CreateProduct() {
+const CreateProduct = () => {
   const navigate = useNavigate();
 
   const {
@@ -45,7 +45,7 @@ function CreateProduct() {
   const { data } = useQuery(GET_CATEGORIES);
   const [createProduct] = useMutation(CREATE_PRODUCT);
 
-  const sortedData = data?.getCategories && Array.from(data.getCategories).sort((a, b) => a.name.localeCompare(b.name));
+  const sortedCategories = data?.getCategories && Array.from(data.getCategories).sort((a, b) => a.name.localeCompare(b.name));
 
   const submitCreateProduct = async (data: IFormCreateProduct) => {
     const imgBase64 = await convertBase64(data.image[0]);
@@ -148,7 +148,7 @@ function CreateProduct() {
             {...register("category", { required: true })}
           >
             <option value="" selected disabled >Choisir une catégorie</option>
-            {sortedData?.map((category) => (
+            {sortedCategories?.map((category) => (
               <option value={category.id} key={category.id}>{category.name}</option>
             ))}
           </select>
