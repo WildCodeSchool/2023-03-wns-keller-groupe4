@@ -23,6 +23,12 @@ export default class ProductResolver {
 		return await this.service.getOneProducts(id);
 	}
 
+	@Query(() => [Product])
+	async getProductsByName(@Arg("name") name: string): Promise<Product[]> {
+		// TODO Write validation classes for the queries input
+		return await this.service.getProductsByName(name);
+	}
+
 	@Mutation(() => Product)
 	async createProduct(
 		@Arg("createProductInput") createProductInput: CreateProductInput

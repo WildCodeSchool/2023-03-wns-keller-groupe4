@@ -1,3 +1,4 @@
+import {ILike} from "typeorm";
 import {CategoryService} from "../category/Category.Service";
 import {UpdateCategoryInput} from "../category/inputs/UpdateCategoryInput";
 import dataSource from "../utils";
@@ -26,6 +27,18 @@ export class ProductService {
 			const product = await this.productRepository.findOneOrFail({where: {id}});
 
 			return product;
+		} catch (err: any) {
+			throw new Error(err.message);
+		}
+	}
+
+	async getProductsByName(name: string): Promise<Product[]> {
+		try {
+			const products = await this.productRepository.findBy({
+				name: ILike(`%${name}%`),
+			});
+
+			return products;
 		} catch (err: any) {
 			throw new Error(err.message);
 		}

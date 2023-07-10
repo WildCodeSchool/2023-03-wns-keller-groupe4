@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
@@ -9,7 +9,7 @@ import { HiOutlineMagnifyingGlass } from "react-icons/hi2";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import { VscBlank } from "react-icons/vsc";
 
-// QUERY
+// QUERIES
 const GET_PRODUCTS = gql(`
   query Query {
     getProducts {
@@ -20,11 +20,23 @@ const GET_PRODUCTS = gql(`
     }
 }`);
 
+const GET_PRODUCT_BY_NAME = gql(`
+  query GetProductsByName($name: String!) {
+    getProductsByName(name: $name) {
+      id
+      name
+      stock
+      available
+    }
+  }
+`) 
+
 // COMPONENT
 const Stock = () => {
   const { data, loading } = useQuery(GET_PRODUCTS);
+  const [getProductsByName, { data: dataByName }] = useLazyQuery(GET_PRODUCT_BY_NAME);
 
-  const { register } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const [sortColumn, setSortColumn] = useState("product");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -72,14 +84,18 @@ const Stock = () => {
     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
   };
 
-  const sortedProducts = sortProducts(data?.getProducts, sortColumn, sortDirection);
+  const searchProducts = (data: any) => {
+    getProductsByName({ variables: { name: data.search } });
+  }
+
+  const sortedProducts = sortProducts(dataByName ? dataByName.getProductsByName : data?.getProducts, sortColumn, sortDirection);
 
   return (
     <div>
       <h1 className="text-2xl text-center my-6 sm:my-8">Stock</h1>
 
       {/* Search Bar */}
-      <div className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
+      <form onSubmit={handleSubmit(searchProducts)} className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
         <label htmlFor="search" className="sr-only">
           Rechercher un produit
         </label>
@@ -96,7 +112,7 @@ const Stock = () => {
         >
           <HiOutlineMagnifyingGlass />
         </button>
-      </div>
+      </form>
 
       {/* Table */}
       <div className="overflow-scroll h-full text-sm sm:text-base">
