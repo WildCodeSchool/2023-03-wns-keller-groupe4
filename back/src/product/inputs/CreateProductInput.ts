@@ -21,8 +21,7 @@ export class CreateProductInput implements Partial<Product> {
 	@Field()
 	picture: string;
 
-	@Field()
-	category?: string;
-
-	// categories cause they can be several categories for a product it's type is a category array
+	// Since a product can have many categories we expect an array of category ID here.
+	@Field((type) => [String])
+	category?: String[];
 }
