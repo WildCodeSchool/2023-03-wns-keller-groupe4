@@ -5,7 +5,6 @@ import "./index.css";
 import App from "./App";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { offsetLimitPagination } from "@apollo/client/utilities";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
