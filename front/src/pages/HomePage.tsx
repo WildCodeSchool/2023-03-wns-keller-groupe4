@@ -2,6 +2,16 @@ import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 import { RxMagnifyingGlass } from "react-icons/rx";
+import { gql } from "../__generated__";
+
+const GET_CATEGORIES = gql(`
+  query GetCategories {
+    getCategories {
+      id
+      name
+    }
+  }
+`); 
 
 const product = [
   { id: 1, name: "Pelle" },
