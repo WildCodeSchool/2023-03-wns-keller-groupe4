@@ -6,6 +6,7 @@ import NavbarFront from "./NavbarFront";
 import NavbarBack from "./NavbarBack";
 import MenuFront from "./MenuFront";
 import MenuBack from "./MenuBack";
+import Footer from "./Footer";
 
 interface ILayoutFrontProps {
   isFrontOffice: boolean;
@@ -36,6 +37,7 @@ function Layout({ isFrontOffice }: ILayoutFrontProps) {
         </Transition>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }

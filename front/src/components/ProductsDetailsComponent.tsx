@@ -11,7 +11,7 @@ export interface IProductProps {
     available: boolean;
 }
 
-const ProductDetailsComponent = ({ name, description, price, stock, picture, available }: IProductProps) => {
+const ProductsDetailsComponent = ({ name, description, price, stock, picture, available }: IProductProps) => {
     
     // Description
     description = description !=='' ? description : "No description available";
@@ -108,4 +108,4 @@ const ProductDetailsComponent = ({ name, description, price, stock, picture, ava
     );
 };
 
-export default ProductDetailsComponent;
+export default ProductsDetailsComponent;

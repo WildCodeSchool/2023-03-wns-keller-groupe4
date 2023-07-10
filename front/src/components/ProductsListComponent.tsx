@@ -8,7 +8,7 @@ export interface IProductProps {
     picture: string;
 }
 
-const ProductListComponent = ({ id, name, price, picture }: IProductProps) => {
+const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
 
     const [image, setImage] = useState("default.jpg");
     (function () {
@@ -51,4 +51,4 @@ const ProductListComponent = ({ id, name, price, picture }: IProductProps) => {
     );
 };
 
-export default ProductListComponent;
+export default ProductsListComponent;
