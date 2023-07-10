@@ -4,14 +4,14 @@ import * as jwt from "jsonwebtoken";
 import dataSource from "./utils";
 import {buildSchema} from "type-graphql";
 import {ApolloServer} from "apollo-server";
-// import {ProductService} from "./product/Product.Service";
-import UserResolver from "./user/UserResolver";
 import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
 import {Category} from "./category/entity/Category";
 import {Product} from "./product/entity/Product";
 import {categoriesNames, mockProducts} from "./mockDataArray";
 import {ProductService} from "./product/Product.Service";
+import LangResolver from "./lang/Lang.Resolver";
+import UserResolver from "./user/User.Resolver";
 
 dotenv.config();
 
