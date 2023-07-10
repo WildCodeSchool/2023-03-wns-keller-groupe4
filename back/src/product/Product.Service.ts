@@ -52,22 +52,22 @@ export class ProductService {
 				picture,
 			});
 
-			/** we have to do this because assigning categories in the create
-			 * method above doesn't work as categories is not an array yet
-			 */
-
+			// We check if the category sent by the client exists in DB
 			if (category !== undefined) {
-				const foundCategory = await this.categoryService.getOneCategory(
-					category
-				);
-
-				newProduct.categories = [];
-				newProduct.categories = [...newProduct.categories, foundCategory];
+				for (let index = 0; index < category.length; index++) {
+					const element = category[index];
+					const foundCategory = await this.categoryService.getOneCategory(
+						element
+					);
+					/** we have to do this because assigning categories in the create
+					 * method above doesn't work as categories is not an array yet
+					 */
+					newProduct.categories = [];
+					newProduct.categories = [...newProduct.categories, foundCategory];
+				}
 			}
 
 			await this.productRepository.save(newProduct);
-
-			console.log(newProduct);
 
 			return newProduct;
 		} catch (err: any) {
@@ -96,7 +96,6 @@ export class ProductService {
 		try {
 			await this.productRepository.delete({id});
 			// TODO check the DeleteResult Obj to verify that the deletion took place before returning true
-			console.log(await this.productRepository.delete({id}));
 
 			return true;
 		} catch (err: any) {
