@@ -13,7 +13,9 @@ export class ProductService {
 
 	async getAllProducts(): Promise<Product[]> {
 		try {
-			const products = await this.productRepository.find();
+			const products = await this.productRepository.find({
+				relations: {categories: true},
+			});
 
 			return products;
 		} catch (err: any) {
@@ -23,7 +25,10 @@ export class ProductService {
 
 	async getOneProducts(id: string): Promise<Product> {
 		try {
-			const product = await this.productRepository.findOneOrFail({where: {id}});
+			const product = await this.productRepository.findOneOrFail({
+				where: {id},
+				relations: {categories: true},
+			});
 
 			return product;
 		} catch (err: any) {
@@ -38,10 +43,6 @@ export class ProductService {
 			const {name, price, stock, available, description, picture, category} =
 				createCategoryInput;
 
-			const foundCategory = await this.categoryService.getOneCategory(category);
-
-			console.log(foundCategory);
-
 			const newProduct = this.productRepository.create({
 				name,
 				price,
@@ -51,16 +52,22 @@ export class ProductService {
 				picture,
 			});
 
-			/** we have to do this because assigning categories in the create
-			 * method above doesn't work as categories is not an array yet
-			 */
-
-			newProduct.categories = [];
-			newProduct.categories = [...newProduct.categories, foundCategory];
+			// We check if the category sent by the client exists in DB
+			if (category !== undefined) {
+				for (let index = 0; index < category.length; index++) {
+					const element = category[index];
+					const foundCategory = await this.categoryService.getOneCategory(
+						element
+					);
+					/** we have to do this because assigning categories in the create
+					 * method above doesn't work as categories is not an array yet
+					 */
+					newProduct.categories = [];
+					newProduct.categories = [...newProduct.categories, foundCategory];
+				}
+			}
 
 			await this.productRepository.save(newProduct);
-
-			console.log(newProduct);
 
 			return newProduct;
 		} catch (err: any) {
@@ -89,7 +96,6 @@ export class ProductService {
 		try {
 			await this.productRepository.delete({id});
 			// TODO check the DeleteResult Obj to verify that the deletion took place before returning true
-			console.log(await this.productRepository.delete({id}));
 
 			return true;
 		} catch (err: any) {

@@ -3,6 +3,10 @@ services:
     build: ./back
     env_file:
       - vars.env
+    environment:
+      - DATA_FIXTURE=$DATA_FIXTURE
+      - DATA_FIXTURE_CATEGORIES=$DATA_FIXTURE_CATEGORIES
+      - DATA_FIXTURE_PRODUCTS=$DATA_FIXTURE_PRODUCTS
     ports:
       - 4000:4000
     volumes:
