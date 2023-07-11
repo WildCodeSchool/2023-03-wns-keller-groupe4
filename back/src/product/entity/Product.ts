@@ -39,7 +39,7 @@ export class Product {
 	@Column("text")
 	picture: string;
 
-	@Field()
+	@Field({nullable: true})
 	@Column({type: "timestamptz", default: () => "CURRENT_TIMESTAMP"})
 	created_at: Date;
 
