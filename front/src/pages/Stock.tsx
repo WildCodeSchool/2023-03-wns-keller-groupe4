@@ -115,10 +115,10 @@ const Stock = () => {
 
       {/* Table */}
       <div className="h-full text-sm sm:text-base">
-        <table className="table-auto text-left max-w-screen-sm mx-auto sm:w-4/5">
+        <table className="table-fixed text-left max-w-screen-sm w-full mx-auto sm:w-4/5">
           <thead>
             <tr>
-              <th className="border-b p-4">
+              <th className="border-b p-4 w-9/12">
                 <button
                   onClick={handleProductSort}
                   className="opacity-50 flex items-center gap-2"
@@ -149,7 +149,7 @@ const Stock = () => {
                       {product.name}
                     </Link>
                   </td>
-                  <td className="p-4">
+                  <td className="p-4 pl-10">
                     <p className={color}>{product.stock}</p>
                   </td>
                 </tr>
