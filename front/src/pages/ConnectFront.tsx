@@ -12,7 +12,7 @@ function ConnectFront() {
     // alors redirection vers la page profile
     if(AuthService.getClientData())
       navigate("/profile")
-  }, [])
+  })
 
 
   return (
