@@ -30,25 +30,24 @@ export const GET_ALL_PRODUCTS = gql`
   }
 `;
 
-const ProductsListPage = () => {
+const ProductsListPage = () => { 
 
   // Products from API
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   console.log(data);
 
   let { cat } = useParams<ProductCategory>();
-  console.log(cat);
-
   console.log("CATEGORY FILTER => "+cat);
-
   
   if (loading) return <p>Chargement...</p>;
-  if (error) return (
-    <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
-      <p className="font-bold">Erreur</p>
-      <p>Une erreur est survenue. Veuillez réessayer</p>
-    </div>
-  );
+  if (error) {
+    return (
+      <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+        <p className="font-bold">Erreur</p>
+        <p>Une erreur est survenue. Veuillez réessayer</p>
+      </div>
+    );
+  }
 
   return (
     <div className="my-10">
