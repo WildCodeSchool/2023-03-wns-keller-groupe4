@@ -25,7 +25,7 @@ export const categoriesNames = [
 	"Visseuse",
 ];
 
-export interface Product {
+export interface IMockProduct {
 	name: string;
 	price: number;
 	stock: number;
@@ -35,7 +35,7 @@ export interface Product {
 	categories: string[];
 }
 
-export const mockProducts: Product[] = [
+export const mockProducts: IMockProduct[] = [
 	{
 		name: "Bétonnière électrique 350L",
 		price: 30,
