@@ -10,8 +10,8 @@ import { VscBlank } from "react-icons/vsc";
 
 // QUERIES
 const GET_PRODUCTS = gql(`
-  query GetProducts($limit: Float, $offset: Float, $name: String) {
-    getProducts(limit: $limit, offset: $offset, name: $name) {
+  query GetProducts($orderBy: String, $orderDirection: String, $limit: Float, $offset: Float, $name: String) {
+    getProducts(orderBy: $orderBy, orderDirection: $orderDirection, limit: $limit, offset: $offset, name: $name) {
       id
       name
       stock
@@ -34,8 +34,8 @@ const Stock = () => {
   const [getLazyProducts, { data: lazyData }] = useLazyQuery(GET_PRODUCTS);
 
   const [search, setSearch] = useState("");
-  const [sortColumn, setSortColumn] = useState("product");
-  const [sortDirection, setSortDirection] = useState("desc");
+  const [orderBy, setOrderBy] = useState("name");
+  const [orderDirection, setOrderDirection] = useState("ASC");
   const [currentPage, setCurrentPage] = useState(1);
 
   const pageCount = productCount && Math.ceil(productCount.getProductsCount / LIMIT);
@@ -48,35 +48,45 @@ const Stock = () => {
   }
 
   const getSortIndicator = (column: string) => {
-    if (column === sortColumn) {
-      return sortDirection === "asc" ? <AiOutlineArrowUp /> : <AiOutlineArrowDown />;
+    if (column === orderBy) {
+      if (column === "stock") {
+        return orderDirection === "DESC" ? <AiOutlineArrowDown /> : <AiOutlineArrowUp />;
+      }
+      return orderDirection === "DESC" ? <AiOutlineArrowUp /> : <AiOutlineArrowDown />;
     } else {
       return <VscBlank />;
     }
   };
 
   const handleProductSort = () => {
-    setSortColumn("product");
-    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    setOrderBy("name");
+    setOrderDirection(orderDirection === "ASC" ? "DESC" : "ASC");
   };
 
   const handleQuantitySort = () => {
-    setSortColumn("quantity");
-    setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    setOrderBy("stock");
+    setOrderDirection(orderDirection === "ASC" ? "DESC" : "ASC");
   };
 
   const searchProducts = (e: any) => {
     e.preventDefault();
     setCurrentPage(1);
     getLazyProductCount({ variables: { name: search } });
-    getLazyProducts({ variables: { name: search, offset: 0, limit: LIMIT } });
+    getLazyProducts({ variables: { name: search, offset: 0, limit: LIMIT, orderBy, orderDirection } });
   };
 
   useEffect(() => {
     getLazyProductCount({ variables: { name: search } });
-    getLazyProducts({ variables: { name: search, offset, limit: LIMIT } });
+    getLazyProducts({ variables: { name: search, offset, limit: LIMIT, orderBy, orderDirection } });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    getLazyProductCount({ variables: { name: search } });
+    getLazyProducts({ variables: { name: search, offset: 0, limit: LIMIT, orderBy, orderDirection } });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderBy, orderDirection]);
 
   return (
     <div>
@@ -113,7 +123,7 @@ const Stock = () => {
                   onClick={handleProductSort}
                   className="opacity-50 flex items-center gap-2"
                 >
-                  Produit {getSortIndicator("product")}
+                  Produit {getSortIndicator("name")}
                 </button>
               </th>
               <th className="border-b p-4">
@@ -121,7 +131,7 @@ const Stock = () => {
                   onClick={handleQuantitySort}
                   className="opacity-50 flex items-center gap-2"
                 >
-                  Quantité {getSortIndicator("quantity")}
+                  Quantité {getSortIndicator("stock")}
                 </button>
               </th>
             </tr>
@@ -155,7 +165,7 @@ const Stock = () => {
           {/* Previous Page */}
           <button 
             disabled={currentPage === 1} 
-            onClick={() => setCurrentPage(currentPage + 1)} 
+            onClick={() => setCurrentPage(currentPage - 1)} 
             className="flex items-center pt-3 text-gray-600 hover:text-main cursor-pointer"
           >
             <svg width={14} height={8} viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">

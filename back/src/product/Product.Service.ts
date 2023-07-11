@@ -12,12 +12,15 @@ export class ProductService {
 		this.categoryService = new CategoryService();
 	}
 
-	async getProducts(limit: number | undefined, offset: number | undefined, name: string | undefined): Promise<Product[]> {
+	async getProducts(limit: number | undefined, offset: number | undefined, name: string | undefined, orderBy: string, orderDirection: string): Promise<Product[]> {
         try {
             if (name === undefined) {
                 const products = await this.productRepository.find({
                     take: limit,
                     skip: offset,
+					order: {
+						[orderBy]: orderDirection, 
+					},
                 });
                 return products;
             }
@@ -26,6 +29,9 @@ export class ProductService {
                 take: limit,
                 skip: offset,
                 where: { name: ILike(`%${name}%`) },
+				order: {
+					[orderBy]: orderDirection, 
+				},
             });
             return products;
             
