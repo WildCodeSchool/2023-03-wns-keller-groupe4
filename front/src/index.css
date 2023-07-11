@@ -2,3 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Others styles */
+.component:hover .comp-background {
+  background-color: orangered;
+}
+
+.component:hover .comp-color {
+  color: orangered;
+}
+
+.component:hover .comp-border {
+    border-color: gray;
+}
