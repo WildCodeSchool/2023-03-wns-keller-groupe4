@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useQuery, gql } from "@apollo/client";
 import ProductsListComponent from "../../components/ProductsListComponent";
 import { useEffect, useState } from 'react';
@@ -12,9 +12,9 @@ export interface IProductFromAPI {
   picture: string;
 }
 
-type ProductCategory = {
-  cat: string;
-}
+// type ProductCategory = {
+//   cat: string;
+// }
 
 export const GET_ALL_PRODUCTS = gql`
   query getAllProducts {
@@ -36,8 +36,10 @@ const ProductsListPage = () => {
   const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
   console.log(data);
 
-  let { cat } = useParams<ProductCategory>();
-  console.log("CATEGORY FILTER => "+cat);
+  // let { cat } = useParams<ProductCategory>();
+  let { state } = useLocation();
+  let category = state.cat;
+  console.log("CATEGORY FILTER => "+category);
   
   if (loading) return <p>Chargement...</p>;
   if (error) {
@@ -49,14 +51,29 @@ const ProductsListPage = () => {
     );
   }
 
+  const products = data.getProducts;
+
   return (
     <div className="my-10">
       <div className="mx-2 md:mx-5 lg:mx-10">
-        <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Tous nos produits</h2>
+        <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{category ?? "Tous nos produits"}</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-5 mt-10 items-center place-items-stretch">
           {
-          cat !== "all" ? 
-            data.getProducts.filter((product:any)=> product.name === cat).map((product:any) => (
+            category !== "all" 
+            ? products
+            .filter((product:any)=> product.name === category)
+              .map((product:any) => (
+                <ProductsListComponent
+                  key = {product.id}
+                  id = {product.id}
+                  name = {product.name}
+                  price = {product.price}
+                  picture = {product.picture}
+                />
+              )
+            )
+            : products
+            .map((product:any) => (
               <ProductsListComponent
                 key = {product.id}
                 id = {product.id}
@@ -64,17 +81,8 @@ const ProductsListPage = () => {
                 price = {product.price}
                 picture = {product.picture}
               />
-            )
-          ) : (
-          data.getProducts.map((product:any) => (
-            <ProductsListComponent
-              key = {product.id}
-              id = {product.id}
-              name = {product.name}
-              price = {product.price}
-              picture = {product.picture}
-            />
-          )))}
+            ))
+          }
         </div>
       </div>
     </div>
