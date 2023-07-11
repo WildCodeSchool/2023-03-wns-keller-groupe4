@@ -17,29 +17,49 @@ export interface IProductFromAPI {
 // }
 
 export const GET_ALL_PRODUCTS = gql`
-  query getAllProducts {
-    getProducts {
-      id
-      name
-      price
-      stock
-      available
-      description
-      picture
+  query getAllProducts($idCategory: String!) {
+    getProducts(id_category: $idCategory) {
+      categories {
+        id
+        name
+        price
+        stock
+        available
+        description
+        picture
+      }
     }
   }
 `;
 
+// const GET_CATEGORIES = gql(`
+//   query GetCategories {
+//     getCategories {
+//       id
+//       name
+//     }
+//   }
+// `);
+
 const ProductsListPage = () => { 
 
-  // Products from API
-  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
-  console.log(data);
-
   // let { cat } = useParams<ProductCategory>();
-  let { state } = useLocation();
-  let category = state.cat;
-  console.log("CATEGORY FILTER => "+category);
+  const { state } = useLocation();
+  const category = state.cat;
+
+  const CategoryNameFormatted = (category: string) => {
+    if (category !== "all") {
+      category = category.charAt(0).toUpperCase() + category.slice(1);
+      console.log("CATEGORY FILTER => "+category);
+    }
+
+    return category;
+  }
+
+  // Products from API
+  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS, {
+    variables: { idCategory:  },
+  });
   
   if (loading) return <p>Chargement...</p>;
   if (error) {
@@ -51,6 +71,8 @@ const ProductsListPage = () => {
     );
   }
 
+  console.log(data);
+
   const products = data.getProducts;
 
   return (
@@ -59,21 +81,7 @@ const ProductsListPage = () => {
         <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{category ?? "Tous nos produits"}</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-5 mt-10 items-center place-items-stretch">
           {
-            category !== "all" 
-            ? products
-            .filter((product:any)=> product.name === category)
-              .map((product:any) => (
-                <ProductsListComponent
-                  key = {product.id}
-                  id = {product.id}
-                  name = {product.name}
-                  price = {product.price}
-                  picture = {product.picture}
-                />
-              )
-            )
-            : products
-            .map((product:any) => (
+            products.map((product:any) => (
               <ProductsListComponent
                 key = {product.id}
                 id = {product.id}

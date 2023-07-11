@@ -17,6 +17,13 @@ export default class ProductResolver {
 		return (await this.service.getAllProducts());
 	}
 
+	@Query(() => [Product])
+	async getProductsByCategory(@Arg("id_category") id_category: string): Promise<Product[]> {
+
+		// TODO Write validation classes for the queries input
+		return (await this.service.getAllProductsByCategory(id_category));
+	}
+
 	@Query(() => Product)
 	async getProduct(@Arg("id") id: string): Promise<Product> {
 		// TODO Write validation classes for the queries input

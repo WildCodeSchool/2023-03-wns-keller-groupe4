@@ -23,6 +23,19 @@ export class ProductService {
 		}
 	}
 
+	async getAllProductsByCategory(id_category: string): Promise<Product[]> {
+		try {
+			const products = await this.productRepository.find({
+				relations: {categories: true},
+				where: {categories: {id: id_category}},
+			});
+
+			return products;
+		} catch (err: any) {
+			throw new Error(err.message);
+		}
+	}
+
 	async getOneProducts(id: string): Promise<Product> {
 		try {
 			const product = await this.productRepository.findOneOrFail({
