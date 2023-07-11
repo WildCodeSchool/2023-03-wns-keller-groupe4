@@ -1,7 +1,6 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { useQuery, gql } from "@apollo/client";
 import ProductsListComponent from "../../components/ProductsListComponent";
-import { useEffect, useState } from 'react';
 
 export interface IProductFromAPI {
   id: number;
@@ -97,5 +96,4 @@ const ProductsListPage = () => {
   );
 };
 
-export default ProductsListPage;
 export default ProductsListPage;
