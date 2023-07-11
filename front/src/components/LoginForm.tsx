@@ -1,43 +1,57 @@
+import { useLazyQuery} from "@apollo/client";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { LOGIN_GUERY } from "../utils/queries";
+import AuthService, { IClientData } from "../utils/utils";
 
 interface IFormLogin {
   email: string;
   password: string;
 }
 
-function LoginForm({ admin = false }) {
+const LoginForm = () => {
+  const navigate = useNavigate();
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IFormLogin>();
+    register, 
+    handleSubmit, 
+    formState
+  } = useForm<IFormLogin>({});
+  const [login] = useLazyQuery(LOGIN_GUERY);
 
-  const login = async (data: IFormLogin) => {
-    if (admin) {
-      console.log("login admin", data);
-    } else {
-      console.log("login user", data);
-    }
-  };
+  const submitForm = async (data: IFormLogin) => {
+    await login({
+      variables: {
+        email: data.email,
+        password: data.password  
+      },
+      onCompleted: async ({login}:{login: IClientData}) => {
+        AuthService.login(login)
+        navigate("/");
+      },
+      onError: (err) => {
+        navigate("/connect");
+      }
+    })
+  }
+
 
   return (
     <div className="flex flex-col justify-center items-center gap-8">
       <h1 className="text-2xl underline underline-offset-4 decoration-main">
-        Se Connecter
+        Se connecter
       </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(login)}>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)}>
         {/* Email */}
         <div>
           <label htmlFor="email">Email</label>
           <input
             type="email"
-            id="email"
             className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
             {...register("email", { required: "Ce champ est requis" })}
           />
-          {errors.email && (
+          {formState.errors.email && (
             <p className="text-sm text-red-400 text-right">
-              {errors.email.message?.toString()}
+              {formState.errors.email.message?.toString()}
             </p>
           )}
         </div>
@@ -47,13 +61,12 @@ function LoginForm({ admin = false }) {
           <label htmlFor="password">Mot de passe</label>
           <input
             type="password"
-            id="password"
             className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
             {...register("password", { required: "Ce champ est requis" })}
           />
-          {errors.password && (
+          {formState.errors.password && (
             <p className="text-sm text-red-400 text-right">
-              {errors.password.message?.toString()}
+              {formState.errors.password.message?.toString()}
             </p>
           )}
         </div>

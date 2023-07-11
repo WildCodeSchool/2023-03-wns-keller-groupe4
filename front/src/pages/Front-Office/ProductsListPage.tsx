@@ -98,3 +98,4 @@ const ProductsListPage = () => {
 };
 
 export default ProductsListPage;
+export default ProductsListPage;

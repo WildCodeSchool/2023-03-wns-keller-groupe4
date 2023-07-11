@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import { GoPerson } from "react-icons/go";
 import { FaShoppingCart } from "react-icons/fa";
+import AuthService from "../utils/utils";
 
 interface INavbarFrontProps {
   openNav: boolean;
@@ -73,9 +74,10 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
         >
           Wildrent
         </Link>
-
+        
         {/* User */}
         <div className="flex gap-4">
+          <button onClick={() => {AuthService.logout()}}>Logout</button>
           <Link to="/profile">
             <GoPerson
               aria-label="Go to profile page"
