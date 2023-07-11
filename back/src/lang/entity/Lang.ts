@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType } from "type-graphql";
 import { UserProfile } from "../../user/entity/UserProfile";
+import { DEFAULT_LANG_ID } from "../../constants";
 
 @ObjectType()
 @Entity()
@@ -21,7 +22,7 @@ export class Lang {
         if(id === null){
 
             // géré la langue pas dégaut avec un fichier de constant
-            this.id = "92011618-e552-4f37-bc5d-cdf80b48f462";
+            this.id = DEFAULT_LANG_ID;
             this.name = ""; // pour ne pas etre null
         }
     }
