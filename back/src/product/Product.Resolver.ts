@@ -18,6 +18,11 @@ export default class ProductResolver {
 		return await this.service.getProducts(limit, offset, name);
 	}
 
+	@Query(() => Number)
+	async getProductsCount(@Arg("name", {nullable: true}) name: string): Promise<number> {
+		return await this.service.getProductsCount(name);
+	}
+
 	@Query(() => Product)
 	async getProduct(@Arg("id") id: string): Promise<Product> {
 		// TODO Write validation classes for the queries input

@@ -44,6 +44,22 @@ export class ProductService {
 		}
 	}
 
+    async getProductsCount(name: string | undefined): Promise<number> {
+        try {
+            if (name === undefined) {
+                const count = await this.productRepository.count();
+                return count;
+            }
+
+            const count = await this.productRepository.count({
+                where: { name: ILike(`%${name}%`) },
+            });
+            return count;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
 	async createNewProduct(
 		createCategoryInput: CreateProductInput
 	): Promise<Product> {

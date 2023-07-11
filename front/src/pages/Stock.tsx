@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { useLazyQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
 
 import { gql } from "../__generated__";
 
@@ -21,41 +20,32 @@ const GET_PRODUCTS = gql(`
   }
 `);
 
+const GET_PRODUCT_COUNT = gql(`
+  query Query($name: String) {
+    getProductsCount(name: $name)
+  }
+`)
+
+const LIMIT = 10;
 
 // COMPONENT
 const Stock = () => {
-  const { data: initialData, loading } = useQuery(GET_PRODUCTS);
+  const [getLazyProductCount, { data: productCount }] = useLazyQuery(GET_PRODUCT_COUNT);
   const [getLazyProducts, { data: lazyData }] = useLazyQuery(GET_PRODUCTS);
 
-  const { register, handleSubmit } = useForm();
-
+  const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState("product");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  if (loading) return <p>Loading...</p>;
-  if (initialData?.getProducts === undefined || initialData.getProducts.length === 0) return <p>Aucun produit</p>;
-
-  const sortProducts = (products: typeof initialData.getProducts, sortColumn: string, sortOrder: string ) => {
-    return [...products].sort((a, b) => {
-      if (sortColumn === "product") {
-        if (sortOrder === "desc") {
-          return a.name.localeCompare(b.name);
-        } else {
-          return b.name.localeCompare(a.name);
-        }
-      } else if (sortColumn === "quantity") {
-        if (a.stock === b.stock) {
-          return a.name.localeCompare(b.name);
-        }
-        if (sortOrder === "asc") {
-          return a.stock - b.stock;
-        } else {
-          return b.stock - a.stock;
-        }
-      }
-      return 0;
-    });
-  };
+  const pageCount = productCount && Math.ceil(productCount.getProductsCount / LIMIT);
+  const offset = (currentPage - 1) * LIMIT;
+  const pageNumbers = [];
+  if (pageCount) {
+    for (let i = 1; i <= pageCount; i++) {
+      pageNumbers.push(i);
+    }
+  }
 
   const getSortIndicator = (column: string) => {
     if (column === sortColumn) {
@@ -75,18 +65,25 @@ const Stock = () => {
     setSortDirection(sortDirection === "asc" ? "desc" : "asc");
   };
 
-  const searchProducts = (data: any) => {
-    getLazyProducts({ variables: { name: data.search } });
-  }
+  const searchProducts = (e: any) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    getLazyProductCount({ variables: { name: search } });
+    getLazyProducts({ variables: { name: search, offset: 0, limit: LIMIT } });
+  };
 
-  const sortedProducts = sortProducts(lazyData ? lazyData.getProducts : initialData.getProducts, sortColumn, sortDirection);
+  useEffect(() => {
+    getLazyProductCount({ variables: { name: search } });
+    getLazyProducts({ variables: { name: search, offset, limit: LIMIT } });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offset]);
 
   return (
     <div>
       <h1 className="text-2xl text-center my-6 sm:my-8">Stock</h1>
 
       {/* Search Bar */}
-      <form onSubmit={handleSubmit(searchProducts)} className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
+      <form onSubmit={searchProducts} className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
         <label htmlFor="search" className="sr-only">
           Rechercher un produit
         </label>
@@ -95,7 +92,8 @@ const Stock = () => {
           type="text"
           placeholder="Rechercher un produit..."
           className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
-          {...register("search")}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <button
           type="submit"
@@ -129,7 +127,7 @@ const Stock = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedProducts.map((product) => {
+            {lazyData?.getProducts.map((product) => {
               let color = "";
               if (product.stock <= 3) color = "text-yellow-500";
               if (product.stock > 3) color = "text-green-500";
@@ -149,6 +147,53 @@ const Stock = () => {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-center py-10 lg:px-0 sm:px-6 px-4">
+        <div className="lg:w-3/5 w-full  flex items-center justify-between border-t border-gray-200">
+          {/* Previous Page */}
+          <button 
+            disabled={currentPage === 1} 
+            onClick={() => setCurrentPage(currentPage + 1)} 
+            className="flex items-center pt-3 text-gray-600 hover:text-main cursor-pointer"
+          >
+            <svg width={14} height={8} viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.1665 4H12.8332" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1.1665 4L4.49984 7.33333" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1.1665 4.00002L4.49984 0.666687" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <p className="text-sm ml-3 font-medium leading-none ">Previous</p>
+          </button>
+
+          {/* Page Numbers */}
+          <div className="sm:flex hidden">
+            {pageNumbers.map((number) => (
+                <p 
+                  key={number} 
+                  onClick={() => setCurrentPage(number)} 
+                  className={`pt-3 mr-4 px-2 text-sm font-medium leading-none cursor-pointer border-t ${currentPage === number ? "text-main border-main" : "text-gray-600 border-transparent hover:border-main"}`}
+                >
+                  {number}
+                </p>
+            ))
+            }
+          </div>
+
+          {/* Next Page */}
+          <button 
+            disabled={currentPage === pageCount} 
+            onClick={() => setCurrentPage(currentPage + 1)} 
+            className="flex items-center pt-3 text-gray-600 hover:text-main cursor-pointer"
+          >
+              <p className="text-sm font-medium leading-none mr-3">Next</p>
+              <svg width={14} height={8} viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1.1665 4H12.8332" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9.5 7.33333L12.8333 4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9.5 0.666687L12.8333 4.00002" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
