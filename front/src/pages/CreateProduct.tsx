@@ -54,7 +54,7 @@ const CreateProduct = () => {
       name: data.name,
       description: data.description,
       price: parseInt(data.price),
-      category: data.category,
+      category: [data.category],
       picture: imgBase64,
       stock: 0,
       available: false,
@@ -144,10 +144,11 @@ const CreateProduct = () => {
 
           <select
             id="category"
+            defaultValue={""}
             className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
             {...register("category", { required: true })}
           >
-            <option value="" selected disabled >Choisir une catégorie</option>
+            <option value="" disabled >Choisir une catégorie</option>
             {sortedCategories?.map((category) => (
               <option value={category.id} key={category.id}>{category.name}</option>
             ))}

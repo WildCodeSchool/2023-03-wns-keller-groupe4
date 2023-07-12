@@ -3,6 +3,7 @@ import {Product} from "./entity/Product";
 import {ProductService} from "./Product.Service";
 import {CreateProductInput} from "./inputs/CreateProductInput";
 import {UpdateProductInput} from "./inputs/UpdateProductInput";
+import { GetProductsInput } from "./inputs/GetProductsInput";
 
 @Resolver()
 export default class ProductResolver {
@@ -12,9 +13,14 @@ export default class ProductResolver {
 	}
 
 	@Query(() => [Product])
-	async getProducts(): Promise<Product[]> {
+	async getProducts(@Arg("getProductsInput", {nullable: true}) getProductsInput: GetProductsInput): Promise<Product[]> {
 		// TODO Write validation classes for the queries input
-		return (await this.service.getAllProducts());
+		return await this.service.getAllProducts(getProductsInput);
+	}
+
+	@Query(() => Number)
+	async getProductsCount(@Arg("name", {nullable: true}) name: string): Promise<number> {
+		return await this.service.getProductsCount(name);
 	}
 
 	@Query(() => [Product])
@@ -27,7 +33,7 @@ export default class ProductResolver {
 	@Query(() => Product)
 	async getProduct(@Arg("id") id: string): Promise<Product> {
 		// TODO Write validation classes for the queries input
-		return await this.service.getOneProducts(id);
+		return await this.service.getOneProduct(id);
 	}
 
 	@Mutation(() => Product)
