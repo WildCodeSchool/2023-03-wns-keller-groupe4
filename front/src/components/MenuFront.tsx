@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import INavbarFrontProps  from "./NavbarFront";
 import { GET_CATEGORIES } from '../utils/queries';
 
-function MenuFront() {
+interface INavbarFrontProps {
+  openNav: boolean;
+  setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
 
   // Categories from API
   const { loading, error, data } = useQuery(GET_CATEGORIES);
@@ -24,20 +28,20 @@ function MenuFront() {
         placeholder="Chercher un matériel"
       />
 
-      <nav>
-        <div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-7 gap-y-2 gap-x-1 sm:gap-1 justify-between text-center pt-3 pb-2 overflow-hidden">
-            <Link to={"products/list/all"} key="0" className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium">
-              <span className="inline-block px-2">Tous</span>
+      <nav className="overflow-x-hidden">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-y-3 gap-x-2 sm:gap-2 pt-3 pb-2 text-center">
+          <Link to={"products/list/all"} key="0" className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium"
+            onClick={() => setOpenNav(false)}
+          >
+            <div className="flex items-center h-full px-2"><div className="w-full">Tous</div></div>
+          </Link>
+          {categories.map((category:any) => (
+            <Link to={"products/list/"+category.name.toLowerCase()} key={category.id} className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium"
+              onClick={() => setOpenNav(false)}
+            >
+              <div className="flex items-center h-full px-2"><div className="w-full">{category.name}</div></div>
             </Link>
-            {categories.map((category:any) => (
-              <Link to={"products/list/"+category.name.toLowerCase()} key={category.id} className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium"
-                onClick={() => INavbarFrontProps.arguments.setOpenNav(false)}
-              >
-                <span className="inline-block px-2">{category.name}</span>
-              </Link>
-            ))}
-          </div>
+          ))}
         </div>
       </nav>
     </div>

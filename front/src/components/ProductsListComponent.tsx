@@ -13,12 +13,9 @@ const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
 
     verifyBase64(picture)
     .then((res) => {
-        console.log(res);
         if (res === false) {
             setImage(defaultImage);
             setBackgroundColorImage("bg-gray-200");
-        } else {
-            setImage(picture);
         }
     })
     .catch((err) => {

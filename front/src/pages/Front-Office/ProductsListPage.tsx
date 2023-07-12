@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 import { GET_CATEGORY_BY_NAME, GET_PRODUCTS_BY_CATEGORY } from '../../utils/queries';
+import { PrevButton } from '../../components/Tools';
 import ProductsListComponent from "../../components/ProductsListComponent";
 
 export interface IProductFromAPI {
@@ -65,7 +66,7 @@ const ProductsListPage = () => {
   );
 
   // Loadings and errors states
-  if(Qcategory_loading) return <p>Chargement de la catégorie en cours...</p>;
+  if(Qcategory_loading) return <p className="p-5 text-center">Chargement de la catégorie en cours...</p>;
   if(Qcategory_error && category_name !== "") {
     return (
       <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5" role="alert">
@@ -75,7 +76,7 @@ const ProductsListPage = () => {
     );
   }
 
-  if(Qproducts_loading) return <p>Chargement des produits en cours...</p>;
+  if(Qproducts_loading) return <p className="text-center p-5">Chargement des produits en cours...</p>;
   if(Qproducts_error) {
     return (
       <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5" role="alert">
@@ -96,6 +97,7 @@ const ProductsListPage = () => {
   } else {
     return (
       <div className="mx-2 md:mx-5 lg:mx-10 my-10">
+        <PrevButton />
         <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{ category_title }</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 mt-10 items-center place-items-stretch">
           {
@@ -107,7 +109,7 @@ const ProductsListPage = () => {
                 price = {product.price}
                 picture = {product.picture}
               />
-            ))
+            )).reverse()
           }
         </div>
       </div>
