@@ -49,6 +49,13 @@ export default class UserResolver {
         return await this.service.getOneUserById(id);
     }
 
+    // pour activer l'autorisation par token
+    // @Authorized()
+    @Query(() => User)
+    async getUserByEmail(@Arg("email") email: string): Promise<User> {
+        return await this.service.getOneUserByEmail(email);
+    }
+
     @Mutation(() => Boolean)
     async updateUser(
         @Arg("id") id: string,

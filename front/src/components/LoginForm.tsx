@@ -2,7 +2,7 @@ import { useLazyQuery} from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_GUERY } from "../utils/queries";
-import AuthService, { IClientData } from "../utils/utils";
+import AuthService, { IClientData } from "../utils/authService";
 
 interface IFormLogin {
   email: string;
