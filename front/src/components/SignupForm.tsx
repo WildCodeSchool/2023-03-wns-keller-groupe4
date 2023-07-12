@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import AuthService, { IClientData } from "../utils/utils";
+import AuthService, { IClientData } from "../utils/authService";
 import { SIGNUP_MUTATION } from "../utils/mutations";
 
 interface IFormSignup {

@@ -99,6 +99,22 @@ export default class UserService {
         }
     }
 
+    /**
+     * Renvois un utilisateur via son email
+     * @param email - email de l'user a modifier
+     * @returns User
+    */
+     async getOneUserByEmail(email: string): Promise<User> {
+        try {
+            return await dataSource.getRepository(User).findOneOrFail({
+                relations: ["user_profile", "user_profile.lang"],
+                where: { email },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
 
     /**
      * Modifie un user

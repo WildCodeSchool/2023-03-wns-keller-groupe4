@@ -11,6 +11,9 @@ module.exports = {
         second: "#221B1C",
       },
     },
+    screens: {
+      "sm-height": { raw: "(max-height: 770px), (min-width: 1024px)" },
+    }
   },
   extend: {},
   plugins: [],

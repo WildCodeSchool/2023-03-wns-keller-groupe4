@@ -1,7 +1,7 @@
 import { Tab } from "@headlessui/react";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
-import AuthService from "../utils/utils";
+import AuthService from "../utils/authService";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
