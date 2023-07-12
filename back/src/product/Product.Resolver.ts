@@ -1,4 +1,4 @@
-import {Arg, Args, Mutation, Query, Resolver} from "type-graphql";
+import {Arg, Mutation, Query, Resolver} from "type-graphql";
 import {Product} from "./entity/Product";
 import {ProductService} from "./Product.Service";
 import {CreateProductInput} from "./inputs/CreateProductInput";
@@ -13,9 +13,9 @@ export default class ProductResolver {
 	}
 
 	@Query(() => [Product])
-	async getProducts(@Args() {limit, offset, name, orderBy, orderDirection}: GetProductsInput): Promise<Product[]> {
+	async getProducts(@Arg("getProductsInput", {nullable: true}) getProductsInput: GetProductsInput): Promise<Product[]> {
 		// TODO Write validation classes for the queries input
-		return await this.service.getProducts(limit, offset, name, orderBy, orderDirection);
+		return await this.service.getAllProducts(getProductsInput);
 	}
 
 	@Query(() => Number)

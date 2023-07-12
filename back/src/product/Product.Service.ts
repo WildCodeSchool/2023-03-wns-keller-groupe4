@@ -4,6 +4,7 @@ import {UpdateCategoryInput} from "../category/inputs/UpdateCategoryInput";
 import dataSource from "../utils";
 import {Product} from "./entity/Product";
 import {CreateProductInput} from "./inputs/CreateProductInput";
+import { GetProductsInput } from "./inputs/GetProductsInput";
 
 export class ProductService {
 	productRepository = dataSource.getRepository(Product);
@@ -12,7 +13,16 @@ export class ProductService {
 		this.categoryService = new CategoryService();
 	}
 
-	async getProducts(limit: number | undefined, offset: number | undefined, name: string | undefined, orderBy: string, orderDirection: string): Promise<Product[]> {
+	async getAllProducts(getProductsInput: GetProductsInput | undefined): Promise<Product[]> {
+		if (getProductsInput === undefined) {
+			try {
+				const products = await this.productRepository.find();
+				return products;
+			} catch (err: any) {
+				throw new Error(err.message);
+			}
+		}
+		const {limit, offset, name, orderBy, orderDirection} = getProductsInput;
         try {
             if (name === undefined) {
                 const products = await this.productRepository.find({

@@ -10,8 +10,8 @@ import { VscBlank } from "react-icons/vsc";
 
 // QUERIES
 const GET_PRODUCTS = gql(`
-  query GetProducts($orderBy: String, $orderDirection: String, $limit: Float, $offset: Float, $name: String) {
-    getProducts(orderBy: $orderBy, orderDirection: $orderDirection, limit: $limit, offset: $offset, name: $name) {
+  query GetProducts($getProductsInput: GetProductsInput) {
+    getProducts(getProductsInput: $getProductsInput) {
       id
       name
       stock
@@ -72,19 +72,19 @@ const Stock = () => {
     e.preventDefault();
     setCurrentPage(1);
     getLazyProductCount({ variables: { name: search } });
-    getLazyProducts({ variables: { name: search, offset: 0, limit: LIMIT, orderBy, orderDirection } });
+    getLazyProducts({ variables: { getProductsInput: {name: search, offset: 0, limit: LIMIT, orderBy, orderDirection} } });
   };
 
   useEffect(() => {
     getLazyProductCount({ variables: { name: search } });
-    getLazyProducts({ variables: { name: search, offset, limit: LIMIT, orderBy, orderDirection } });
+    getLazyProducts({ variables: { getProductsInput: {name: search, offset, limit: LIMIT, orderBy, orderDirection} } });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
 
   useEffect(() => {
     setCurrentPage(1);
     getLazyProductCount({ variables: { name: search } });
-    getLazyProducts({ variables: { name: search, offset: 0, limit: LIMIT, orderBy, orderDirection } });
+    getLazyProducts({ variables: { getProductsInput: {name: search, offset: 0, limit: LIMIT, orderBy, orderDirection} } });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderBy, orderDirection]);
 
