@@ -1,8 +1,20 @@
 import { Tab } from "@headlessui/react";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
+import AuthService from "../utils/authService";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function ConnectFront() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    // si on a les datas du client, c''est qu'il est loggé
+    // alors redirection vers la page profile
+    if(AuthService.getClientData())
+      navigate("/profile")
+  })
+
+
   return (
     <div className="relative flex justify-center items-center min-h-[calc(100vh-58px)] lg:min-h-[calc(100vh-74px)]">
       <Tab.Group>

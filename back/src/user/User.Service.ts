@@ -8,6 +8,7 @@ import CreateUserInput from "./inputs/CreateUserInput";
 import { UserProfile } from "./entity/UserProfile";
 import UpdateUserInput from "./inputs/UpdateUserInput";
 import LangResolver from "../lang/Lang.Resolver";
+import SignupUserInput from "./inputs/SignupUserInput";
 
 
 export default class UserService {
@@ -35,15 +36,33 @@ export default class UserService {
      * @param password 
      * @returns renvois le token si l'authentification réussi, sinon renvois une erreur
     */
-    async login(email: string, password: string): Promise<String> {
+    async login(email: string, password: string): Promise<User> {
         try {
             const user = await dataSource
                 .getRepository(User)
                 .findOneByOrFail({ email });
 
             if (await argon2.verify(user.hashedPassword, password)) {
-                return jwt.sign({ email }, JWT_SECRET);
+                const token = jwt.sign({ email }, JWT_SECRET);
+                return {...user, token}
             } else throw new Error("passwords not matching");
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Créer un User et se connect directement apres
+     * @param signupUserInput 
+     * @returns renvois le User crée et le token de login
+    */
+     async signup(signupUserInput: SignupUserInput): Promise<User> {
+        try {
+            if(signupUserInput.password !== signupUserInput.passwordConfirm)
+                throw new Error("Password and confirm password not matching")
+
+            const userCreated = await this.createOneUser(signupUserInput);
+            return await this.login(userCreated.email, signupUserInput.password);
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -74,6 +93,22 @@ export default class UserService {
             return await dataSource.getRepository(User).findOneOrFail({
                 relations: ["user_profile", "user_profile.lang"],
                 where: { id },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Renvois un utilisateur via son email
+     * @param email - email de l'user a modifier
+     * @returns User
+    */
+     async getOneUserByEmail(email: string): Promise<User> {
+        try {
+            return await dataSource.getRepository(User).findOneOrFail({
+                relations: ["user_profile", "user_profile.lang"],
+                where: { email },
             });
         } catch (err: any) {
             throw new Error(err.message);

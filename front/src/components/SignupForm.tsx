@@ -1,4 +1,8 @@
+import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import AuthService, { IClientData } from "../utils/authService";
+import { SIGNUP_MUTATION } from "../utils/mutations";
 
 interface IFormSignup {
   email: string;
@@ -7,6 +11,7 @@ interface IFormSignup {
 }
 
 function SignupForm() {
+  const navigate = useNavigate();
   const {
     register,
     watch,
@@ -14,16 +19,34 @@ function SignupForm() {
     formState: { errors },
   } = useForm<IFormSignup>();
 
-  const signup = async (data: IFormSignup) => {
-    console.log(data);
-  };
+  const [signup] = useMutation(SIGNUP_MUTATION);
+
+  const submitForm = async (data: IFormSignup) => {
+    await signup({
+      variables: {
+        signupUserInput: {   
+          email: data.email,
+          password: data.password,
+          passwordConfirm: data.passwordConfirm
+        }
+      },
+      onCompleted: async ({signup}:{signup: IClientData}) => {
+        AuthService.login(signup)
+        navigate("/")
+      },
+      onError: (err) => {
+        navigate("/connect");
+      }
+    })
+  }
+
 
   return (
     <div className="flex flex-col justify-center items-center gap-8">
       <h1 className="text-2xl underline underline-offset-4 decoration-main">
         S'inscrire
       </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(signup)}>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(submitForm)}>
         {/* Email */}
         <div>
           <label htmlFor="email">Email</label>
@@ -106,7 +129,7 @@ function SignupForm() {
           type="submit"
           className="border border-main rounded-md mt-6 px-2 py-1"
         >
-          Se connecter
+          S'inscrire
         </button>
       </form>
     </div>
