@@ -16,7 +16,9 @@ export class ProductService {
 	async getAllProducts(getProductsInput: GetProductsInput | undefined): Promise<Product[]> {
 		if (getProductsInput === undefined) {
 			try {
-				const products = await this.productRepository.find();
+				const products = await this.productRepository.find(
+					{relations: {categories: true}}
+				);
 				return products;
 			} catch (err: any) {
 				throw new Error(err.message);
@@ -26,6 +28,7 @@ export class ProductService {
         try {
             if (name === undefined) {
                 const products = await this.productRepository.find({
+					relations: {categories: true},
                     take: limit,
                     skip: offset,
 					order: {
@@ -36,6 +39,7 @@ export class ProductService {
             }
             
             const products = await this.productRepository.find({
+				relations: {categories: true},
                 take: limit,
                 skip: offset,
                 where: { name: ILike(`%${name}%`) },
