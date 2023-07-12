@@ -8,7 +8,7 @@ import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
 import {Category} from "./category/entity/Category";
 import {Product} from "./product/entity/Product";
-import {categoriesNames, mockProducts} from "./mockDataArray";
+import {IMockProduct, categoriesNames, mockProducts} from "./mockDataArray";
 import {ProductService} from "./product/Product.Service";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
@@ -75,18 +75,12 @@ const start = async (): Promise<void> => {
 		// This is getting all the categories previously created so we can bind them to the products in next steps
 		const categories = await categoryRepository.find();
 
-		let resultArray = [];
+		const resultArray: IMockProduct[] = [];
 		// The issue is all the mock data for products doesn't have category provided. In the case where the category property of a product is a null array this aims to finds the matching category using the products name
 		if (DATA_FIXTURE_PRODUCTS === "true") {
 			mockProducts.forEach((product) => {
-				const CategoryNameFromProduct = product.name.slice(
-					0,
-					product.name.indexOf(" ")
-				);
-				// trying to find category using the product name
-
 				const foundMatchingCategory = categories.find((category) => {
-					return category.name === CategoryNameFromProduct;
+					return product.name.includes(category.name);
 				});
 
 				// This checks if no category is provided for a product, if it's the case we check if we found it using the products name and finaly if the products doesn't already belong to the category

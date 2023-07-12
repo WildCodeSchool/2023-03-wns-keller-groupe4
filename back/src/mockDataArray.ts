@@ -13,7 +13,7 @@ export const categoriesNames = [
 	"Escabeau",
 	"Groupe électrogène",
 	"Marteau piqueur",
-	"Mini pelle",
+	"Mini-pelle",
 	"Nacelle",
 	"Nettoyeur haute pression",
 	"Perforateur",
@@ -25,7 +25,7 @@ export const categoriesNames = [
 	"Visseuse",
 ];
 
-export interface Product {
+export interface IMockProduct {
 	name: string;
 	price: number;
 	stock: number;
@@ -35,7 +35,7 @@ export interface Product {
 	categories: string[];
 }
 
-export const mockProducts: Product[] = [
+export const mockProducts: IMockProduct[] = [
 	{
 		name: "Bétonnière électrique 350L",
 		price: 30,
@@ -187,21 +187,21 @@ export const mockProducts: Product[] = [
 		categories: [],
 	},
 	{
-		name: "Défonçeuse 1000W",
+		name: "Défonceuse 1000W",
 		price: 10,
 		stock: 3,
 		available: true,
-		description: "Défonçeuse 1000W",
+		description: "Défonceuse 1000W",
 		picture:
 			"https://www.loxam.fr/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/d/e/defonceuse_1000w.jpg",
 		categories: [],
 	},
 	{
-		name: "Défonçeuse 2000W",
+		name: "Défonceuse 2000W",
 		price: 15,
 		stock: 0,
 		available: false,
-		description: "Défonçeuse 2000W",
+		description: "Défonceuse 2000W",
 		picture:
 			"https://www.loxam.fr/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/d/e/defonceuse_1000w.jpg",
 		categories: [],
@@ -257,31 +257,31 @@ export const mockProducts: Product[] = [
 		categories: [],
 	},
 	{
-		name: "Echaffaudage 2m",
+		name: "Echafaudage 2m",
 		price: 25,
 		stock: 0,
 		available: false,
-		description: "Echaffaudage 2m",
+		description: "Echafaudage 2m",
 		picture:
 			"https://www.loxam.fr/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/e/c/echafaudage_2m.jpg",
 		categories: [],
 	},
 	{
-		name: "Echaffaudage 4m",
+		name: "Echafaudage 4m",
 		price: 30,
 		stock: 3,
 		available: true,
-		description: "Echaffaudage 4m",
+		description: "Echafaudage 4m",
 		picture:
 			"https://www.loxam.fr/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/e/c/echafaudage_2m.jpg",
 		categories: [],
 	},
 	{
-		name: "Echaffaudage 6m",
+		name: "Echafaudage 6m",
 		price: 35,
 		stock: 0,
 		available: false,
-		description: "Echaffaudage 6m",
+		description: "Echafaudage 6m",
 		picture:
 			"https://www.loxam.fr/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/e/c/echafaudage_2m.jpg",
 		categories: [],
