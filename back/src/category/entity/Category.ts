@@ -1,8 +1,9 @@
 import {Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Field, ObjectType} from "type-graphql";
+import {Field, InputType, ObjectType} from "type-graphql";
 import {Product} from "../../product/entity/Product";
 
 @ObjectType()
+@InputType()
 @Entity()
 export class Category {
 	@Field()
@@ -13,10 +14,7 @@ export class Category {
 	@Column()
 	name: string;
 
-	// @Field({nullable: true})
-	// @Column({nullable: true})
-	// description?: string;
-
-	@ManyToMany(() => Product, (product) => product.categories)
+	@Field(() => [Product])
+	@ManyToMany(() => Product, (product) => product.categories, {eager: true})
 	products: Product[];
 }

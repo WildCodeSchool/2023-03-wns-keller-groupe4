@@ -16,7 +16,7 @@ export class Product {
 	id: string;
 
 	@Field()
-	@Column()
+	@Column({unique: true})
 	name: string;
 
 	@Field()
@@ -39,7 +39,7 @@ export class Product {
 	@Column("text")
 	picture: string;
 
-	@Field()
+	@Field({nullable: true})
 	@Column({type: "timestamptz", default: () => "CURRENT_TIMESTAMP"})
 	created_at: Date;
 
@@ -51,7 +51,8 @@ export class Product {
 	@Column({nullable: true})
 	updated_by: string;
 
-	@ManyToMany(() => Category, (categorie) => categorie.products)
+	@Field(() => [Category])
+	@ManyToMany(() => Category, (category) => category.products)
 	@JoinTable()
 	categories: Category[];
 }
