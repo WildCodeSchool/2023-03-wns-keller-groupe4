@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
+import INavbarFrontProps  from "./NavbarFront";
 import { GET_CATEGORIES } from '../utils/queries';
 
 function MenuFront() {
@@ -7,8 +8,8 @@ function MenuFront() {
   // Categories from API
   const { loading, error, data } = useQuery(GET_CATEGORIES);
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
-  let categories = data.getCategories;
+  if (error) return <p>Erreur : Une erreur est survenue. La barre de navigation ne peut pas être affichée pour le moment.</p>;
+  const categories = data.getCategories;
 
   return (
     <div>
@@ -30,7 +31,9 @@ function MenuFront() {
               <span className="inline-block px-2">Tous</span>
             </Link>
             {categories.map((category:any) => (
-              <Link to={"products/list/"+category.name.toLowerCase()} key={category.id} className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium">
+              <Link to={"products/list/"+category.name.toLowerCase()} key={category.id} className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium"
+                onClick={() => INavbarFrontProps.arguments.setOpenNav(false)}
+              >
                 <span className="inline-block px-2">{category.name}</span>
               </Link>
             ))}

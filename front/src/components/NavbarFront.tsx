@@ -4,7 +4,7 @@ import { GoPerson } from "react-icons/go";
 import { FaShoppingCart } from "react-icons/fa";
 import AuthService from "../utils/authService";
 
-interface INavbarFrontProps {
+export interface INavbarFrontProps {
   openNav: boolean;
   setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
 }

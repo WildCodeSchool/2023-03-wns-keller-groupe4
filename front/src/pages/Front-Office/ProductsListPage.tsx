@@ -81,8 +81,6 @@ const ProductsListPage = () => {
       </div>
     );
   }
-
-  console.log("PRODUCTS => ",products)
   
   // No product found
   if (products.getProductsByCategory.length === 0) {
