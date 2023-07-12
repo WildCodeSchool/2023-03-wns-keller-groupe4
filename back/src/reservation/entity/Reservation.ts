@@ -1,49 +1,21 @@
 import {
     Column,
     Entity,
-    JoinColumn,
-    OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import { Field, ObjectType, registerEnumType } from "type-graphql";
-import { UserProfile } from "./UserProfile";
+import { Field, ObjectType } from "type-graphql";
 
-export enum EnumRoles {
-    SUPERADMIN = "superAdmin",
-    ADMIN = "admin",
-    USER = "user",
-}
-
-registerEnumType(EnumRoles, {
-    name: "EnumRoles",
-    description: "Liste des roles possible pour un utilisateurrrr",
-});
 
 @ObjectType()
 @Entity()
-export class User {
+export class Reservation {
     @Field()
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Field()
-    @Column({ unique: true })
-    email: string;
-
-    @Field()
     @Column()
-    hashedPassword: string;
-
-    @Field()
-    @Column()
-    role: EnumRoles;
-
-    @Field()
-    @OneToOne((type) => UserProfile, { 
-        cascade: true, onDelete: 'CASCADE' 
-    })
-    @JoinColumn()
-    user_profile: UserProfile;
+    test: string;
 
     @Field()
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
@@ -53,6 +25,4 @@ export class User {
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
-    @Field({nullable: true, description: "readonly"})
-    token?: string;
 }

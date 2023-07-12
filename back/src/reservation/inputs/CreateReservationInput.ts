@@ -1,19 +1,7 @@
 import { Field, InputType } from "type-graphql";
-import { EnumRoles } from "../entity/Reservation";
-import { UserProfile } from "../entity/UserProfile";
 
 @InputType()
-export default class CreateUserInput {
+export default class CreateReservationInput {
     @Field()
-    email: string;
-
-    @Field((type) => EnumRoles)
-    role: EnumRoles;
-
-    @Field()
-    password: string;
-
-    user_profile: UserProfile = new UserProfile();
-
-    hashedPassword: string;
+    test: string;
 }
