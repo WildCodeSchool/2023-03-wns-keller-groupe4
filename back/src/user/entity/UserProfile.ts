@@ -34,7 +34,7 @@ export class UserProfile {
     country: string;
 
     @Field({ nullable: true })
-    @ManyToOne((type) => Lang, (lang) => lang.user_profiles)
+    @ManyToOne((type) => Lang, (lang) => lang.user_profiles, {nullable: true})
     @JoinColumn()
-    lang: Lang = new Lang();
+    lang: Lang;
 }
