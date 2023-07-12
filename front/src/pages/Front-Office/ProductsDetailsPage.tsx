@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import {useParams} from "react-router-dom";
+import {useQuery} from "@apollo/client";
 import Products from "../../components/ProductsDetailsComponent";
-import { GET_ONE_PRODUCT } from "../../utils/queries";
+import {GET_ONE_PRODUCT} from "../../utils/queries";
 
 export interface IProductFromAPI {
   id: string;
@@ -14,16 +14,13 @@ export interface IProductFromAPI {
 }
 
 const ProductsDetailsPage = () => {
-
-  const { productId } = useParams();
+  const {productId} = useParams();
+  const getProductId = productId;
 
   // Products data from API
-  const { loading, error, data } = useQuery(GET_ONE_PRODUCT, {
-    variables: { getProductId : productId as string },
+  const {loading, error, data} = useQuery(GET_ONE_PRODUCT, {
+    variables: {getProductId: productId as string},
   });
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
 
   const product = data?.getProduct;
 
@@ -33,14 +30,15 @@ const ProductsDetailsPage = () => {
         <section className="card-row mx-1">
           {product && (
             <Products
-              key = {product.id}
-              id = {product.id}
-              name = {product.name}
-              description = {product.description}
-              stock = {product.stock}
-              price = {product.price}
-              picture = {product.picture}
-              available = {product.available}
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              description={product.description}
+              stock={product.stock}
+              price={product.price}
+              picture={product.picture}
+              available={product.available}
+              isAdmin={false}
             />
           )}
         </section>
