@@ -3,9 +3,9 @@ import defaultImage from "./../assets/products/default.png";
 import verifyBase64 from "../utils/verifyBase64Image";
 import {PrevButton} from "./tools/PrevButton";
 import {Dialog, Transition} from "@headlessui/react";
-import {useMutation, useQuery} from "@apollo/client";
+import {useMutation} from "@apollo/client";
 import {gql} from "@apollo/client";
-import {GET_ONE_PRODUCT} from "../pages/Front-Office/ProductsDetailsPage";
+import {GET_ONE_PRODUCT} from "../utils/queries";
 // import {gql} from "../__generated__";
 
 export interface IProductProps {
