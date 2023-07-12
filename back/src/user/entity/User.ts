@@ -2,11 +2,13 @@ import {
     Column,
     Entity,
     JoinColumn,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { UserProfile } from "./UserProfile";
+import { Reservation } from "../../reservation/entity/Reservation";
 
 export enum EnumRoles {
     SUPERADMIN = "superAdmin",
@@ -16,7 +18,7 @@ export enum EnumRoles {
 
 registerEnumType(EnumRoles, {
     name: "EnumRoles",
-    description: "Liste des roles possible pour un utilisateurrrr",
+    description: "Liste des roles possible pour un utilisateur",
 });
 
 @ObjectType()
@@ -39,13 +41,6 @@ export class User {
     role: EnumRoles;
 
     @Field()
-    @OneToOne((type) => UserProfile, { 
-        cascade: true, onDelete: 'CASCADE' 
-    })
-    @JoinColumn()
-    user_profile: UserProfile;
-
-    @Field()
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 
@@ -53,6 +48,27 @@ export class User {
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
+    // relations : 
+
+    @Field()
+    @OneToOne(
+        (type) => UserProfile,
+        { cascade: true, onDelete: 'CASCADE'}
+    )
+    @JoinColumn()
+    user_profile: UserProfile;
+
+    @Field(() => [Reservation], {nullable: true})
+    @OneToMany(
+        (type) => Reservation,
+        (reservation) => reservation.user,
+        {nullable: true}
+    )
+    @JoinColumn()
+    reservations: Reservation[];
+
+
+    // field non présent en bdd mais récupérable depuis l'endpoint
     @Field({nullable: true, description: "readonly"})
     token?: string;
 }

@@ -3,5 +3,5 @@ import { Field, InputType } from "type-graphql";
 @InputType()
 export default class UpdateReservationInput {
     @Field()
-    test: string;
+    start_at: Date;
 }

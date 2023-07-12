@@ -64,7 +64,7 @@ export default class UserService {
      * @param updateReservationInput 
      * @returns - true si la modification a réussi, sinon renvois une erreur
     */
-    async updateOneReservation(id: string, updateReservationInput: UpdateReservationInput): Promise<Boolean> {
+    async updateOneReservationById(id: string, updateReservationInput: UpdateReservationInput): Promise<Boolean> {
         try {
             if(id === "")
                 return false;

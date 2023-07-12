@@ -12,6 +12,7 @@ import {IMockProduct, categoriesNames, mockProducts} from "./mockDataArray";
 import {ProductService} from "./product/Product.Service";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
+import ReservationResolver from "./reservation/Reservation.Resolver";
 
 dotenv.config();
 
@@ -33,7 +34,13 @@ const start = async (): Promise<void> => {
 	await dataSource.initialize();
 	const typeGraphQLgeneratedSchema = await buildSchema({
 		validate: {forbidUnknownValues: false},
-		resolvers: [UserResolver, CategoryResolver, ProductResolver, LangResolver],
+		resolvers: [
+			UserResolver,
+			CategoryResolver,
+			ProductResolver,
+			LangResolver,
+			ReservationResolver
+		],
 		authChecker: ({context}) => {
 			if (context.email !== undefined) {
 				return true;

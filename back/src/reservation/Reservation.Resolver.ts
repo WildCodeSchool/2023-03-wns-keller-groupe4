@@ -1,66 +1,50 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { User } from "./entity/Reservation";
-import UserService from "./Reservation.Service";
-import CreateUserInput from "./inputs/CreateReservationInput";
-import UpdateUserInput from "./inputs/UpdateReservationInput";
-import SignupUserInput from "./inputs/SignupUserInput";
+import { Reservation } from "./entity/Reservation";
+import ReservationService from "./Reservation.Service";
+import CreateReservationInput from "./inputs/CreateReservationInput";
+import UpdateReservationInput from "./inputs/UpdateReservationInput";
 
 @Resolver()
-export default class UserResolver {
+export default class ReservationResolver {
     service;
     constructor() {
-        this.service = new UserService();
+        this.service = new ReservationService();
     }
 
 
-    @Query(() => User)
-    async login(
-        @Arg("email") email: string,
-        @Arg("password") password: string
-    ): Promise<User> {
-        return await this.service.login(email, password);
-    }
-
-    @Mutation(() => User)
-    async signup(
-        @Arg("signupUserInput") signupUserInput: SignupUserInput
-    ): Promise<User> {
-        return await this.service.signup(signupUserInput);
-    }
-
-    @Mutation(() => User)
-    async createUser(
-        @Arg("createUserInput") createUserInput: CreateUserInput
-    ): Promise<User> {
-        return await this.service.createOneUser(createUserInput);
+    @Mutation(() => Reservation)
+    async createReservation(
+        @Arg("createReservationInput") createReservationInput: CreateReservationInput
+    ): Promise<Reservation> {
+        return await this.service.createOneReservation(createReservationInput);
     }
 
     // pour activer l'autorisation par token
     // @Authorized()
-    @Query(() => [User])
-    async getUsers(): Promise<User[]> {
-        return await this.service.getAllUsers();
+    @Query(() => [Reservation])
+    async getReservations(): Promise<Reservation[]> {
+        return await this.service.getAllReservations();
     }
 
     // pour activer l'autorisation par token
     // @Authorized()
-    @Query(() => User)
-    async getUserById(@Arg("id") id: string): Promise<User> {
-        return await this.service.getOneUserById(id);
+    @Query(() => Reservation)
+    async getReservationById(@Arg("id") id: string): Promise<Reservation> {
+        return await this.service.getOneReservationById(id);
     }
 
     @Mutation(() => Boolean)
-    async updateUser(
+    async updateReservationById(
         @Arg("id") id: string,
-        @Arg("updateUserInput") updateUserInput: UpdateUserInput
+        @Arg("updateReservationInput") updateReservationInput: UpdateReservationInput
     ): Promise<Boolean> {
-        return await this.service.updateOneUser(id, updateUserInput);
+        return await this.service.updateOneReservationById(id, updateReservationInput);
     }
 
     @Mutation(() => Boolean)
-    async deleteUserById(
+    async deleteReservationById(
         @Arg("id") id: string
     ): Promise<Boolean> {
-        return await this.service.deleteOneUserById(id);
+        return await this.service.deleteOneReservationById(id);
     }
 }

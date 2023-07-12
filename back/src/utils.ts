@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import {User} from "./user/entity/User";
 import {Category} from "./category/entity/Category";
 import {Product} from "./product/entity/Product";
+import { Reservation } from "./reservation/entity/Reservation";
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ const dataSource = new DataSource({
 	password: process.env.POSTGRES_PASSWORD,
 	database: "postgres",
 	synchronize: true,
-	entities: [User, UserProfile, Lang, Product, Category],
+	entities: [User, UserProfile, Lang, Product, Category, Reservation],
 	dropSchema: dataFixtureWipe,
 });
 
