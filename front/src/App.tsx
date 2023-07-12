@@ -18,7 +18,6 @@ function App() {
         <Route path="/profile" element={<h1>Profile</h1>} />
         <Route path="/cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
-        <Route path="/products/list" element={<ProductsListPage />} />
         <Route path="/products/list/:categorySlug" element={<ProductsListPage />} />
         <Route path="/product/:productId" element={<ProductDetails />} />
       </Route>
