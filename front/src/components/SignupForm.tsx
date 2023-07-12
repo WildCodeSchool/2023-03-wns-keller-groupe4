@@ -1,6 +1,8 @@
 import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import AuthService, { IClientData } from "../utils/authService";
 import { SIGNUP_MUTATION } from "../utils/mutations";
 
@@ -31,15 +33,19 @@ function SignupForm() {
         }
       },
       onCompleted: async ({signup}:{signup: IClientData}) => {
-        AuthService.login(signup)
-        navigate("/")
+        AuthService.login(signup);
+        navigate("/");
       },
       onError: (err) => {
-        navigate("/connect");
-      }
-    })
-  }
-
+        if (err.message.includes("duplicate key value violates unique constraint")) {
+          toast.error("Cet email est déjà utilisé");
+        } else {
+          console.log(err.message);
+          toast.error("Une erreur est survenue");
+        }
+      },
+    });
+  };
 
   return (
     <div className="flex flex-col justify-center items-center gap-8">

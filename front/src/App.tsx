@@ -8,6 +8,7 @@ import ProductsListPage from "./pages/Front-Office/ProductsListPage";
 import ConnectFront from "./pages/ConnectFront";
 import CreateProduct from "./pages/CreateProduct";
 import Stock from "./pages/Stock";
+import Profile from "./pages/Front-Office/Profile";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="/product/:productId" element={<ProductDetails />} />
         <Route path="/connect" element={<ConnectFront />} />
-        <Route path="/profile" element={<h1>Profile</h1>} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
         <Route path="/products/list" element={<ProductsListPage />} />
