@@ -13,7 +13,7 @@ export class ProductService {
 		this.categoryService = new CategoryService();
 	}
 
-	async getAllProducts(getProductsInput: GetProductsInput | undefined): Promise<Product[]> {
+	async getAllProducts(getProductsInput?: GetProductsInput): Promise<Product[]> {
 		if (getProductsInput === undefined) {
 			try {
 				const products = await this.productRepository.find(
