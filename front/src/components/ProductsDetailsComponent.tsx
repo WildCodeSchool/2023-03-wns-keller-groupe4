@@ -1,5 +1,6 @@
 import { useState } from "react"
-import defaultImage from "./../assets/products/default.jpg";
+import defaultImage from "./../assets/products/default.png";
+import verifyBase64 from "../utils/verifyBase64Image";
 
 export interface IProductProps {
     id: string;
@@ -20,25 +21,27 @@ const ProductsDetailsComponent = ({ name, description, price, stock, picture, av
     const availability = available ? " Available" : " Unavailable";
     const buttonState = available ? false : true;
     
-    // Image
-    const [image, setImage] = useState(defaultImage);
+    verifyBase64(picture)
+    .then((res) => {
+        console.log(res);
+        if (res === false) {
+            setImage(defaultImage);
+            setBackgroundColorImage("bg-gray-200");
+        } else {
+            setImage(picture);
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
 
-    (function () {
-        import(
-          './../assets/products/' + picture
-        ).then((image) => {
-            setImage(image.default)}
-        )
-        .catch((image) => { 
-            setImage(defaultImage)
-        })
-    })();
+    const [image, setImage] = useState(picture);
+    const [backgroundColorImage, setBackgroundColorImage] = useState("");
 
     return (
         <section className="text-gray-700 body-font overflow-hidden bg-white">
         <div className="container px-5 py-12 mx-auto">
             <div className="lg:w-5/6 mx-auto flex flex-wrap">
-                <img alt="ecommerce" className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200" src={ image } />
+                <img src={ image } className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200" />
                 <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
                     {/* Brand */}
                     <div className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative" role="alert">

@@ -22,6 +22,7 @@ const ProductsListPage = () => {
 
   // Init vars
   let category_name:string;
+  let category_title:string;
   let categoryId:string = "";
   let isSkipped:boolean = false;
 
@@ -36,8 +37,10 @@ const ProductsListPage = () => {
 
   if(categorySlug !== undefined && categorySlug !== "all") {
     category_name = CategorySlugToName(categorySlug);
+    category_title = "Catégorie : " + category_name;
   } else {
-    category_name = "Tous les produits";
+    category_name = "Découvrez notre catalogue complet";
+    category_title = category_name;
     isSkipped = true;
   }
 
@@ -92,22 +95,20 @@ const ProductsListPage = () => {
     );
   } else {
     return (
-      <div className="my-10">
-        <div className="mx-2 md:mx-5 lg:mx-10">
-          <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{ category_name }</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 mt-10 items-center place-items-stretch">
-            {
-              products.getProductsByCategory.map((product:any) => (
-                <ProductsListComponent
-                  key = {product.id}
-                  id = {product.id}
-                  name = {product.name}
-                  price = {product.price}
-                  picture = {product.picture}
-                />
-              ))
-            }
-          </div>
+      <div className="mx-2 md:mx-5 lg:mx-10 my-10">
+        <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{ category_title }</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 mt-10 items-center place-items-stretch">
+          {
+            products.getProductsByCategory.map((product:any) => (
+              <ProductsListComponent
+                key = {product.id}
+                id = {product.id}
+                name = {product.name}
+                price = {product.price}
+                picture = {product.picture}
+              />
+            ))
+          }
         </div>
       </div>
     );

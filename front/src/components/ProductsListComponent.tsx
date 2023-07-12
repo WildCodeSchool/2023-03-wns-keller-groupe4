@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
-import defaultImage from "./../assets/products/default.jpg";
+import defaultImage from "./../assets/products/default.png";
+import verifyBase64 from "../utils/verifyBase64Image";
 export interface IProductProps {
     id: number;
     name: string;
@@ -9,20 +10,39 @@ export interface IProductProps {
 }
 
 const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
+
+    verifyBase64(picture)
+    .then((res) => {
+        console.log(res);
+        if (res === false) {
+            setImage(defaultImage);
+            setBackgroundColorImage("bg-gray-200");
+        } else {
+            setImage(picture);
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+    const [image, setImage] = useState(picture);
+    const [backgroundColorImage, setBackgroundColorImage] = useState("");
     
     return (
-        <div key={id} className="component group relative border border-gray-300 hover:border-gray-500 rounded">
-            <div className="flex flex-col justify-center sm:w-10 md:w-32 lg:w-48 h-32 lg:h-64 overflow-hidden align-middle mx-auto rounded-md lg:aspect-none opacity-70 group-hover:opacity-100">
-                <img
-                    src={ picture }
-                    alt={name}
-                    className="sm:w-10 md:w-32 lg:w-48"
-                />
+        <div key={id} className="component group relative border border-gray-300 hover:border-gray-500 rounded h-full pb-1">
+            <div className= { backgroundColorImage }>
+                <div className="flex flex-col justify-center sm:w-10 md:w-32 lg:w-48 h-28 lg:h-36 overflow-hidden align-middle mx-auto rounded-md lg:aspect-none opacity-70 group-hover:opacity-100">
+                    <img
+                        src={ image }
+                        alt={name}
+                        className="sm:w-10 md:w-32 lg:w-48 h-28 lg:h-36 object-cover object-center"
+                    />
+                </div>
             </div>
-            <div className="flex-none md:flex justify-between items-center border-t mt-4 px-2 py-1 comp-border text-center md:text-left">
+            <div className="flex-none md:flex justify-between items-center border-t pt-4 px-2 py-1 comp-border text-center md:text-left">
                 <div>
                     <h3 className="text-sm text-gray-700">{name}</h3>
-                    <p className="mt-1 text-sm text-gray-500">{ price } €/day</p>
+                    <p className="mt-1 text-sm text-orange-500 font-medium">{ price } €/day</p>
                 </div>
                 <div className="flex justify-center m-2 md:m-0 text-sm font-bold text-white">
                     <Link to={"/product/"+id}>
