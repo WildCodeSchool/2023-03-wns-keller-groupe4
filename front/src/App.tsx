@@ -19,7 +19,7 @@ function App() {
         <Route path="/cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
         <Route path="/products/list" element={<ProductsListPage />} />
-        <Route path="/products/list/:cat" element={<ProductsListPage />} />
+        <Route path="/products/list/:categorySlug" element={<ProductsListPage />} />
         <Route path="/product/:productId" element={<ProductDetails />} />
       </Route>
       <Route path="/admin" element={<Layout isFrontOffice={false} />}>

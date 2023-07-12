@@ -10,7 +10,7 @@ interface IFormCreateProduct {
   name: string;
   description: string;
   price: string;
-  category: string;
+  category: string[];
   image: FileList;
 }
 

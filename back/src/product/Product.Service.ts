@@ -25,6 +25,10 @@ export class ProductService {
 
 	async getAllProductsByCategory(id_category: string): Promise<Product[]> {
 		try {
+			if(id_category === "") {
+				return this.getAllProducts();
+			}
+
 			const products = await this.productRepository.find({
 				relations: {categories: true},
 				where: {categories: {id: id_category}},
