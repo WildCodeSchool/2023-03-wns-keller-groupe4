@@ -1,8 +1,10 @@
+import {ILike} from "typeorm";
 import {CategoryService} from "../category/Category.Service";
 import {UpdateCategoryInput} from "../category/inputs/UpdateCategoryInput";
 import dataSource from "../utils";
 import {Product} from "./entity/Product";
 import {CreateProductInput} from "./inputs/CreateProductInput";
+import { GetProductsInput } from "./inputs/GetProductsInput";
 
 export class ProductService {
 	productRepository = dataSource.getRepository(Product);
@@ -11,19 +13,48 @@ export class ProductService {
 		this.categoryService = new CategoryService();
 	}
 
-	async getAllProducts(): Promise<Product[]> {
-		try {
-			const products = await this.productRepository.find({
-				relations: {categories: true},
-			});
-
-			return products;
-		} catch (err: any) {
-			throw new Error(err.message);
+	async getAllProducts(getProductsInput?: GetProductsInput): Promise<Product[]> {
+		if (getProductsInput === undefined) {
+			try {
+				const products = await this.productRepository.find(
+					{relations: {categories: true}}
+				);
+				return products;
+			} catch (err: any) {
+				throw new Error(err.message);
+			}
 		}
+		const {limit, offset, name, orderBy, orderDirection} = getProductsInput;
+        try {
+            if (name === undefined) {
+                const products = await this.productRepository.find({
+					relations: {categories: true},
+                    take: limit,
+                    skip: offset,
+					order: {
+						[orderBy]: orderDirection, 
+					},
+                });
+                return products;
+            }
+            
+            const products = await this.productRepository.find({
+				relations: {categories: true},
+                take: limit,
+                skip: offset,
+                where: { name: ILike(`%${name}%`) },
+				order: {
+					[orderBy]: orderDirection, 
+				},
+            });
+            return products;
+            
+        } catch (err: any) {
+          throw new Error(err.message);
+        }
 	}
 
-	async getOneProducts(id: string): Promise<Product> {
+	async getOneProduct(id: string): Promise<Product> {
 		try {
 			const product = await this.productRepository.findOneOrFail({
 				where: {id},
@@ -35,6 +66,22 @@ export class ProductService {
 			throw new Error(err.message);
 		}
 	}
+
+    async getProductsCount(name: string | undefined): Promise<number> {
+        try {
+            if (name === undefined) {
+                const count = await this.productRepository.count();
+                return count;
+            }
+
+            const count = await this.productRepository.count({
+                where: { name: ILike(`%${name}%`) },
+            });
+            return count;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
 
 	async createNewProduct(
 		createCategoryInput: CreateProductInput
