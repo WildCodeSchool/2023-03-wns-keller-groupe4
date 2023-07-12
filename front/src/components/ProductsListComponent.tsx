@@ -10,23 +10,13 @@ export interface IProductProps {
 
 const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
 
-    const [image, setImage] = useState("default.jpg");
-    (function () {
-        import(
-          './../assets/products/' + picture
-        ).then((image) => {
-            setImage(image.default)}
-        )
-        .catch((image) => { 
-            setImage(defaultImage)
-        })
-    })();
+    console.log(picture);
 
     return (
         <div key={id} className="component group relative border border-gray-300 hover:border-gray-500 rounded">
             <div className="flex flex-col justify-center sm:w-10 md:w-32 lg:w-48 h-32 lg:h-64 overflow-hidden align-middle mx-auto rounded-md lg:aspect-none opacity-70 group-hover:opacity-100">
                 <img
-                    src={image}
+                    src={defaultImage}
                     alt={name}
                     className="sm:w-10 md:w-32 lg:w-48"
                 />

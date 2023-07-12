@@ -57,7 +57,6 @@ const ProductsListPage = () => {
   // Get products by category ID from API
   const {error: Qproducts_error, loading: Qproducts_loading, data: products} = useQuery(
     GET_PRODUCTS_BY_CATEGORY, {
-      // skip: !categoryId,
       variables: { idCategory: categoryId },
     }
   );
@@ -98,7 +97,7 @@ const ProductsListPage = () => {
       <div className="my-10">
         <div className="mx-2 md:mx-5 lg:mx-10">
           <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{ category_name }</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-5 mt-10 items-center place-items-stretch">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 mt-10 items-center place-items-stretch">
             {
               products.getProductsByCategory.map((product:any) => (
                 <ProductsListComponent
