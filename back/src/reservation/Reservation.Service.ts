@@ -1,10 +1,14 @@
+import { ProductService } from "../product/Product.Service";
+import UserService from "../user/User.Service";
 import dataSource from "../utils";
 import { Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import UpdateReservationInput from "./inputs/UpdateReservationInput";
 
 
-export default class UserService {
+export default class ReservationService {
+    userService = new UserService();
+    productService = new ProductService();
 
     /**
      * Créer un une Reservation 
@@ -13,9 +17,14 @@ export default class UserService {
     */
     async createOneReservation(createReservationInput: CreateReservationInput): Promise<Reservation> {
         try {
+            const newReservation = {...createReservationInput};
+            newReservation.user = await this.userService.getOneUserById(createReservationInput.user.id);
+            newReservation.products = await Promise.all(createReservationInput.products.map(async (product) => {
+                return await this.productService.getOneProduct(product.id);
+            }))
             return await dataSource
                 .getRepository(Reservation)
-                .save({ ...createReservationInput });
+                .save({...newReservation});
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -27,7 +36,9 @@ export default class UserService {
     */
     async getAllReservations(): Promise<Reservation[]> {
         try {
-            return await dataSource.getRepository(Reservation).find();
+            return await dataSource.getRepository(Reservation).find({
+                relations: ["user", "products"]
+            });
         } catch (err: any) {
             console.log()
             throw new Error(err.message);
@@ -38,8 +49,19 @@ export default class UserService {
      * Renvois un tableau de toutes les réservations
      * @returns Reservations[] 
     */
-     async getAllReservationsByUserId(): Promise<Reservation[]> {
-        return [new Reservation()]
+     async getAllReservationsByUserId(id: string): Promise<Reservation[]> {
+        try {
+            return await dataSource.getRepository(Reservation).find({
+                relations:["user", "products"],
+                where: { 
+                    user: {
+                        id
+                    } 
+                },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
     }
 
     /**
@@ -50,6 +72,7 @@ export default class UserService {
     async getOneReservationById(id: string): Promise<Reservation> {
         try {
             return await dataSource.getRepository(Reservation).findOneOrFail({
+                relations:["user", "products"],
                 where: { id },
             });
         } catch (err: any) {

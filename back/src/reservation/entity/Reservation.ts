@@ -3,6 +3,7 @@ import {
     Entity,
     JoinColumn,
     JoinTable,
+    ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
@@ -62,7 +63,7 @@ export class Reservation {
 
 
     @Field(() => [Product])
-    @ManyToOne(() => Product)
+    @ManyToMany(() => Product)
     @JoinTable()
     products: Product[]
 }

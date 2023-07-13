@@ -75,7 +75,7 @@ export default class UserService {
     async getAllUsers(): Promise<User[]> {
         try {
             return await dataSource.getRepository(User).find({
-                relations: ["user_profile", "user_profile.lang"],
+                relations: ["user_profile", "user_profile.lang", "reservations", "reservations.products"],
             });
         } catch (err: any) {
             console.log()
@@ -91,7 +91,7 @@ export default class UserService {
     async getOneUserById(id: string): Promise<User> {
         try {
             return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang"],
+                relations: ["user_profile", "user_profile.lang", "reservations", "reservations.products"],
                 where: { id },
             });
         } catch (err: any) {
@@ -107,7 +107,7 @@ export default class UserService {
      async getOneUserByEmail(email: string): Promise<User> {
         try {
             return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang"],
+                relations: ["user_profile", "user_profile.lang", "reservations"],
                 where: { email },
             });
         } catch (err: any) {
