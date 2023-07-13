@@ -1,11 +1,14 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-
-import "./index.css";
-import App from "./App";
+import { ToastContainer } from "react-toastify";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+
+import App from "./App";
 import AuthService from "./utils/authService";
+
+import "./index.css";
+import 'react-toastify/dist/ReactToastify.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -34,6 +37,7 @@ root.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
       <App />
+      <ToastContainer position="bottom-center" />
     </ApolloProvider>
   </BrowserRouter>
 );

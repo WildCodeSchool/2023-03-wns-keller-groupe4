@@ -1,6 +1,8 @@
 import { useLazyQuery} from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import { LOGIN_GUERY } from "../utils/queries";
 import AuthService, { IClientData } from "../utils/authService";
 
@@ -29,7 +31,12 @@ const LoginForm = () => {
         navigate("/");
       },
       onError: (err) => {
-        navigate("/connect");
+        if (err.message.includes("Could not find any entity of type")) {
+          toast.error("Email ou mot de passe incorrect");
+        } else {
+          console.error(err.message);
+          toast.error("Une erreur est survenue");
+        }
       }
     })
   }
