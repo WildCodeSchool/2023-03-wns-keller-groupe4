@@ -11,13 +11,6 @@ const AdminProductsDetails = () => {
 	const {loading, error, data} = useQuery(GET_ONE_PRODUCT, {
 		variables: {getProductId: productId},
 	});
-
-	console.log(data);
-
-	// const data.getProduct = data.getProduct;
-	// console.log(data.getProduct);
-
-	console.log(typeof productId);
 	if (loading) return <p>Loading...</p>;
 	if (error) return <p>Error : {error.message}</p>;
 	return (
