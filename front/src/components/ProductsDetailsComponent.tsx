@@ -1,5 +1,9 @@
 import {useState} from "react";
 import defaultImage from "./../assets/products/default.jpg";
+import {useMutation, useQuery} from "@apollo/client";
+import {gql} from "@apollo/client";
+import {GET_ONE_PRODUCT} from "../pages/Front-Office/ProductsDetailsPage";
+// import {gql} from "../__generated__";
 
 export interface IProductProps {
 	id: string;
@@ -12,7 +16,29 @@ export interface IProductProps {
 	isAdmin: boolean;
 }
 
+// INTERFACES
+interface IFormUpdateProduct {
+	name?: string;
+	description?: string;
+	price?: number;
+	category?: string;
+	image?: FileList;
+	stock?: number;
+	available?: boolean;
+}
+
+const UPDATE_PRODUCT = gql(`
+mutation Mutation($updateProductInput: UpdateProductInput!, $updateProductId: String!) {
+	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
+	  name
+	}
+  }
+`);
+
+// This component is Used both for front and back office. For a non admin user it will just display product detail, for an admin it will give the user the possibility to update the product.
+
 const ProductsDetailsComponent = ({
+	id,
 	name,
 	description,
 	price,
@@ -21,6 +47,50 @@ const ProductsDetailsComponent = ({
 	available,
 	isAdmin,
 }: IProductProps) => {
+	// We passed the props isAdmin to the component so that it knows if he has to show product detail in front office or back office mode, in this case this is set to true in the parent component
+
+	// TODO : generate type
+
+	// this state controls input and is used as data for the update mutation
+	const [updateProductInput, setUpdateProductInput] = useState({
+		name: name,
+		description: description,
+		price: price,
+		picture: picture,
+		stock: stock,
+		available: available,
+	});
+
+	// This state controls if we are in dupdate mode or not wich will trigger showing the update form or not
+	const [updateToggle, setUpdateToogle] = useState(false);
+	const [updateProduct] = useMutation(UPDATE_PRODUCT, {
+		refetchQueries: [GET_ONE_PRODUCT],
+	});
+
+	const submitUpdateProduct = async (id: string, data: IFormUpdateProduct) => {
+		try {
+			const updatedProduct = await updateProduct({
+				variables: {updateProductId: id, updateProductInput: data},
+			});
+			console.log(updatedProduct.data.name);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const togglingUpdate = () => {
+		setUpdateToogle(!updateToggle);
+	};
+
+	// When we choose if a product is available or not the select returns a string but we need a boolean to send to our back end. This fonction translates the str to a boolean
+	const strToBoolean = (str: string) => {
+		if (str === "true") {
+			return true;
+		} else {
+			return false;
+		}
+	};
+
 	// Description
 	description = description !== "" ? description : "No description available";
 
@@ -28,27 +98,14 @@ const ProductsDetailsComponent = ({
 	const availability = available ? " Available" : " Unavailable";
 	const buttonState = available ? false : true;
 
-	// Image
-	const [image, setImage] = useState(defaultImage);
-
-	(function () {
-		import("./../assets/products/" + picture)
-			.then((image) => {
-				setImage(image.default);
-			})
-			.catch((image) => {
-				setImage(defaultImage);
-			});
-	})();
-
 	return (
 		<section className="text-gray-700 body-font overflow-hidden bg-white">
-			<div className="container px-5 py-12 mx-auto">
+			<div className="container px-5 py-12 mx-auto sm:py-20">
 				<div className="lg:w-5/6 mx-auto flex flex-wrap">
 					<img
 						alt="ecommerce"
 						className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200"
-						src={image}
+						src={defaultImage}
 					/>
 					<div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
 						{/* Brand */}
@@ -61,9 +118,27 @@ const ProductsDetailsComponent = ({
 							</h2>
 						</div>
 						{/* Name */}
-						<h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-							{name}
-						</h1>
+						{updateToggle ? (
+							<div className=" flex-col text-center justify-center">
+								<label htmlFor="productNameInput">Nom du produit : </label>
+								<input
+									className="text-gray-900 text-3xl title-font font-medium mb-1 px-2 py-1  border block mx-auto my-auto text-center"
+									type="text"
+									id="name"
+									value={updateProductInput.name}
+									onChange={(e) =>
+										setUpdateProductInput({
+											...updateProductInput,
+											name: e.target.value,
+										})
+									}
+								/>
+							</div>
+						) : (
+							<h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
+								{name}
+							</h1>
+						)}
 						<div
 							className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative"
 							role="alert"
@@ -179,31 +254,123 @@ const ProductsDetailsComponent = ({
 							</div>
 						</div>
 						{/* Description */}
-						<p className="leading-relaxed">{description}</p>
-						<div className="flex mt-2 items-center pb-5 border-b-2 border-gray-200 mb-5"></div>
-						<div className="flex">
-							{/* Stocks and availability */}
-							<div className="title-font text-gray-900">
-								<span className="font-medium">Availability:</span>{" "}
-								{availability}
+						{updateToggle ? (
+							<div className="text-center">
+								<label htmlFor="description">Description : </label>
+								<textarea
+									className="text-gray-700 mb-2 block w-full border-gray-200 rounded border-b-2 pt-2 px-2"
+									id="description"
+									value={updateProductInput.description}
+									onChange={(e) =>
+										setUpdateProductInput({
+											...updateProductInput,
+											description: e.target.value,
+										})
+									}
+								/>
 							</div>
-							<div className="flex ml-auto title-font text-gray-900">
-								<span className="font-medium block md:inline">Quantity: </span>
-								<span className="block md:inline"> {stock} pieces</span>
+						) : (
+							<p className="leading-relaxed">{description}</p>
+						)}
+						<div className="flex justify-around mt-2  pb-5 border-b-2 border-gray-200 mb-5">
+							{/* Stocks and availability */}
+							<div className="flex title-font text-gray-900 flex-col items-center ">
+								<span className="font-medium px-2">Availability</span>
+								{updateToggle ? (
+									<select
+										className="border"
+										id="availabilitySelect"
+										onChange={(e) =>
+											setUpdateProductInput({
+												...updateProductInput,
+												available: strToBoolean(e.target.value),
+											})
+										}
+									>
+										<option value="true">Dispo</option>
+										<option value="false">Non Dispo</option>
+									</select>
+								) : (
+									availability
+								)}
+							</div>
+							<div className="  flex title-font text-gray-900 flex-col items-center ">
+								<span className=" title-font font-medium block md:inline px-2 ">
+									Stock
+								</span>
+								{updateToggle ? (
+									<input
+										className=" block w-10 md:inline border text-center  "
+										id="stock"
+										type="number"
+										value={updateProductInput.stock}
+										onChange={(e) =>
+											setUpdateProductInput({
+												...updateProductInput,
+												stock: parseInt(e.target.value),
+											})
+										}
+									/>
+								) : (
+									<span className="block md:inline"> {stock} pieces</span>
+								)}
 							</div>
 						</div>
-						<div className="flex mt-2 items-center pb-5 border-b-2 border-gray-200 mb-5"></div>
-						<div className="flex">
+
+						<div className="flex justify-around">
 							{/* Price */}
-							<span className="title-font font-medium text-3xl text-gray-900">
-								{price} €
-							</span>
-							<button
-								className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 py-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
-								disabled={buttonState}
-							>
-								Reservation
-							</button>
+							{updateToggle ? (
+								<div className="flex flex-col text-center">
+									<span className="title-font font-medium">Price</span>
+									<input
+										className=" w-16 block md:inline border-2 text-center "
+										id="priceInput"
+										type="number"
+										value={updateProductInput.price}
+										onChange={(e) =>
+											setUpdateProductInput({
+												...updateProductInput,
+												price: parseInt(e.target.value),
+											})
+										}
+									/>
+								</div>
+							) : (
+								<span className="title-font font-medium text-3xl text-gray-900">
+									{price} €
+								</span>
+							)}
+							<div className="flex items-stretch">
+								{updateToggle && (
+									<button
+										className=" text-white text-xs px-2 mx-1 my-1 sm:text-xs lg:text-lg bg-yellow-400  border-0  sm:px-3  md:px-4 lg:px-6 focus:outline-none hover:bg-main  active:bg-yellow-400 rounded  "
+										// disabled={buttonState}
+										onClick={() => submitUpdateProduct(id, updateProductInput)}
+									>
+										Envoyer
+									</button>
+								)}
+
+								{isAdmin ? (
+									<button
+										className=" text-white text-xs px-2 mx-1 my-1 sm:text-xs lg:text-lg bg-red-500 border-0 py-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
+										onClick={() => {
+											togglingUpdate();
+										}}
+									>
+										{updateToggle ? "annuler" : "Modifier"}
+									</button>
+								) : (
+									<button
+										className=" text-white text-xs px-2 mx-1 my-1 sm:text-xs lg:text-lg bg-red-500 border-0 py-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
+										onClick={() => {
+											alert("produit réservé ! ");
+										}}
+									>
+										Réservation
+									</button>
+								)}
+							</div>
 						</div>
 					</div>
 				</div>
