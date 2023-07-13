@@ -26,6 +26,17 @@ export class CategoryService {
 		}
 	}
 
+	async getOneCategoryByName(name: string): Promise<Category> {
+		try {
+			const category = await this.categoryRepository.findOneOrFail({
+				where: {name},
+			});
+			return category;
+		} catch (err: any) {
+			throw new Error(err.message);
+		}
+	}
+
 	async createNewCategory(
 		createCategoryInput: CreateCategoryInput
 	): Promise<Category> {
