@@ -69,10 +69,10 @@ const ProductsDetailsComponent = ({
 
 	const submitUpdateProduct = async (id: string, data: IFormUpdateProduct) => {
 		try {
-			const updatedProduct = await updateProduct({
+			await updateProduct({
 				variables: {updateProductId: id, updateProductInput: data},
 			});
-			console.log(updatedProduct.data.name);
+			togglingUpdate();
 		} catch (error) {
 			console.log(error);
 		}
@@ -344,7 +344,6 @@ const ProductsDetailsComponent = ({
 								{updateToggle && (
 									<button
 										className=" text-white text-xs px-2 mx-1 my-1 sm:text-xs lg:text-lg bg-yellow-400  border-0  sm:px-3  md:px-4 lg:px-6 focus:outline-none hover:bg-main  active:bg-yellow-400 rounded  "
-										// disabled={buttonState}
 										onClick={() => submitUpdateProduct(id, updateProductInput)}
 									>
 										Envoyer
@@ -366,6 +365,7 @@ const ProductsDetailsComponent = ({
 										onClick={() => {
 											alert("produit réservé ! ");
 										}}
+										disabled={buttonState}
 									>
 										Réservation
 									</button>
