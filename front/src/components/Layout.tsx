@@ -6,6 +6,7 @@ import NavbarFront from "./NavbarFront";
 import NavbarBack from "./NavbarBack";
 import MenuFront from "./MenuFront";
 import MenuBack from "./MenuBack";
+import Footer from "./Footer";
 
 interface ILayoutFrontProps {
   isFrontOffice: boolean;
@@ -21,7 +22,7 @@ function Layout({ isFrontOffice }: ILayoutFrontProps) {
         <NavbarBack openNav={openNav} setOpenNav={setOpenNav} />
       )}
 
-      <main>
+      <main className="min-h-screen">
         <Transition
           show={openNav}
           as="div"
@@ -32,10 +33,11 @@ function Layout({ isFrontOffice }: ILayoutFrontProps) {
           leaveFrom="opacity-90 bg-main p-2 shadow-md"
           leaveTo="opacity-0 px-2"
         >
-          {isFrontOffice ? <MenuFront /> : <MenuBack setOpenNav={setOpenNav} />}
+          {isFrontOffice ? <MenuFront openNav={openNav} setOpenNav={setOpenNav} /> : <MenuBack setOpenNav={setOpenNav} />}
         </Transition>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
