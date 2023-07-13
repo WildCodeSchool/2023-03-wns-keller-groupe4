@@ -3,8 +3,6 @@ import defaultImage from "./../assets/products/default.png";
 import verifyBase64 from "../utils/verifyBase64Image";
 import {PrevButton} from "./tools/PrevButton";
 import {Dialog, Transition} from "@headlessui/react";
-import {useState} from "react";
-import defaultImage from "./../assets/products/default.jpg";
 import {useMutation, useQuery} from "@apollo/client";
 import {gql} from "@apollo/client";
 import {GET_ONE_PRODUCT} from "../pages/Front-Office/ProductsDetailsPage";
@@ -74,10 +72,10 @@ const ProductsDetailsComponent = ({
 
   const submitUpdateProduct = async (id: string, data: IFormUpdateProduct) => {
     try {
-      const updatedProduct = await updateProduct({
+      await updateProduct({
         variables: {updateProductId: id, updateProductInput: data},
       });
-      console.log(updatedProduct.data.name);
+      togglingUpdate();
     } catch (error) {
       console.log(error);
     }
