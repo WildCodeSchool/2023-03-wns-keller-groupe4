@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 import { GET_CATEGORY_BY_NAME, GET_PRODUCTS_BY_CATEGORY } from '../../utils/queries';
-import { PrevButton } from '../../components/Tools';
+import { PrevButton } from '../../components/tools/PrevButton';
 import ProductsListComponent from "../../components/ProductsListComponent";
 
 export interface IProductFromAPI {

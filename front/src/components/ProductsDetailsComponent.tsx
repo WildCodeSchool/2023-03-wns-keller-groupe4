@@ -1,7 +1,7 @@
 import { Fragment, useRef, useState } from "react"
 import defaultImage from "./../assets/products/default.png";
 import verifyBase64 from "../utils/verifyBase64Image";
-import { PrevButton } from "./Tools";
+import { PrevButton } from "./tools/PrevButton";
 import { Dialog, Transition } from '@headlessui/react'
 
 export interface IProductProps {
@@ -43,7 +43,7 @@ const ProductsDetailsComponent = ({ name, description, price, stock, picture, av
                 <PrevButton />
                 <div className="container px-5 py-12 mx-auto">
                     <div className="flex flex-wrap lg:w-5/6 mx-auto justify-center">
-                        <img src={ image } className="w-full sm:w-1/2 lg:w-1/3 object-cover object-center rounded border border-gray-200" />
+                        <img src={ image } alt="" className="w-full sm:w-1/2 lg:w-1/3 object-cover object-center rounded border border-gray-200" />
                         <div className="w-full lg:w-1/2 lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center lg:text-left">
                             {/* Brand */}
                             <div className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative" role="alert">
