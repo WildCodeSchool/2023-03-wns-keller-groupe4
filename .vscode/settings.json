@@ -1,15 +1,3 @@
 {
-  "eslint.workingDirectories": [
-    "front",
-    "back"
-  ],
-  "github.copilot.advanced": {
-
-  },
-  "github.copilot.enable": {
-    "*": true,
-    "plaintext": false,
-    "markdown": false,
-    "scminput": false
-  }
+  "eslint.workingDirectories": ["front","back"],
 }
