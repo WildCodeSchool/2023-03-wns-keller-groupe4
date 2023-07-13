@@ -12,27 +12,27 @@ const AdminProductsDetails = () => {
 		variables: {getProductId: productId},
 	});
 
-	// console.log(data);
+	console.log(data);
 
-	const product = data.getProduct;
-	console.log(product);
+	// const data.getProduct = data.getProduct;
+	// console.log(data.getProduct);
 
 	console.log(typeof productId);
-	// if (loading) return <p>Loading...</p>;
-	// if (error) return <p>Error : {error.message}</p>;
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>Error : {error.message}</p>;
 	return (
 		<div>
 			<main className="container mx-auto">
 				<section className="card-row mx-1">
 					<Products
-						key={product.id}
-						id={product.id}
-						name={product.name}
-						description={product.description}
-						stock={product.stock}
-						price={product.price}
-						picture={product.picture}
-						available={product.available}
+						key={data.getProduct.id}
+						id={data.getProduct.id}
+						name={data.getProduct.name}
+						description={data.getProduct.description}
+						stock={data.getProduct.stock}
+						price={data.getProduct.price}
+						picture={data.getProduct.picture}
+						available={data.getProduct.available}
 						isAdmin={true}
 					/>
 				</section>
