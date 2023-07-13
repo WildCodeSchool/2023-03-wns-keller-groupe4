@@ -1,7 +1,7 @@
 import { Field, InputType } from "type-graphql";
 import { EnumStatusReservation } from "../entity/Reservation";
 import { Product } from "../../product/entity/Product";
-import { CreateCategoryInput } from "../../category/inputs/CreateCategoryInput";
+import { GetProductsInput } from "../../product/inputs/GetProductsInput";
 
 @InputType()
 export default class CreateReservationInput {
@@ -11,7 +11,7 @@ export default class CreateReservationInput {
     @Field()
     end_at: Date;
 
-    @Field(() => [CreateCategoryInput])
+    @Field(() => [GetProductsInput])
     products: Product[];
 
     status: EnumStatusReservation = EnumStatusReservation.PAYING;
