@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 import { HiOutlineMagnifyingGlass } from "react-icons/hi2";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";

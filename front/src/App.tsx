@@ -3,11 +3,11 @@ import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 
 import ProductDetails from "./pages/Front-Office/ProductsDetailsPage";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/Front-Office/HomePage";
 import ProductsListPage from "./pages/Front-Office/ProductsListPage";
-import ConnectFront from "./pages/ConnectFront";
-import CreateProduct from "./pages/CreateProduct";
-import Stock from "./pages/Stock";
+import ConnectFront from "./pages/Front-Office/ConnectFront";
+import CreateProduct from "./pages/Back-Office/CreateProduct";
+import Stock from "./pages/Back-Office/Stock";
 
 function App() {
   return (
