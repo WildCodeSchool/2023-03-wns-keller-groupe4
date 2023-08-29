@@ -1,0 +1,12 @@
+name: 🧪-tests
+
+on: push
+
+jobs:
+  tests-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Go to frontend and run test
+        run: cd front && npm i && npm run test
