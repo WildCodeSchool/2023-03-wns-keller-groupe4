@@ -34,4 +34,4 @@ jobs:
 
       - name: Run npm test in frontend container
         run: |
-          docker-compose exec frontend sh -c "npm run test"
+          docker-compose exec -T frontend npm run test
