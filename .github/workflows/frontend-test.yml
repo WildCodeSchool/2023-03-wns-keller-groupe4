@@ -30,7 +30,8 @@ jobs:
 
       - name: Wait for frontend container to be healthy
         run: |
-          while [ "$(docker inspect -f '{{.State.Health.Status}}' frontend)" != "healthy" ]; do
+          FRONTEND_CONTAINER=$(docker ps --format '{{.Names}}' | grep 'frontend')
+          while [ "$(docker inspect -f '{{.State.Health.Status}}' $FRONTEND_CONTAINER)" != "healthy" ]; do
             sleep 5
           done
 
