@@ -3,10 +3,29 @@ name: 🧪-tests
 on: push
 
 jobs:
-  tests-frontend:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Go to frontend and run test
-        run: cd front && npm i && npm run test
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+          docker-compose --version
+
+      - name: Start Docker Compose
+        run: |
+          docker-compose up -d
+
+      - name: Wait for frontend container to be healthy
+        run: |
+          while [ "$(docker inspect -f '{{.State.Health.Status}}' frontend)" != "healthy" ]; do
+            sleep 5
+          done
+
+      - name: Run npm test in frontend container
+        run: |
+          docker exec frontend npm run test
