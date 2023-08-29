@@ -35,3 +35,11 @@ jobs:
       - name: Run npm test in frontend container
         run: |
           docker-compose exec -T frontend npm run test
+
+      - name: Fail if tests failed
+        if: ${{ failure() }}
+        run: exit 1
+
+      - name: Continue if tests passed
+        if: ${{ success() }}
+        run: exit 0
