@@ -1,9 +1,9 @@
-import { Combobox, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
-import { RxMagnifyingGlass } from "react-icons/rx";
-import { gql } from "../../__generated__"
-import { useQuery } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
+import {Combobox, Transition} from "@headlessui/react";
+import {Fragment, useEffect, useState} from "react";
+import {RxMagnifyingGlass} from "react-icons/rx";
+import {gql} from "../../__generated__";
+import {useQuery} from "@apollo/client";
+import {useNavigate} from "react-router-dom";
 
 const GET_CATEGORIES = gql(`
   query GetCategories {
@@ -16,13 +16,17 @@ const GET_CATEGORIES = gql(`
 
 function HomePage() {
   const navigate = useNavigate();
-  
+
   const [selected, setSelected] = useState({});
   const [query, setQuery] = useState("");
 
-  const { data } = useQuery(GET_CATEGORIES);
+  const {data} = useQuery(GET_CATEGORIES);
 
-  const sortedData = data?.getCategories && Array.from(data?.getCategories).sort((a, b) => a.name.localeCompare(b.name));
+  const sortedData =
+    data?.getCategories &&
+    Array.from(data?.getCategories).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
   const filteredProduct =
     query === ""
@@ -35,15 +39,18 @@ function HomePage() {
         );
 
   useEffect(() => {
-    if (selected && "id" in selected) {
-      navigate(`/products/list?category=${selected.id}`);
+    if (selected && "name" in selected) {
+      navigate(`/products/list/${selected.name}`);
     }
   }, [navigate, selected]);
 
   return (
     <div className="relative flex flex-col items-center justify-around w-4/5 mx-auto h-[calc(100vh-58px)] lg:h-[calc(100vh-74px)]">
       <div className="absolute top-8 w-4/5 sm:w-96 lg:top-24 sm-height:top-8">
-        <Combobox value={selected} onChange={setSelected}>
+        <Combobox
+          value={selected}
+          onChange={setSelected}
+        >
           <div className="relative mt-1">
             <Combobox.Label className="opacity-50">
               Trouvez votre matériel
@@ -76,7 +83,7 @@ function HomePage() {
                   filteredProduct?.map((product) => (
                     <Combobox.Option
                       key={product.id}
-                      className={({ active }) =>
+                      className={({active}) =>
                         `relative cursor-default select-none py-2 pl-10 pr-4 ${
                           active ? "bg-main text-white" : "text-gray-900"
                         }`
