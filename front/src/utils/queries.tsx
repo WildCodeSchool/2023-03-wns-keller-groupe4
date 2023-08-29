@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import {gql} from "../__generated__";
 
 export const LOGIN_GUERY = gql(`
   query LoginQuery(
@@ -31,6 +31,8 @@ export const GET_CATEGORY_BY_NAME = gql(`
   }
 `);
 
+// This has no reason to exist, we can get product by categorie
+// in the query commented line 49
 export const GET_PRODUCTS_BY_CATEGORY = gql(`
   query GetProductsByCategory($idCategory: String!) {
     getProductsByCategory(id_category: $idCategory) {
@@ -44,6 +46,22 @@ export const GET_PRODUCTS_BY_CATEGORY = gql(`
     }
   }
 `);
+
+// export const GET_PRODUCTS_BY_CATEGORY = gql(`
+// query GetCategory($getCategoryId: String!) {
+//   getCategory(id: $getCategoryId) {
+//     products {
+//       id
+//       name
+//       price
+//       stock
+//       available
+//       description
+//       picture
+//     }
+//   }
+// }
+// `);
 
 export const GET_ALL_PRODUCTS = gql(`
   query ExampleQuery {
@@ -78,7 +96,7 @@ export const GET_PRODUCT_COUNT = gql(`
   query Query($name: String) {
     getProductsCount(name: $name)
   }
-`)
+`);
 
 export const GET_ONE_PRODUCT = gql(`
   query getProduct($getProductId: String!) {
