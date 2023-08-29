@@ -58,7 +58,6 @@ function App() {
           path="/admin/product/:productId"
           element={<AdminProductsDetails />}
         />
-
         <Route
           path="/admin/stock"
           element={<h1>Stock</h1>}
