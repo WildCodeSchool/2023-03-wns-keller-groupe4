@@ -108,18 +108,18 @@ const ProductsDetailsComponent = ({
     return (
       <section className="text-gray-700 body-font overflow-hidden bg-white">
         <div className="container px-5 py-12 mx-auto sm:py-20">
-          <div className="lg:w-5/6 mx-auto flex flex-wrap">
-            <img
-              alt="ecommerce"
-              className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200"
-              src={updateProductInput.picture}
-            />
-            <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
+          <div className="flex flex-wrap lg:w-5/6 mx-auto justify-center">
+            <div className=" flex flex-col items-center	lg:w-96 py-8">
+              <img
+                alt="ecommerce"
+                className=" lg:w-full sm:w-1/2 object-cover object-center rounded border border-gray-200"
+                src={updateProductInput.picture}
+              />
               {updateToggle ? (
                 <input
                   type="file"
                   id="image"
-                  className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
+                  className="lg:w-full sm:w-1/3   py-8 px-2  focus:outline-main focus:border-transparent"
                   onChange={async (e) =>
                     setUpdateProductInput({
                       ...updateProductInput,
@@ -132,6 +132,8 @@ const ProductsDetailsComponent = ({
               ) : (
                 ""
               )}
+            </div>
+            <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
               {/* Brand */}
               <div
                 className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative"
