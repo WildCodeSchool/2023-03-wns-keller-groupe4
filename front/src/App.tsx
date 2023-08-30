@@ -8,6 +8,7 @@ import ProductsListPage from "./pages/Front-Office/ProductsListPage";
 import ConnectFront from "./pages/Front-Office/ConnectFront";
 import CreateProduct from "./pages/Back-Office/CreateProduct";
 import Stock from "./pages/Back-Office/Stock";
+import Profile from "./pages/Front-Office/Profile";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <Route path="/" element={<Layout isFrontOffice={true} />}>
         <Route index element={<HomePage />} />
         <Route path="/connect" element={<ConnectFront />} />
-        <Route path="/profile" element={<h1>Profile</h1>} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<h1>Cart</h1>} />
         <Route path="*" element={<h1>404</h1>} />
         <Route path="/products/list/:categorySlug" element={<ProductsListPage />} />

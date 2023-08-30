@@ -77,8 +77,7 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
         
         {/* User */}
         <div className="flex gap-4">
-          <button onClick={() => {AuthService.logout()}}>Logout</button>
-          <Link to="/profile">
+          <Link to={AuthService.getClientData() ? "/profile" : "/connect"}>
             <GoPerson
               aria-label="Go to profile page"
               className="cursor-pointer"
