@@ -21,7 +21,20 @@ function SignupForm() {
     formState: { errors },
   } = useForm<IFormSignup>();
 
-  const [signup] = useMutation(SIGNUP_MUTATION);
+  const [signup] = useMutation(SIGNUP_MUTATION, {
+    onCompleted: async ({signup}:{signup: IClientData}) => {
+      AuthService.login(signup)
+      navigate("/")
+    },
+    onError: (err) => {
+      if (err.message.includes("duplicate key value violates unique constraint")) {
+        toast.error("Cet email est déjà utilisé");
+      } else {
+        console.log(err.message);
+        toast.error("Une erreur est survenue");
+      }
+    }
+  });
 
   const submitForm = async (data: IFormSignup) => {
     await signup({
@@ -32,20 +45,9 @@ function SignupForm() {
           passwordConfirm: data.passwordConfirm
         }
       },
-      onCompleted: async ({signup}:{signup: IClientData}) => {
-        AuthService.login(signup);
-        navigate("/");
-      },
-      onError: (err) => {
-        if (err.message.includes("duplicate key value violates unique constraint")) {
-          toast.error("Cet email est déjà utilisé");
-        } else {
-          console.log(err.message);
-          toast.error("Une erreur est survenue");
-        }
-      },
-    });
-  };
+    })
+  }
+
 
   return (
     <div className="flex flex-col justify-center items-center gap-8">

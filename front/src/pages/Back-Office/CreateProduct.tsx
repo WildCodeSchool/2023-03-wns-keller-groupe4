@@ -3,7 +3,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
 import convertBase64 from "../../utils/convertBase64";
-import { gql } from "../../__generated__";
+import { GET_CATEGORIES } from "../../utils/queries";
+import { CREATE_PRODUCT } from "../../utils/mutations";
 
 // INTERFACES
 interface IFormCreateProduct {
@@ -13,24 +14,6 @@ interface IFormCreateProduct {
   category: string;
   image: FileList;
 }
-
-// QUERIES & MUTATIONS
-const GET_CATEGORIES = gql(`
-  query GetCategories {
-    getCategories {
-      id
-      name
-    }
-  }
-`)
-
-const CREATE_PRODUCT = gql(`
-  mutation Mutation($createProductInput: CreateProductInput!) {
-    createProduct(createProductInput: $createProductInput) {
-      id
-    }
-  }
-`)
 
 // COMPONENT
 const CreateProduct = () => {

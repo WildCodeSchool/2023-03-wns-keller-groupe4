@@ -2,29 +2,10 @@ import { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 
-import { gql } from "../../__generated__";
-
 import { HiOutlineMagnifyingGlass } from "react-icons/hi2";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import { VscBlank } from "react-icons/vsc";
-
-// QUERIES
-const GET_PRODUCTS = gql(`
-  query GetProducts($getProductsInput: GetProductsInput) {
-    getProducts(getProductsInput: $getProductsInput) {
-      id
-      name
-      stock
-      available
-    }
-  }
-`);
-
-const GET_PRODUCT_COUNT = gql(`
-  query Query($name: String) {
-    getProductsCount(name: $name)
-  }
-`)
+import { GET_PRODUCTS, GET_PRODUCT_COUNT } from "../../utils/queries";
 
 const LIMIT = 10;
 

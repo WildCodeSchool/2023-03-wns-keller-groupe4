@@ -18,28 +18,30 @@ const LoginForm = () => {
     handleSubmit, 
     formState
   } = useForm<IFormLogin>({});
-  const [login] = useLazyQuery(LOGIN_GUERY);
+  
+  const [login] = useLazyQuery(LOGIN_GUERY, {
+    onCompleted: async ({ login }: { login: IClientData }) => {
+      AuthService.login(login);
+      navigate("/");
+    },
+    onError: (err) => {
+      if (err.message.includes("Could not find any entity of type")) {
+        toast.error("Email ou mot de passe incorrect");
+      } else {
+        console.error(err.message);
+        toast.error("Une erreur est survenue");
+      }
+    },
+  });
 
   const submitForm = async (data: IFormLogin) => {
     await login({
       variables: {
         email: data.email,
-        password: data.password  
+        password: data.password,
       },
-      onCompleted: async ({login}:{login: IClientData}) => {
-        AuthService.login(login)
-        navigate("/");
-      },
-      onError: (err) => {
-        if (err.message.includes("Could not find any entity of type")) {
-          toast.error("Email ou mot de passe incorrect");
-        } else {
-          console.error(err.message);
-          toast.error("Une erreur est survenue");
-        }
-      }
-    })
-  }
+    });
+  };
 
 
   return (

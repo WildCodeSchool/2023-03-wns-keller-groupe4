@@ -55,7 +55,9 @@ const ProductsListPage = () => {
 
   // No cateory name = no category ID. So it's skipped
   if(!isSkipped) {
-    categoryId = Qcategory?.getCategoryByName?.id;
+    if (Qcategory?.getCategoryByName !== undefined) {
+      categoryId = Qcategory.getCategoryByName.id;
+    }
   }
 
   // Get products by category ID from API
@@ -87,7 +89,7 @@ const ProductsListPage = () => {
   }
   
   // No product found
-  if (products.getProductsByCategory.length === 0) {
+  if (products?.getProductsByCategory.length === 0) {
     return (
       <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 m-5" role="alert">
         <p className="font-bold">Information</p>
@@ -101,7 +103,7 @@ const ProductsListPage = () => {
         <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">{ category_title }</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3 lg:gap-4 mt-10 items-center place-items-stretch">
           {
-            products.getProductsByCategory.map((product:any) => (
+            products?.getProductsByCategory.map((product:any) => (
               <ProductsListComponent
                 key = {product.id}
                 id = {product.id}

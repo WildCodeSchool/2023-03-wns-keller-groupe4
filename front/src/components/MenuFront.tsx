@@ -13,7 +13,7 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
   const { loading, error, data } = useQuery(GET_CATEGORIES);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Erreur : Une erreur est survenue. La barre de navigation ne peut pas être affichée pour le moment.</p>;
-  const categories = data.getCategories;
+  const categories = data?.getCategories;
 
   return (
     <div>
@@ -35,7 +35,7 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
           >
             <div className="flex items-center h-full px-2"><div className="w-full">Tous</div></div>
           </Link>
-          {categories.map((category:any) => (
+          {categories?.map((category) => (
             <Link to={"products/list/"+category.name.toLowerCase()} key={category.id} className="bg-orange-600 hover:bg-orange-700 text-white block rounded-md px-3 py-2 mx-2 text-base font-medium"
               onClick={() => setOpenNav(false)}
             >
