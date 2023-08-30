@@ -63,7 +63,7 @@ const ProductsDetailsComponent = ({
     available: available,
   });
 
-  // This state controls if we are in dupdate mode or not wich will trigger showing the update form or not
+  // This state controls if we are in update mode or not wich will trigger showing the update form or not
   const [updateToggle, setUpdateToogle] = useState(false);
   const [updateProduct] = useMutation(UPDATE_PRODUCT, {
     refetchQueries: [GET_ONE_PRODUCT],
@@ -114,7 +114,7 @@ const ProductsDetailsComponent = ({
             <img
               alt="ecommerce"
               className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200"
-              src={defaultImage}
+              src={image}
             />
             <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
               {/* Brand */}
@@ -369,7 +369,7 @@ const ProductsDetailsComponent = ({
                         togglingUpdate();
                       }}
                     >
-                      {updateToggle ? "annuler" : "Modifier"}
+                      {updateToggle ? "Annuler" : "Modifier"}
                     </button>
                   ) : (
                     <button

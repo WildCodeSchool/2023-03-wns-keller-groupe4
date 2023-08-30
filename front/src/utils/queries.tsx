@@ -31,8 +31,14 @@ export const GET_CATEGORY_BY_NAME = gql(`
   }
 `);
 
-// This has no reason to exist, we can get product by categorie
-// in the query commented line 49
+export const UPDATE_PRODUCT = gql(`
+mutation Mutation($updateProductInput: UpdateProductInput!, $updateProductId: String!) {
+	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
+	  name
+	}
+  }
+`);
+
 export const GET_PRODUCTS_BY_CATEGORY = gql(`
   query GetProductsByCategory($idCategory: String!) {
     getProductsByCategory(id_category: $idCategory) {
@@ -46,22 +52,6 @@ export const GET_PRODUCTS_BY_CATEGORY = gql(`
     }
   }
 `);
-
-// export const GET_PRODUCTS_BY_CATEGORY = gql(`
-// query GetCategory($getCategoryId: String!) {
-//   getCategory(id: $getCategoryId) {
-//     products {
-//       id
-//       name
-//       price
-//       stock
-//       available
-//       description
-//       picture
-//     }
-//   }
-// }
-// `);
 
 export const GET_ALL_PRODUCTS = gql(`
   query ExampleQuery {
