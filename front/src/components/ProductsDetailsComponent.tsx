@@ -3,8 +3,8 @@ import defaultImage from "./../assets/products/default.png";
 import {PrevButton} from "./tools/PrevButton";
 import {Dialog, Transition} from "@headlessui/react";
 import {useMutation} from "@apollo/client";
-import {gql} from "@apollo/client";
-import {GET_ONE_PRODUCT} from "../utils/queries";
+import {GET_ONE_PRODUCT} from "../pages/Front-Office/ProductsDetailsPage";
+import {UPDATE_PRODUCT} from "../utils/queries";
 // import {gql} from "../__generated__";
 
 export interface IProductProps {
@@ -28,14 +28,6 @@ interface IFormUpdateProduct {
   stock?: number;
   available?: boolean;
 }
-
-const UPDATE_PRODUCT = gql(`
-mutation Mutation($updateProductInput: UpdateProductInput!, $updateProductId: String!) {
-	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
-	  name
-	}
-  }
-`);
 
 // This component is Used both for front and back office. For a non admin user it will just display product detail, for an admin it will give the user the possibility to update the product.
 
@@ -97,7 +89,7 @@ const ProductsDetailsComponent = ({
   description = description !== "" ? description : "No description available";
 
   // Availability
-  const availability = available ? " Available" : " Unavailable";
+  const availability = available ? " disponible" : " non disponible";
 
   // Image
 
@@ -284,7 +276,7 @@ const ProductsDetailsComponent = ({
               <div className="flex justify-around mt-2  pb-5 border-b-2 border-gray-200 mb-5">
                 {/* Stocks and availability */}
                 <div className="flex title-font text-gray-900 flex-col items-center ">
-                  <span className="font-medium px-2">Availability</span>
+                  <span className="font-medium px-2">Disponibilité</span>
                   {updateToggle ? (
                     <select
                       className="border"
@@ -296,8 +288,18 @@ const ProductsDetailsComponent = ({
                         })
                       }
                     >
-                      <option value="true">Dispo</option>
-                      <option value="false">Non Dispo</option>
+                      <option
+                        selected={available}
+                        value="true"
+                      >
+                        disponible
+                      </option>
+                      <option
+                        selected={!available}
+                        value="false"
+                      >
+                        non disponible
+                      </option>
                     </select>
                   ) : (
                     availability
@@ -330,7 +332,7 @@ const ProductsDetailsComponent = ({
                 {/* Price */}
                 {updateToggle ? (
                   <div className="flex flex-col text-center">
-                    <span className="title-font font-medium">Price</span>
+                    <span className="title-font font-medium">Prix</span>
                     <input
                       className=" w-16 block md:inline border-2 text-center "
                       id="priceInput"
