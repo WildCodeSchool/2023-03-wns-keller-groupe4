@@ -5,6 +5,7 @@ import {Dialog, Transition} from "@headlessui/react";
 import {useMutation} from "@apollo/client";
 import {GET_ONE_PRODUCT} from "../pages/Front-Office/ProductsDetailsPage";
 import {UPDATE_PRODUCT} from "../utils/queries";
+import convertBase64 from "../utils/convertBase64";
 // import {gql} from "../__generated__";
 
 export interface IProductProps {
@@ -64,7 +65,12 @@ const ProductsDetailsComponent = ({
   const submitUpdateProduct = async (id: string, data: IFormUpdateProduct) => {
     try {
       await updateProduct({
-        variables: {updateProductId: id, updateProductInput: data},
+        variables: {
+          updateProductId: id,
+          updateProductInput: {
+            ...data,
+          },
+        },
       });
       togglingUpdate();
     } catch (error) {
@@ -106,9 +112,26 @@ const ProductsDetailsComponent = ({
             <img
               alt="ecommerce"
               className="sm:w-1/2 lg:w-1/3 w-full object-cover object-center rounded border border-gray-200"
-              src={image}
+              src={updateProductInput.picture}
             />
             <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 text-center md:text-left">
+              {updateToggle ? (
+                <input
+                  type="file"
+                  id="image"
+                  className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
+                  onChange={async (e) =>
+                    setUpdateProductInput({
+                      ...updateProductInput,
+                      picture: e.target.files
+                        ? await convertBase64(e.target.files[0])
+                        : "",
+                    })
+                  }
+                />
+              ) : (
+                ""
+              )}
               {/* Brand */}
               <div
                 className="inline-block bg-red-100 border border-red-400 text-red-700 px-2 my-3 rounded relative"
