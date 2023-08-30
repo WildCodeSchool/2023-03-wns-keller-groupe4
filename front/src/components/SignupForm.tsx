@@ -19,7 +19,15 @@ function SignupForm() {
     formState: { errors },
   } = useForm<IFormSignup>();
 
-  const [signup] = useMutation(SIGNUP_MUTATION);
+  const [signup] = useMutation(SIGNUP_MUTATION, {
+    onCompleted: async ({signup}:{signup: IClientData}) => {
+      AuthService.login(signup)
+      navigate("/")
+    },
+    onError: (err) => {
+      navigate("/connect");
+    }
+  });
 
   const submitForm = async (data: IFormSignup) => {
     await signup({
@@ -30,13 +38,6 @@ function SignupForm() {
           passwordConfirm: data.passwordConfirm
         }
       },
-      onCompleted: async ({signup}:{signup: IClientData}) => {
-        AuthService.login(signup)
-        navigate("/")
-      },
-      onError: (err) => {
-        navigate("/connect");
-      }
     })
   }
 

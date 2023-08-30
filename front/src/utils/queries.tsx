@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "../__generated__";
 
 export const LOGIN_GUERY = gql(`
   query LoginQuery(
@@ -32,7 +32,7 @@ export const GET_CATEGORY_BY_NAME = gql(`
 `);
 
 export const GET_PRODUCTS_BY_CATEGORY = gql(`
-  query getProducts($idCategory: String!) {
+  query GetProductsByCategory($idCategory: String!) {
     getProductsByCategory(id_category: $idCategory) {
       id
       name
