@@ -31,14 +31,6 @@ export const GET_CATEGORY_BY_NAME = gql(`
   }
 `);
 
-export const UPDATE_PRODUCT = gql(`
-mutation Mutation($updateProductInput: UpdateProductInput!, $updateProductId: String!) {
-	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
-	  name
-	}
-  }
-`);
-
 export const GET_PRODUCTS_BY_CATEGORY = gql(`
   query GetProductsByCategory($idCategory: String!) {
     getProductsByCategory(id_category: $idCategory) {

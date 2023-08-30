@@ -1,6 +1,5 @@
 import {ILike} from "typeorm";
 import {CategoryService} from "../category/Category.Service";
-import {UpdateCategoryInput} from "../category/inputs/UpdateCategoryInput";
 import dataSource from "../utils";
 import {Product} from "./entity/Product";
 import {CreateProductInput} from "./inputs/CreateProductInput";

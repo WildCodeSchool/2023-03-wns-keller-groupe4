@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import {gql} from "../__generated__";
 
 export const SIGNUP_MUTATION = gql(`
   mutation Signup($signupUserInput: SignupUserInput!) {
@@ -11,9 +11,17 @@ export const SIGNUP_MUTATION = gql(`
 `);
 
 export const CREATE_PRODUCT = gql(`
-  mutation Mutation($createProductInput: CreateProductInput!) {
+  mutation CreateProduct($createProductInput: CreateProductInput!) {
     createProduct(createProductInput: $createProductInput) {
       id
     }
   }
-`)
+`);
+
+export const UPDATE_PRODUCT = gql(`
+mutation UpdateProduct($updateProductInput: UpdateProductInput!, $updateProductId: String!) {
+	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
+	  name
+	}
+  }
+`);

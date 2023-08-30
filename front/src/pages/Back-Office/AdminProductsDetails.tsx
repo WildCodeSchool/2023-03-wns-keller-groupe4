@@ -29,7 +29,7 @@ const AdminProductsDetails = () => {
               price={product.price}
               picture={product.picture}
               available={product.available}
-              isAdmin={false}
+              isAdmin={true}
             />
           )}
         </section>
