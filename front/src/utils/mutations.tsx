@@ -9,3 +9,11 @@ export const SIGNUP_MUTATION = gql(`
     }
   }
 `);
+
+export const CREATE_PRODUCT = gql(`
+  mutation Mutation($createProductInput: CreateProductInput!) {
+    createProduct(createProductInput: $createProductInput) {
+      id
+    }
+  }
+`)

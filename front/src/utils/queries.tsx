@@ -62,3 +62,34 @@ export const GET_ALL_PRODUCTS = gql(`
     }
   }
 `);
+
+export const GET_PRODUCTS = gql(`
+  query GetProducts($getProductsInput: GetProductsInput) {
+    getProducts(getProductsInput: $getProductsInput) {
+      id
+      name
+      stock
+      available
+    }
+  }
+`);
+
+export const GET_PRODUCT_COUNT = gql(`
+  query Query($name: String) {
+    getProductsCount(name: $name)
+  }
+`)
+
+export const GET_ONE_PRODUCT = gql(`
+  query getProduct($getProductId: String!) {
+    getProduct(id: $getProductId) {
+      id
+      name
+      price
+      stock
+      available
+      description
+      picture
+    }
+  }
+`);

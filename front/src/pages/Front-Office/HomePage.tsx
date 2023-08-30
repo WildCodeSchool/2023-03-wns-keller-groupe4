@@ -1,18 +1,9 @@
 import {Combobox, Transition} from "@headlessui/react";
 import {Fragment, useEffect, useState} from "react";
 import {RxMagnifyingGlass} from "react-icons/rx";
-import {gql} from "../../__generated__";
 import {useQuery} from "@apollo/client";
 import {useNavigate} from "react-router-dom";
-
-const GET_CATEGORIES = gql(`
-  query GetCategories {
-    getCategories {
-      id
-      name
-    }
-  }
-`);
+import { GET_CATEGORIES } from "../../utils/queries";
 
 function HomePage() {
   const navigate = useNavigate();
