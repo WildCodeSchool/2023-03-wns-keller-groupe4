@@ -9,6 +9,7 @@ import ConnectFront from "./pages/Front-Office/ConnectFront";
 import CreateProduct from "./pages/Back-Office/CreateProduct";
 import Profile from "./pages/Front-Office/Profile";
 import AdminProductsDetails from "./pages/Back-Office/AdminProductsDetails";
+import Stock from "./pages/Back-Office/Stock";
 
 function App() {
   return (
@@ -60,7 +61,7 @@ function App() {
         />
         <Route
           path="/admin/stock"
-          element={<h1>Stock</h1>}
+          element={<Stock />}
         />
         <Route
           path="/admin/stock/:id"
