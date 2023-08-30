@@ -2,8 +2,8 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 
-import convertBase64 from "../utils/convertBase64";
-import { gql } from "../__generated__";
+import convertBase64 from "../../utils/convertBase64";
+import { gql } from "../../__generated__";
 
 // INTERFACES
 interface IFormCreateProduct {

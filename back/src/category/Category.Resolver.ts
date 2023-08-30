@@ -24,6 +24,12 @@ export default class CategoryResolver {
 		return await this.service.getOneCategory(id);
 	}
 
+	@Query(() => Category)
+	async getCategoryByName(@Arg("name") name: string): Promise<Category> {
+		// TODO Write validation classes for the queries input
+		return await this.service.getOneCategoryByName(name);
+	}
+
 	@Mutation(() => Category)
 	async createCategory(
 		@Arg("createCategorieInput") createCategoryInput: CreateCategoryInput
