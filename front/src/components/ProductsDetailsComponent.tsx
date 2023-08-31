@@ -411,7 +411,7 @@ const ProductsDetailsComponent = ({
                                                 )
                                             }
                                         >
-                                            Envoyer
+                                            Modifier
                                         </button>
                                     )}
 
