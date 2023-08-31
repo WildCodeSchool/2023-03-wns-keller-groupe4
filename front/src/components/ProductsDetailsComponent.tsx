@@ -349,7 +349,8 @@ const ProductsDetailsComponent = ({
                                     {updateToggle ? (
                                         <input
                                             className=" block w-10 md:inline border text-center  "
-                                            id="stock"
+                                            id="stockInput"
+                                            min={0}
                                             type="number"
                                             value={updateProductInput.stock}
                                             onChange={(e) =>
@@ -381,6 +382,7 @@ const ProductsDetailsComponent = ({
                                             className=" w-16 block md:inline border-2 text-center "
                                             id="priceInput"
                                             type="number"
+                                            min={0}
                                             value={updateProductInput.price}
                                             onChange={(e) =>
                                                 setUpdateProductInput({
