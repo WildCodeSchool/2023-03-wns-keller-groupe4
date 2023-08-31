@@ -1,4 +1,4 @@
-import { render, screen } from "../utils/testCustomRender";
+import { render, screen} from "../utils/testCustomRender";
 import ProductsListComponent from "../components/ProductsListComponent";
 
 describe("Products list", () => {
@@ -6,13 +6,27 @@ describe("Products list", () => {
         render(<ProductsListComponent id={1} name={"brouette"} price={10} picture={"test"} />);
     });
 
-    it("renders buttons to show product details", () => {
+    it("renders elements of the component", async () => {
         render(<ProductsListComponent id={1} name={"brouette"} price={10} picture={"test"} />);
-        const linkElement = screen.queryByText(/Details/i);
-        expect(linkElement).toBeInTheDocument();
-    });
 
-    // Click on the button redirect to the product details page
-    
-    
+        // Expect image alt to be present
+        const imageElement = screen.getByRole("img", { 
+            name: "brouette"
+        });
+        expect(imageElement).toBeInTheDocument();
+
+        // Expect title to be present
+        const titleElement = screen.getByText(/brouette/i);
+        expect(titleElement).toBeInTheDocument();
+
+        // Expect price to be present
+        const priceElement = screen.getByText(/10 €\/day/i);
+        expect(priceElement).toBeInTheDocument();
+
+        // Expect link to be present
+        const buttonElement = screen.getByRole("link", { 
+            name: "Details"
+        });
+        expect(buttonElement).toHaveAttribute('href', '/product/1');
+    });
 });
