@@ -176,7 +176,7 @@ const Stock = () => {
                 >
                   <td className="p-4">
                     <Link
-                      to={`/admin/stock/${product.id}`}
+                      to={`/admin/product/${product.id}/${product.name}`}
                       className="underline cursor-pointer"
                     >
                       {product.name}

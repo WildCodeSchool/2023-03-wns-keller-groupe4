@@ -5,11 +5,11 @@ import Products from "../../components/ProductsDetailsComponent";
 import {GET_ONE_PRODUCT} from "../../utils/queries";
 
 const AdminProductsDetails = () => {
-  const {productId} = useParams();
-  console.log(productId);
+  const {id} = useParams();
+  console.log(id);
 
   const {loading, error, data} = useQuery(GET_ONE_PRODUCT, {
-    variables: {getProductId: productId as string},
+    variables: {getProductId: id as string},
   });
   const product = data?.getProduct;
 

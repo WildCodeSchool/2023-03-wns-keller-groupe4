@@ -43,7 +43,7 @@ function App() {
           element={<ProductsListPage />}
         />
         <Route
-          path="/product/:productId"
+          path="/product/:id/:name"
           element={<ProductDetails />}
         />
       </Route>
@@ -56,7 +56,7 @@ function App() {
           element={<CreateProduct />}
         />
         <Route
-          path="/admin/product/:productId"
+          path="/admin/product/:id/:name"
           element={<AdminProductsDetails />}
         />
         <Route
@@ -64,7 +64,7 @@ function App() {
           element={<Stock />}
         />
         <Route
-          path="/admin/stock/:id"
+          path="/admin/product/:id/:name"
           element={<h1>Stock Product</h1>}
         />
         <Route

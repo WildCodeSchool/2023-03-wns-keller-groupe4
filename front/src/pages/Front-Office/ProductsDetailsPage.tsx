@@ -14,11 +14,11 @@ export interface IProductFromAPI {
 }
 
 const ProductsDetailsPage = () => {
-  const {productId} = useParams();
+  const {id} = useParams();
 
   // Products data from API
   const {loading, error, data} = useQuery(GET_ONE_PRODUCT, {
-    variables: {getProductId: productId as string},
+    variables: {getProductId: id as string},
   });
 
   if (loading) return <p>Loading...</p>;

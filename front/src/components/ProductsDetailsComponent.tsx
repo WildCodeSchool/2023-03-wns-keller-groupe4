@@ -111,7 +111,7 @@ const ProductsDetailsComponent = ({
           <div className="flex flex-wrap lg:w-5/6 mx-auto justify-center">
             <div className=" flex flex-col items-center	lg:w-96 py-8">
               <img
-                alt="ecommerce"
+                alt="produit"
                 className=" lg:w-full sm:w-1/2 object-cover object-center rounded border border-gray-200"
                 src={updateProductInput.picture}
               />
