@@ -1,4 +1,4 @@
-import {gql} from "../__generated__";
+import { gql } from "../__generated__";
 
 export const SIGNUP_MUTATION = gql(`
   mutation Signup($signupUserInput: SignupUserInput!) {
