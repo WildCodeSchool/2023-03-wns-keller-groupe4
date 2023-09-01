@@ -78,7 +78,7 @@ export const GET_PRODUCT_COUNT = gql(`
   query Query($name: String) {
     getProductsCount(name: $name)
   }
-`)
+`);
 
 export const GET_ONE_PRODUCT = gql(`
   query getProduct($getProductId: String!) {

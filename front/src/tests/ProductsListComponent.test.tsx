@@ -27,6 +27,6 @@ describe("Products list", () => {
         const buttonElement = screen.getByRole("link", { 
             name: "Details"
         });
-        expect(buttonElement).toHaveAttribute('href', '/product/1');
+        expect(buttonElement).toHaveAttribute('href', '/product/1/brouette');
     });
 });

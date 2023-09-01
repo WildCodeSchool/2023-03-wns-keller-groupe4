@@ -1,31 +1,20 @@
+import React from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import { useQuery, gql } from "@apollo/client";
 import Products from "../../components/ProductsDetailsComponent";
 import { GET_ONE_PRODUCT } from "../../utils/queries";
 
-export interface IProductFromAPI {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    available: boolean;
-    picture: string;
-}
-
-const ProductsDetailsPage = () => {
+const AdminProductsDetails = () => {
     const { id } = useParams();
+    console.log(id);
 
-    // Products data from API
     const { loading, error, data } = useQuery(GET_ONE_PRODUCT, {
         variables: { getProductId: id as string },
     });
+    const product = data?.getProduct;
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error : {error.message}</p>;
-
-    const product = data?.getProduct;
-
     return (
         <div>
             <main className="container mx-auto">
@@ -40,7 +29,7 @@ const ProductsDetailsPage = () => {
                             price={product.price}
                             picture={product.picture}
                             available={product.available}
-                            isAdmin={false}
+                            isAdmin={true}
                         />
                     )}
                 </section>
@@ -49,4 +38,4 @@ const ProductsDetailsPage = () => {
     );
 };
 
-export default ProductsDetailsPage;
+export default AdminProductsDetails;
