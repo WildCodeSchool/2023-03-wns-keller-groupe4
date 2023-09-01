@@ -11,11 +11,11 @@ describe("Products details", () => {
     window.ResizeObserver = ResizeObserver;
 
     it("renders product details component", () => {
-        render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={true} />);
+        render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={true} isAdmin={false} />);
     });
 
     it("renders elements of the component for an available product", async () => {
-        render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={"Description de la brouette"} price={10} stock={5} picture={"image.jpg"} available={true} />);
+        render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={"Description de la brouette"} price={10} stock={5} picture={"image.jpg"} available={true} isAdmin={false} />);
         expect(screen.getByRole("heading", { name: "brouette" })).toBeInTheDocument();
         expect(screen.getByText(/Description de la brouette/i)).toBeInTheDocument();
         expect(screen.getByText(/10 €/i)).toBeInTheDocument();
@@ -26,17 +26,17 @@ describe("Products details", () => {
 
     describe("When the product is not available or have no description, or image src is wrong", () => {
         it("should display the status as unavailable", () => {
-            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"image.jpg"} available={false} />);
-            expect(screen.getByText(/Unavailable/i)).toBeInTheDocument();
+            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"image.jpg"} available={false} isAdmin={false} />);
+            expect(screen.getByText(/Non disponible/i)).toBeInTheDocument();
         });
 
         it("should display the description as unavailable", () => {
-            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"image.jpg"} available={false} />);
+            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"image.jpg"} available={false} isAdmin={false} />);
             expect(screen.getByText(/No description available/i)).toBeInTheDocument();
         });
 
         it("should disable the reservation button", () => {
-            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={false} />);
+            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={false} isAdmin={false} />);
             const buttonElement = screen.getByRole("button", {
                 name: "Reservation"
             });
@@ -46,7 +46,7 @@ describe("Products details", () => {
 
     describe("When user clicks on the reservation button", () => {
         it("should open a modal showing a preview of the cart", async () => {
-            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={true} />);
+            render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={true} isAdmin={false} />);
             
             const buttonElement = screen.getByRole("button", { 
                 name: "Reservation" 
