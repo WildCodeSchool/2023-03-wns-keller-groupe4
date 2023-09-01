@@ -2,6 +2,8 @@ import dataSource from "../utils";
 import { Lang } from "./entity/Lang";
 
 export default class LangService {
+    repository = dataSource.getRepository(Lang)
+
     /**
      * Créer une entité Lang
      * @param name nom/alias à donner à notre Lang (ex: FR, EN, IT etc..)
@@ -9,7 +11,7 @@ export default class LangService {
      */
     async createOneLang(name: string): Promise<Lang> {
         try {
-            return await dataSource.getRepository(Lang).save({ name });
+            return await this.repository.save({ name });
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -20,7 +22,7 @@ export default class LangService {
      * @returns un talbeau d'object Lang
      */
     async getAllLang(): Promise<Lang[]> {
-        return await dataSource.getRepository(Lang).find();
+        return await this.repository.find();
     }
 
     /**
@@ -29,9 +31,7 @@ export default class LangService {
      * @returns un object Lang
      */
     async getOneLangById(id: string): Promise<Lang> {
-        return await dataSource
-            .getRepository(Lang)
-            .findOneOrFail({ where: { id } });
+        return await this.repository.findOneOrFail({ where: { id } });
     }
 
     /**
@@ -40,10 +40,10 @@ export default class LangService {
      * @param name le nouveau nom/alias à attribuer
      * @returns
      */
-    async updateOneLangById(id: string, name: string): Promise<boolean> {
+    async updateOneLangById(id: string, name: string): Promise<Lang> {
         try {
-            const result = await dataSource.getRepository(Lang).update({ id }, { name });
-            return typeof result.affected === "number" && result.affected > 0;
+            const lang = this.getOneLangById(id);
+            return await this.repository.save({ ...lang, name });
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -57,7 +57,7 @@ export default class LangService {
     async deleteOneLangById(id: string): Promise<Boolean> {
         try {
             const langToDelete = await this.getOneLangById(id);
-            await dataSource.getRepository(Lang).remove(langToDelete);
+            await this.repository.remove(langToDelete);
             return true;
         } catch (err: any) {
             throw new Error(err.message);
