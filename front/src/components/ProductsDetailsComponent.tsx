@@ -99,6 +99,7 @@ const ProductsDetailsComponent = ({
 
     // Availability
     const availability = available ? " disponible" : " non disponible";
+    const buttonState = available ? false : true;
 
     // Image
 
@@ -403,7 +404,6 @@ const ProductsDetailsComponent = ({
                                     {updateToggle && (
                                         <button
                                             className=" text-white text-xs px-2 mx-1 my-1 sm:text-xs lg:text-lg bg-yellow-400  border-0  sm:px-3  md:px-4 lg:px-6 focus:outline-none hover:bg-main  active:bg-yellow-400 rounded  "
-                                            // disabled={buttonState}
                                             onClick={() =>
                                                 submitUpdateProduct(
                                                     id,
@@ -612,8 +612,8 @@ const ProductsDetailsComponent = ({
                                     {price} €
                                 </span>
                                 <button
-                                    className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
-                                    // disabled={buttonState}
+                                    className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded disabled:bg-red-200"
+                                    disabled={buttonState}
                                     onClick={() => {
                                         setOpen(true);
                                     }}
