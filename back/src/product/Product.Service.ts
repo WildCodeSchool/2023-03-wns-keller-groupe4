@@ -1,10 +1,10 @@
 import {ILike} from "typeorm";
 import {CategoryService} from "../category/Category.Service";
-import {UpdateCategoryInput} from "../category/inputs/UpdateCategoryInput";
 import dataSource from "../utils";
 import {Product} from "./entity/Product";
 import {CreateProductInput} from "./inputs/CreateProductInput";
 import {GetProductsInput} from "./inputs/GetProductsInput";
+import {UpdateProductInput} from "./inputs/UpdateProductInput";
 
 export class ProductService {
   productRepository = dataSource.getRepository(Product);
@@ -142,10 +142,13 @@ export class ProductService {
 
   async updateOneProduct(
     id: string,
-    updateCategorieInput: UpdateCategoryInput
+    updateProductInput: UpdateProductInput
   ): Promise<Product> {
     try {
-      await this.productRepository.update({id}, updateCategorieInput);
+      if (updateProductInput.stock === 0) {
+        updateProductInput.available = false;
+      }
+      await this.productRepository.update({id}, updateProductInput);
 
       const updatedProduct = await this.productRepository.findOneOrFail({
         where: {id},

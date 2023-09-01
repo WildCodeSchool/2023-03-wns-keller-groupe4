@@ -11,9 +11,18 @@ export const SIGNUP_MUTATION = gql(`
 `);
 
 export const CREATE_PRODUCT = gql(`
-  mutation Mutation($createProductInput: CreateProductInput!) {
+  mutation CreateProduct($createProductInput: CreateProductInput!) {
     createProduct(createProductInput: $createProductInput) {
       id
+      name
     }
   }
-`)
+`);
+
+export const UPDATE_PRODUCT = gql(`
+mutation UpdateProduct($updateProductInput: UpdateProductInput!, $updateProductId: String!) {
+	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
+	  name
+	}
+  }
+`);
