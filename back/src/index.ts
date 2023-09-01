@@ -2,14 +2,14 @@ import "reflect-metadata";
 import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
 import dataSource from "./utils";
-import {buildSchema} from "type-graphql";
-import {ApolloServer} from "apollo-server";
+import { buildSchema } from "type-graphql";
+import { ApolloServer } from "apollo-server";
 import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
-import {Category} from "./category/entity/Category";
-import {Product} from "./product/entity/Product";
-import {IMockProduct, categoriesNames, mockProducts} from "./mockDataArray";
-import {ProductService} from "./product/Product.Service";
+import { Category } from "./category/entity/Category";
+import { Product } from "./product/entity/Product";
+import { IMockProduct, categoriesNames, mockProducts } from "./mockDataArray";
+import { ProductService } from "./product/Product.Service";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
 import ReservationResolver from "./reservation/Reservation.Resolver";
@@ -33,7 +33,7 @@ if (JWT_SECRET === undefined) {
 const start = async (): Promise<void> => {
 	await dataSource.initialize();
 	const typeGraphQLgeneratedSchema = await buildSchema({
-		validate: {forbidUnknownValues: false},
+		validate: { forbidUnknownValues: false },
 		resolvers: [
 			UserResolver,
 			CategoryResolver,
@@ -41,7 +41,7 @@ const start = async (): Promise<void> => {
 			LangResolver,
 			ReservationResolver
 		],
-		authChecker: ({context}) => {
+		authChecker: ({ context }) => {
 			if (context.email !== undefined) {
 				return true;
 			} else {
@@ -52,7 +52,7 @@ const start = async (): Promise<void> => {
 
 	const server = new ApolloServer({
 		schema: typeGraphQLgeneratedSchema,
-		context: ({req}) => {
+		context: ({ req }) => {
 			if (
 				req.headers.authorization !== undefined &&
 				req.headers.authorization !== ""
@@ -67,7 +67,7 @@ const start = async (): Promise<void> => {
 		},
 	});
 
-	const {url} = await server.listen();
+	const { url } = await server.listen();
 
 	const dataFixture = async (): Promise<void> => {
 		if (DATA_FIXTURE_CATEGORIES === "true") {

@@ -12,6 +12,7 @@ import { ReservationDetail } from "./ReservationDetail";
 
 
 export enum EnumStatusReservation {
+    BUILDING = "building",
     PAYING = "paying",
     PROCESSING = "processing",
     READY = "ready",

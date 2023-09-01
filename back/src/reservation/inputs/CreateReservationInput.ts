@@ -17,5 +17,5 @@ export default class CreateReservationInput {
 
     reservationsDetails: ReservationDetail[] = []
 
-    status: EnumStatusReservation = EnumStatusReservation.PAYING;
+    status: EnumStatusReservation = EnumStatusReservation.BUILDING;
 }

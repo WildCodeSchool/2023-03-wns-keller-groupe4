@@ -1,7 +1,7 @@
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
-import { Reservation } from "./entity/Reservation";
+import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import ProductReservationInput from "./inputs/ProductReservationInput";
 
@@ -10,7 +10,7 @@ export default class ReservationService {
     repository = dataSource.getRepository(Reservation);
     userService = new UserService();
     productService = new ProductService();
-    relations = ["user", "reservationsDetails", "reservationsDetails.product"]
+    relations = ["user", "reservationsDetails.product"]
 
     /**
      * Créer un une Reservation 
@@ -52,7 +52,8 @@ export default class ReservationService {
     }
 
     /**
-     * Renvois un tableau de toutes les réservations
+     * Renvois un tableau de toutes les réservations d'un utilisateur
+     * @param id uuid de l'utilisateur qui possède les réservations
      * @returns Reservations[] 
     */
     async getAllReservationsByUserId(id: string): Promise<Reservation[]> {
@@ -65,6 +66,27 @@ export default class ReservationService {
                     }
                 },
             });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Renvois la réservation courante, c.a.d., le panier d'un utilisateur
+     * @param id uuid de l'utilisateur qui possède la reservation
+     * @returns Reservation
+    */
+    async getCartReservationOfUserByUserId(id: string): Promise<Reservation> {
+        try {
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
+                where: {
+                    user: {
+                        id
+                    },
+                    status: EnumStatusReservation.BUILDING
+                },
+            })
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -108,7 +130,7 @@ export default class ReservationService {
      * @param endAt nouevlle date de fin
      * @returns renvois le nouvelle état de la reservation
     */
-    async updateDateFromOneReservationById(id: string, startAt: Date, endAt: Date): Promise<Reservation> {
+    async updateDateOfOneReservation(id: string, startAt: Date, endAt: Date): Promise<Reservation> {
         try {
             // vérifie si la date de début est bien inférieure à la date de fin
             if (startAt.getTime() >= endAt.getTime()) {
@@ -120,6 +142,22 @@ export default class ReservationService {
             const reservation = await this.getOneReservationById(id);
             reservation.start_at = startAt;
             reservation.end_at = endAt;
+            return await this.repository.save(reservation);
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Modifie le status d'une réservation
+     * @param id - uuid de la reservation a modifer
+     * @param status - une value du status 
+     * @returns renvois le nouvelle état de la reservation
+    */
+    async updateStatusOfOneReservation(id: string, status: EnumStatusReservation): Promise<Reservation> {
+        try {
+            const reservation = await this.getOneReservationById(id);
+            reservation.status = status;
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message);

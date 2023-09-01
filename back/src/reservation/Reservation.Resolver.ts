@@ -1,5 +1,5 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { Reservation } from "./entity/Reservation";
+import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import ReservationService from "./Reservation.Service";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import ProductReservationInput from "./inputs/ProductReservationInput";
@@ -28,6 +28,20 @@ export default class ReservationResolver {
 
     // pour activer l'autorisation par token
     // @Authorized()
+    @Query(() => [Reservation])
+    async getReservationsByUserId(@Arg("id") id: string): Promise<Reservation[]> {
+        return await this.service.getAllReservationsByUserId(id);
+    }
+
+    // pour activer l'autorisation par token
+    // @Authorized()
+    @Query(() => Reservation)
+    async getCartReservationOfUser(@Arg("id") id: string): Promise<Reservation> {
+        return await this.service.getCartReservationOfUserByUserId(id);
+    }
+
+    // pour activer l'autorisation par token
+    // @Authorized()
     @Query(() => Reservation)
     async getReservationById(@Arg("id") id: string): Promise<Reservation> {
         return await this.service.getOneReservationById(id);
@@ -41,12 +55,20 @@ export default class ReservationResolver {
     }
 
     @Mutation(() => Reservation)
-    async updateDateFromReservation(
+    async updateDateOfReservation(
         @Arg("id") id: string,
         @Arg("startAt") startAt: Date,
         @Arg("endAt") endAt: Date,
     ): Promise<Reservation> {
-        return await this.service.updateDateFromOneReservationById(id, startAt, endAt);
+        return await this.service.updateDateOfOneReservation(id, startAt, endAt);
+    }
+
+    @Mutation(() => Reservation)
+    async updateStatusOfReservation(
+        @Arg("id") id: string,
+        @Arg("status", (type) => EnumStatusReservation) status: EnumStatusReservation,
+    ): Promise<Reservation> {
+        return await this.service.updateStatusOfOneReservation(id, status);
     }
 
     @Mutation(() => Reservation)

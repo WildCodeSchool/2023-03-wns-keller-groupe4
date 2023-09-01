@@ -12,6 +12,9 @@ import SignupUserInput from "./inputs/SignupUserInput";
 
 
 export default class UserService {
+    repository = dataSource.getRepository(User);
+    relations = ["user_profile.lang", "reservations.reservationsDetails.product"]
+
 
     /**
      * Créer un User 
@@ -21,9 +24,7 @@ export default class UserService {
     async createOneUser(createUserInput: CreateUserInput): Promise<User> {
         try {
             createUserInput.hashedPassword = await argon2.hash(createUserInput.password);
-            return await dataSource
-                .getRepository(User)
-                .save({ ...createUserInput });
+            return await this.repository.save({ ...createUserInput });
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -38,10 +39,7 @@ export default class UserService {
     */
     async login(email: string, password: string): Promise<User> {
         try {
-            const user = await dataSource
-                .getRepository(User)
-                .findOneByOrFail({ email });
-
+            const user = await this.repository.findOneByOrFail({ email });
             if (await argon2.verify(user.hashedPassword, password)) {
                 const token = jwt.sign({ email }, JWT_SECRET);
                 return { ...user, token }
@@ -74,8 +72,8 @@ export default class UserService {
     */
     async getAllUsers(): Promise<User[]> {
         try {
-            return await dataSource.getRepository(User).find({
-                relations: ["user_profile", "user_profile.lang", "reservations", "reservations.products"],
+            return await this.repository.find({
+                relations: this.relations,
             });
         } catch (err: any) {
             console.log()
@@ -90,8 +88,8 @@ export default class UserService {
     */
     async getOneUserById(id: string): Promise<User> {
         try {
-            return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang", "reservations", "reservations.reservationsDetails"],
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
                 where: { id },
             });
         } catch (err: any) {
@@ -106,8 +104,8 @@ export default class UserService {
     */
     async getOneUserByEmail(email: string): Promise<User> {
         try {
-            return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang", "reservations"],
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
                 where: { email },
             });
         } catch (err: any) {
@@ -134,8 +132,7 @@ export default class UserService {
             // @ts-expect-error
             delete updateUserInput.lang_id;
 
-            const result = await dataSource
-                .getRepository(UserProfile)
+            const result = await dataSource.getRepository(UserProfile)
                 .update({ id: userToUpdate.user_profile.id }, updateUserInput);
 
             return typeof result.affected === "number" && result.affected > 0;
@@ -153,7 +150,7 @@ export default class UserService {
     async deleteOneUserById(id: string): Promise<Boolean> {
         try {
             const userToDelete = await this.getOneUserById(id);
-            await dataSource.getRepository(User).remove(userToDelete);
+            await this.repository.remove(userToDelete);
             return true;
         } catch (err: any) {
             throw new Error(err.message);
