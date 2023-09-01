@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "../__generated__";
 
 export const LOGIN_GUERY = gql(`
   query LoginQuery(
@@ -32,7 +32,7 @@ export const GET_CATEGORY_BY_NAME = gql(`
 `);
 
 export const GET_PRODUCTS_BY_CATEGORY = gql(`
-  query getProducts($idCategory: String!) {
+  query GetProductsByCategory($idCategory: String!) {
     getProductsByCategory(id_category: $idCategory) {
       id
       name
@@ -59,6 +59,37 @@ export const GET_ALL_PRODUCTS = gql(`
         id
         name
       }
+    }
+  }
+`);
+
+export const GET_PRODUCTS = gql(`
+  query GetProducts($getProductsInput: GetProductsInput) {
+    getProducts(getProductsInput: $getProductsInput) {
+      id
+      name
+      stock
+      available
+    }
+  }
+`);
+
+export const GET_PRODUCT_COUNT = gql(`
+  query Query($name: String) {
+    getProductsCount(name: $name)
+  }
+`);
+
+export const GET_ONE_PRODUCT = gql(`
+  query getProduct($getProductId: String!) {
+    getProduct(id: $getProductId) {
+      id
+      name
+      price
+      stock
+      available
+      description
+      picture
     }
   }
 `);
