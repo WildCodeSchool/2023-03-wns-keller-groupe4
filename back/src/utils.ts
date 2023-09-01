@@ -1,11 +1,12 @@
-import {UserProfile} from "./user/entity/UserProfile";
-import {Lang} from "./lang/entity/Lang";
-import {DataSource} from "typeorm";
+import { UserProfile } from "./user/entity/UserProfile";
+import { Lang } from "./lang/entity/Lang";
+import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
-import {User} from "./user/entity/User";
-import {Category} from "./category/entity/Category";
-import {Product} from "./product/entity/Product";
+import { User } from "./user/entity/User";
+import { Category } from "./category/entity/Category";
+import { Product } from "./product/entity/Product";
 import { Reservation } from "./reservation/entity/Reservation";
+import { ReservationDetail } from "./reservation/entity/ReservationDetail";
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ const dataSource = new DataSource({
 	password: process.env.POSTGRES_PASSWORD,
 	database: "postgres",
 	synchronize: true,
-	entities: [User, UserProfile, Lang, Product, Category, Reservation],
+	entities: [User, UserProfile, Lang, Product, Category, Reservation, ReservationDetail],
 	dropSchema: dataFixtureWipe,
 });
 

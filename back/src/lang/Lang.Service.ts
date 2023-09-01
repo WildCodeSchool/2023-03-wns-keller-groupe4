@@ -42,8 +42,8 @@ export default class LangService {
      */
     async updateOneLangById(id: string, name: string): Promise<boolean> {
         try {
-            await dataSource.getRepository(Lang).update({ id }, { name });
-            return true;
+            const result = await dataSource.getRepository(Lang).update({ id }, { name });
+            return typeof result.affected === "number" && result.affected > 0;
         } catch (err: any) {
             throw new Error(err.message);
         }

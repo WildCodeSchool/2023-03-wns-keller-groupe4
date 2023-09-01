@@ -2,22 +2,21 @@ import {
     Column,
     Entity,
     JoinColumn,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { User } from "../../user/entity/User";
-import { Product } from "../../product/entity/Product";
+import { ReservationDetail } from "./ReservationDetail";
 
 
 export enum EnumStatusReservation {
     PAYING = "paying",
-    PROCESSING = "  processing",
-    READY = "  ready",
-    TAKEN = "  taken",
-    RETURNED = "  returned",
+    PROCESSING = "processing",
+    READY = "ready",
+    TAKEN = "taken",
+    RETURNED = "returned",
 }
 
 registerEnumType(EnumStatusReservation, {
@@ -34,11 +33,11 @@ export class Reservation {
     id: string;
 
     @Field()
-    @Column({type: "timestamptz"})
+    @Column({ type: "timestamptz" })
     start_at: Date;
 
     @Field()
-    @Column({type: "timestamptz"})
+    @Column({ type: "timestamptz" })
     end_at: Date;
 
     @Field()
@@ -62,8 +61,7 @@ export class Reservation {
     user: User;
 
 
-    @Field(() => [Product])
-    @ManyToMany(() => Product)
-    @JoinTable()
-    products: Product[]
+    @Field(() => [ReservationDetail])
+    @OneToMany(() => ReservationDetail, detail => detail.reservation, { cascade: true })
+    reservationsDetails: ReservationDetail[];
 }

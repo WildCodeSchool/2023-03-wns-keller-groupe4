@@ -44,7 +44,7 @@ export default class UserService {
 
             if (await argon2.verify(user.hashedPassword, password)) {
                 const token = jwt.sign({ email }, JWT_SECRET);
-                return {...user, token}
+                return { ...user, token }
             } else throw new Error("passwords not matching");
         } catch (err: any) {
             throw new Error(err.message);
@@ -56,9 +56,9 @@ export default class UserService {
      * @param signupUserInput 
      * @returns renvois le User crée et le token de login
     */
-     async signup(signupUserInput: SignupUserInput): Promise<User> {
+    async signup(signupUserInput: SignupUserInput): Promise<User> {
         try {
-            if(signupUserInput.password !== signupUserInput.passwordConfirm)
+            if (signupUserInput.password !== signupUserInput.passwordConfirm)
                 throw new Error("Password and confirm password not matching")
 
             const userCreated = await this.createOneUser(signupUserInput);
@@ -91,7 +91,7 @@ export default class UserService {
     async getOneUserById(id: string): Promise<User> {
         try {
             return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang", "reservations", "reservations.products"],
+                relations: ["user_profile", "user_profile.lang", "reservations", "reservations.reservationsDetails"],
                 where: { id },
             });
         } catch (err: any) {
@@ -104,7 +104,7 @@ export default class UserService {
      * @param email - email de l'user a modifier
      * @returns User
     */
-     async getOneUserByEmail(email: string): Promise<User> {
+    async getOneUserByEmail(email: string): Promise<User> {
         try {
             return await dataSource.getRepository(User).findOneOrFail({
                 relations: ["user_profile", "user_profile.lang", "reservations"],
@@ -126,19 +126,19 @@ export default class UserService {
         try {
             const userToUpdate = await this.getOneUserById(id);
 
-            if(updateUserInput.lang_id !== undefined){
+            if (updateUserInput.lang_id !== undefined) {
                 updateUserInput.lang = await (new LangResolver().getLangById(updateUserInput.lang_id));
-            } 
+            }
             // on supprimme détruit la propriété lang_id poiur ne pas 
             // qu'elle soit pris en compte par la class UserProfile, sinon une erreur apollo apparait 
             // @ts-expect-error
             delete updateUserInput.lang_id;
 
-            await dataSource
+            const result = await dataSource
                 .getRepository(UserProfile)
-                .update({id: userToUpdate.user_profile.id}, updateUserInput);
+                .update({ id: userToUpdate.user_profile.id }, updateUserInput);
 
-            return true;
+            return typeof result.affected === "number" && result.affected > 0;
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -150,7 +150,7 @@ export default class UserService {
      * @param id uuid de la ligne bdd du user à supprimer
      * @returns Promise< bool> : si la suppression a bien réussi
     */
-     async deleteOneUserById(id: string): Promise<Boolean> {
+    async deleteOneUserById(id: string): Promise<Boolean> {
         try {
             const userToDelete = await this.getOneUserById(id);
             await dataSource.getRepository(User).remove(userToDelete);

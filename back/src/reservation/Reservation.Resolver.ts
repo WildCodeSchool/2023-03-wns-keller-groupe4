@@ -2,7 +2,7 @@ import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Reservation } from "./entity/Reservation";
 import ReservationService from "./Reservation.Service";
 import CreateReservationInput from "./inputs/CreateReservationInput";
-import UpdateReservationInput from "./inputs/UpdateReservationInput";
+import ProductReservationInput from "./inputs/ProductReservationInput";
 
 @Resolver()
 export default class ReservationResolver {
@@ -34,17 +34,41 @@ export default class ReservationResolver {
     }
 
     @Mutation(() => Boolean)
-    async updateReservationById(
-        @Arg("id") id: string,
-        @Arg("updateReservationInput") updateReservationInput: UpdateReservationInput
-    ): Promise<Boolean> {
-        return await this.service.updateOneReservationById(id, updateReservationInput);
-    }
-
-    @Mutation(() => Boolean)
     async deleteReservationById(
         @Arg("id") id: string
     ): Promise<Boolean> {
         return await this.service.deleteOneReservationById(id);
+    }
+
+    @Mutation(() => Reservation)
+    async updateDateFromReservation(
+        @Arg("id") id: string,
+        @Arg("startAt") startAt: Date,
+        @Arg("endAt") endAt: Date,
+    ): Promise<Reservation> {
+        return await this.service.updateDateFromOneReservationById(id, startAt, endAt);
+    }
+
+    @Mutation(() => Reservation)
+    async updateProductsQuantitiesFromReservation(
+        @Arg("id") id: string,
+        @Arg("products", (type) => [ProductReservationInput]) products: ProductReservationInput[]
+    ): Promise<Reservation> {
+        return await this.service.updateProductsQuantitiesFromOneReservation(id, products);
+    }
+
+    @Mutation(() => Reservation)
+    async removeProductsFromReservation(
+        @Arg("id") id: string,
+        @Arg("products_ids", (type) => [String]) productsIds: string[]
+    ): Promise<Reservation> {
+        return await this.service.removeManyProductsFromOneReservation(id, productsIds);
+    }
+
+    @Mutation(() => Reservation)
+    async removeAllProductsFromReservation(
+        @Arg("id") id: string
+    ): Promise<Reservation> {
+        return await this.service.removeAllProductsFromOneReservation(id);
     }
 }
