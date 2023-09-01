@@ -1,4 +1,5 @@
 import {
+    Check,
     Column,
     Entity,
     JoinTable,
@@ -10,6 +11,8 @@ import { Category } from "../../category/entity/Category";
 
 @ObjectType()
 @Entity()
+@Check(`"stock" >= 0 `)
+@Check(`"price" >= 0 `)
 export class Product {
     @Field()
     @PrimaryGeneratedColumn("uuid")
