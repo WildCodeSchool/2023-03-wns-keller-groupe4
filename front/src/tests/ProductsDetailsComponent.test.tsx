@@ -1,7 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "../utils/testCustomRender";
 import ProductsDetailsComponent from "../components/ProductsDetailsComponent";
-import verifyBase64Image from "../utils/verifyBase64Image";
-import defaultImage from "./../assets/products/default.png";
 
 class ResizeObserver {
     observe() {}
