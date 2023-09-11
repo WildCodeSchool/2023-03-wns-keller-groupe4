@@ -93,8 +93,6 @@ export const dataFixture = async (): Promise<void> => {
 };
 
 export const dataFixtureWipe = (): boolean => {
-    console.log("I'm in the dataFixtureWipe function ");
-
     if (
         DATA_FIXTURE_CATEGORIES === "true" ||
         (DATA_FIXTURE_CATEGORIES === "true" && DATA_FIXTURE_PRODUCTS === "true")
