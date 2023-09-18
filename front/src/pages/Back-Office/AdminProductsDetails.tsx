@@ -1,6 +1,5 @@
-import React from "react";
 import { useParams } from "react-router-dom";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import Products from "../../components/ProductsDetailsComponent";
 import { GET_ONE_PRODUCT } from "../../utils/queries";
 

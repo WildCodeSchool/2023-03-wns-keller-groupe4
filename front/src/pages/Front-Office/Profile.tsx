@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-import AuthService from "../../utils/authService";
 import { useMutation } from "@apollo/client";
 import { setAccessToken } from "../../utils/accessToken";
 import { LOGOUT } from "../../utils/mutations";
