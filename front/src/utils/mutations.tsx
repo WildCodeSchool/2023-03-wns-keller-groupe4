@@ -22,3 +22,9 @@ mutation UpdateProduct($updateProductInput: UpdateProductInput!, $updateProductI
 	}
   }
 `);
+
+export const LOGOUT = gql(`
+  mutation Mutation {
+    logout
+  }
+`);

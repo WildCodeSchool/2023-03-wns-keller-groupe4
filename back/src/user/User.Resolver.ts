@@ -43,6 +43,11 @@ export default class UserResolver {
         return await this.service.signup(signupUserInput);
     }
 
+    @Mutation(() => Boolean)
+    async logout(@Ctx() ctx: MyContext): Promise<Boolean> {
+        return await this.service.logout(ctx);
+    }
+
     @Mutation(() => User)
     async createUser(
         @Arg("createUserInput") createUserInput: CreateUserInput,

@@ -86,9 +86,16 @@ export default class UserService {
             await this.createOneUser(signupUserInput);
             return true;
         } catch (err: any) {
-            throw new Error(
-                `error at back/src/user/User.Service.ts - "signup" : ${err.message}`,
-            );
+            throw new Error(err.message);
+        }
+    }
+
+    async logout(ctx: MyContext): Promise<Boolean> {
+        try {
+            sendRefreshToken(ctx.res, "");
+            return true;
+        } catch (err: any) {
+            throw new Error(err.message);
         }
     }
 
