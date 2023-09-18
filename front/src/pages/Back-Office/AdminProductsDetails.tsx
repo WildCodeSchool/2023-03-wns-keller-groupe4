@@ -5,7 +5,6 @@ import { GET_ONE_PRODUCT } from "../../utils/queries";
 
 const AdminProductsDetails = () => {
     const { id } = useParams();
-    console.log(id);
 
     const { loading, error, data } = useQuery(GET_ONE_PRODUCT, {
         variables: { getProductId: id as string },

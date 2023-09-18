@@ -109,7 +109,6 @@ export default class UserService {
                 relations: ["user_profile", "user_profile.lang"],
             });
         } catch (err: any) {
-            console.log();
             throw new Error(err.message);
         }
     }

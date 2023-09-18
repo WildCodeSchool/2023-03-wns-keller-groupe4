@@ -30,7 +30,7 @@ function SignupForm() {
             ) {
                 toast.error("Cet email est déjà utilisé");
             } else {
-                console.log(err.message);
+                console.error(err.message);
                 toast.error("Une erreur est survenue");
             }
         },

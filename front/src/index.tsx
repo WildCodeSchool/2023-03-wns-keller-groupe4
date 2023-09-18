@@ -42,9 +42,6 @@ const errorLink = onError(
         if (graphQLErrors) {
             for (const error of graphQLErrors) {
                 if (error.message.includes("Access denied")) {
-                    console.log("Access denied");
-
-                    // You can return a new observable that retries the operation after refreshing the token
                     return new Observable((observer) => {
                         (async () => {
                             try {

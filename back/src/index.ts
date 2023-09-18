@@ -93,7 +93,7 @@ const start = async (): Promise<void> => {
                 accessToken: createAccessToken(payload.email, user.role),
             });
         } catch (err) {
-            console.log(err);
+            console.error(err);
             return res.send({ ok: false, accessToken: "" });
         }
     });
@@ -107,10 +107,7 @@ const start = async (): Promise<void> => {
             LangResolver,
         ],
         authChecker: ({ context }, roles) => {
-            console.log("roles", roles);
-
             const { email, role } = context.payload;
-            console.log("role", role);
 
             if (email !== undefined) {
                 if (roles.length === 0 || roles.includes(role)) {
@@ -137,7 +134,7 @@ const start = async (): Promise<void> => {
                     const payload = jwt.verify(token, JWT_SECRET);
                     return { req, res, payload };
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                     return { req, res, payload: { email: undefined } };
                 }
             }
