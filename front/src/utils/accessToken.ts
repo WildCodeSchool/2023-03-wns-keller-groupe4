@@ -19,10 +19,13 @@ export const getAccessToken = () => {
 
 export const refreshToken = async () => {
     try {
-        const response = await fetch("http://localhost:4000/refresh_token", {
-            method: "POST",
-            credentials: "include",
-        });
+        const response = await fetch(
+            `${process.env.REACT_APP_SERVER_URL}/refresh_token`,
+            {
+                method: "POST",
+                credentials: "include",
+            },
+        );
 
         const { accessToken } = await response.json();
 

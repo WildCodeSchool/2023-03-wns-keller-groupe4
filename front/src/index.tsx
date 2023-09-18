@@ -23,7 +23,7 @@ const root = ReactDOM.createRoot(
 );
 
 const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: process.env.REACT_APP_SERVER_GRAPHQL_URL!,
     credentials: "include",
 });
 

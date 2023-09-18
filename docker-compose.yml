@@ -20,6 +20,8 @@ services:
 
   frontend:
     build: ./front
+    env_file:
+      - vars.env
     ports:
       - 3000:3000
     volumes:

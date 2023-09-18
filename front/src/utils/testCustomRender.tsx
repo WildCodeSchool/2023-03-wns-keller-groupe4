@@ -14,7 +14,7 @@ import { getAccessToken, refreshToken } from "./accessToken";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: process.env.REACT_APP_SERVER_GRAPHQL_URL!,
     credentials: "include",
 });
 
