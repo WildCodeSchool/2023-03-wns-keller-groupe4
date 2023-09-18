@@ -10,11 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/cors": "^2.8.14",
     "apollo-server": "^3.12.0",
     "apollo-server-express": "^3.12.1",
     "argon2": "^0.30.3",
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "graphql": "^15.8.0",

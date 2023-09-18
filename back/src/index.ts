@@ -21,6 +21,7 @@ import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
 import { User } from "./user/entity/User";
+import cors from "cors";
 
 dotenv.config();
 
@@ -48,6 +49,13 @@ const start = async (): Promise<void> => {
     await dataSource.initialize();
 
     const app = express();
+
+    app.use(
+        cors({
+            origin: "http://localhost:3000",
+            credentials: true,
+        }),
+    );
 
     app.use(cookieParser());
 
@@ -137,7 +145,7 @@ const start = async (): Promise<void> => {
 
     await server.start();
 
-    server.applyMiddleware({ app });
+    server.applyMiddleware({ app, cors: false });
 
     app.listen(4000, () => {
         console.log("express server OPEN");
