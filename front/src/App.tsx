@@ -1,4 +1,7 @@
+import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { refreshToken } from "./utils/accessToken";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 import Layout from "./components/Layout";
 
@@ -12,6 +15,26 @@ import AdminProductsDetails from "./pages/Back-Office/AdminProductsDetails";
 import Stock from "./pages/Back-Office/Stock";
 
 function App() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Refresh token when app is loaded to avoid logout
+    useEffect(() => {
+        refreshToken()
+            .catch((err) => {
+                console.error(err);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+            </div>
+        );
+    }
     return (
         // prettier-ignore
         <Routes>
@@ -24,13 +47,15 @@ function App() {
                 <Route path="/products/list/:categorySlug" element={<ProductsListPage />} />
                 <Route path="/product/:id/:name" element={<ProductDetails />} />
             </Route>
-            <Route path="/admin" element={<Layout isFrontOffice={false} />}>
-                <Route path="/admin/create" element={<CreateProduct />} />
-                <Route path="/admin/product/:id/:name" element={<AdminProductsDetails />} />
-                <Route path="/admin/stock" element={<Stock />} />
-                <Route path="/admin/product/:id/:name" element={<h1>Stock Product</h1>} />
-                <Route path="/admin/reservations" element={<h1>Reservations</h1>} />
-                <Route path="/admin/profile" element={<h1>Admin Profile</h1>} />
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/admin" element={<Layout isFrontOffice={false} />}>
+                    <Route path="/admin/create" element={<CreateProduct />} />
+                    <Route path="/admin/product/:id/:name" element={<AdminProductsDetails />} />
+                    <Route path="/admin/stock" element={<Stock />} />
+                    <Route path="/admin/product/:id/:name" element={<h1>Stock Product</h1>} />
+                    <Route path="/admin/reservations" element={<h1>Reservations</h1>} />
+                    <Route path="/admin/profile" element={<h1>Admin Profile</h1>} />
+                </Route>
             </Route>
         </Routes>
     );
