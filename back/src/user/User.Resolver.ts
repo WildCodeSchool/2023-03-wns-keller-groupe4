@@ -12,25 +12,24 @@ export default class UserResolver {
         this.service = new UserService();
     }
 
-
     @Query(() => User)
     async login(
         @Arg("email") email: string,
-        @Arg("password") password: string
+        @Arg("password") password: string,
     ): Promise<User> {
         return await this.service.login(email, password);
     }
 
     @Mutation(() => User)
     async signup(
-        @Arg("signupUserInput") signupUserInput: SignupUserInput
+        @Arg("signupUserInput") signupUserInput: SignupUserInput,
     ): Promise<User> {
         return await this.service.signup(signupUserInput);
     }
 
     @Mutation(() => User)
     async createUser(
-        @Arg("createUserInput") createUserInput: CreateUserInput
+        @Arg("createUserInput") createUserInput: CreateUserInput,
     ): Promise<User> {
         return await this.service.createOneUser(createUserInput);
     }
@@ -59,15 +58,13 @@ export default class UserResolver {
     @Mutation(() => Boolean)
     async updateUser(
         @Arg("id") id: string,
-        @Arg("updateUserInput") updateUserInput: UpdateUserInput
+        @Arg("updateUserInput") updateUserInput: UpdateUserInput,
     ): Promise<Boolean> {
         return await this.service.updateOneUser(id, updateUserInput);
     }
 
     @Mutation(() => Boolean)
-    async deleteUserById(
-        @Arg("id") id: string
-    ): Promise<Boolean> {
+    async deleteUserById(@Arg("id") id: string): Promise<Boolean> {
         return await this.service.deleteOneUserById(id);
     }
 }

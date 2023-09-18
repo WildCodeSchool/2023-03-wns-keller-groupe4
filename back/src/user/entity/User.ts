@@ -39,8 +39,9 @@ export class User {
     role: EnumRoles;
 
     @Field()
-    @OneToOne((type) => UserProfile, { 
-        cascade: true, onDelete: 'CASCADE' 
+    @OneToOne((type) => UserProfile, {
+        cascade: true,
+        onDelete: "CASCADE",
     })
     @JoinColumn()
     user_profile: UserProfile;
@@ -53,6 +54,6 @@ export class User {
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
-    @Field({nullable: true, description: "readonly"})
+    @Field({ nullable: true, description: "readonly" })
     token?: string;
 }
