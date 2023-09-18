@@ -17,5 +17,14 @@ module.exports = {
                 checksVoidReturn: false,
             },
         ],
+        "@typescript-eslint/restrict-template-expressions": [
+            "error",
+            {
+                allowNumber: true,
+                allowBoolean: true,
+                allowAny: true,
+                allowNullish: true,
+            },
+        ],
     },
 };

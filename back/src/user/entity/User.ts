@@ -30,12 +30,11 @@ export class User {
     @Column({ unique: true })
     email: string;
 
-    @Field()
     @Column()
     hashedPassword: string;
 
     @Field()
-    @Column()
+    @Column({ default: EnumRoles.USER })
     role: EnumRoles;
 
     @Field()
@@ -54,6 +53,6 @@ export class User {
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
-    @Field({ nullable: true, description: "readonly" })
-    token?: string;
+    @Column({ default: 0 })
+    tokenVersion: number;
 }

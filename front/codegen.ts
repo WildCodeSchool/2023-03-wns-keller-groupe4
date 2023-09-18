@@ -1,7 +1,7 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-    schema: "http://backend:4000",
+    schema: "http://backend:4000/graphql",
     documents: ["src/**/*.tsx"],
     generates: {
         "./src/__generated__/": {

@@ -2,8 +2,13 @@ import "reflect-metadata";
 import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
 import dataSource from "./utils";
+import {
+    createAccessToken,
+    createRefreshToken,
+    sendRefreshToken,
+} from "./tokenGeneration";
 import { buildSchema } from "type-graphql";
-import { ApolloServer } from "apollo-server";
+import { ApolloServer } from "apollo-server-express";
 import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
 import { Category } from "./category/entity/Category";
@@ -12,8 +17,18 @@ import { IMockProduct, categoriesNames, mockProducts } from "./mockDataArray";
 import { ProductService } from "./product/Product.Service";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
+import express, { Request, Response } from "express";
+import cookieParser from "cookie-parser";
+import { verify } from "jsonwebtoken";
+import { User } from "./user/entity/User";
 
 dotenv.config();
+
+export interface MyContext {
+    req: Request;
+    res: Response;
+    payload?: { email: string };
+}
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY as string;
 export const DATA_FIXTURE_CATEGORIES = process.env
@@ -31,6 +46,49 @@ if (JWT_SECRET === undefined) {
 
 const start = async (): Promise<void> => {
     await dataSource.initialize();
+
+    const app = express();
+
+    app.use(cookieParser());
+
+    app.get("/", (req, res) => res.send("hello"));
+
+    app.post("/refresh_token", async (req, res) => {
+        const token = req.cookies?.jid;
+
+        if (token === undefined || token === "") {
+            return res.send({ ok: false, accessToken: "" });
+        }
+
+        try {
+            const payload = verify(
+                token,
+                process.env.REFRESH_JWT_SECRET_KEY as string,
+            ) as any;
+
+            const user = await dataSource
+                .getRepository(User)
+                .findOneBy({ email: payload.email });
+
+            if (user === null || user.tokenVersion !== payload.tokenVersion) {
+                return res.send({ ok: false, accessToken: "" });
+            }
+
+            sendRefreshToken(
+                res,
+                createRefreshToken(payload.email, user.role, user.tokenVersion),
+            );
+
+            return res.send({
+                ok: true,
+                accessToken: createAccessToken(payload.email, user.role),
+            });
+        } catch (err) {
+            console.log(err);
+            return res.send({ ok: false, accessToken: "" });
+        }
+    });
+
     const typeGraphQLgeneratedSchema = await buildSchema({
         validate: { forbidUnknownValues: false },
         resolvers: [
@@ -39,33 +97,51 @@ const start = async (): Promise<void> => {
             ProductResolver,
             LangResolver,
         ],
-        authChecker: ({ context }) => {
-            if (context.email !== undefined) {
-                return true;
-            } else {
-                return false;
+        authChecker: ({ context }, roles) => {
+            console.log("roles", roles);
+
+            const { email, role } = context.payload;
+            console.log("role", role);
+
+            if (email !== undefined) {
+                if (roles.length === 0 || roles.includes(role)) {
+                    return true; // Authorized
+                }
             }
+
+            return false; // Not authorized
         },
     });
 
     const server = new ApolloServer({
         schema: typeGraphQLgeneratedSchema,
-        context: ({ req }) => {
+        context: ({ req, res }) => {
+            const { authorization } = req.headers;
             if (
-                req.headers.authorization !== undefined &&
-                req.headers.authorization !== ""
+                authorization === undefined ||
+                !authorization.startsWith("Bearer ")
             ) {
-                const payload = jwt.verify(
-                    req.headers.authorization.split("Bearer ")[1],
-                    JWT_SECRET,
-                );
-                return payload;
+                return { req, res };
+            } else {
+                const token = authorization.split(" ")[1];
+                try {
+                    const payload = jwt.verify(token, JWT_SECRET);
+                    return { req, res, payload };
+                } catch (err) {
+                    console.log(err);
+                    return { req, res };
+                }
             }
-            return {};
         },
     });
 
-    const { url } = await server.listen();
+    await server.start();
+
+    server.applyMiddleware({ app });
+
+    app.listen(4000, () => {
+        console.log("express server OPEN");
+    });
 
     const dataFixture = async (): Promise<void> => {
         if (DATA_FIXTURE_CATEGORIES === "true") {
@@ -150,8 +226,6 @@ const start = async (): Promise<void> => {
     } else {
         console.log("data fixture off");
     }
-    console.log(`🚀  Server ready at ${url}`);
-    // console.log(JWT_SECRET);
 };
 
 void start();

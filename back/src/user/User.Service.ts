@@ -1,14 +1,18 @@
 import * as argon2 from "argon2";
-import * as jwt from "jsonwebtoken";
-
 import dataSource from "../utils";
-import { JWT_SECRET } from "../index";
+import {
+    createAccessToken,
+    createRefreshToken,
+    sendRefreshToken,
+} from "../tokenGeneration";
+import { MyContext } from "../index";
 import { User } from "./entity/User";
 import CreateUserInput from "./inputs/CreateUserInput";
 import { UserProfile } from "./entity/UserProfile";
 import UpdateUserInput from "./inputs/UpdateUserInput";
 import LangResolver from "../lang/Lang.Resolver";
 import SignupUserInput from "./inputs/SignupUserInput";
+import { LoginResponse } from "./User.Resolver";
 
 export default class UserService {
     /**
@@ -35,16 +39,35 @@ export default class UserService {
      * @param password
      * @returns renvois le token si l'authentification réussi, sinon renvois une erreur
      */
-    async login(email: string, password: string): Promise<User> {
+    async login(
+        email: string,
+        password: string,
+        ctx: MyContext,
+    ): Promise<LoginResponse> {
         try {
             const user = await dataSource
                 .getRepository(User)
-                .findOneByOrFail({ email });
+                .findOneBy({ email });
 
-            if (await argon2.verify(user.hashedPassword, password)) {
-                const token = jwt.sign({ email }, JWT_SECRET);
-                return { ...user, token };
-            } else throw new Error("passwords not matching");
+            if (user === null) {
+                throw new Error("User Not found");
+            }
+
+            const verifyPassword = await argon2.verify(
+                user.hashedPassword,
+                password,
+            );
+
+            if (!verifyPassword) {
+                throw new Error("Wrong password");
+            }
+
+            sendRefreshToken(
+                ctx.res,
+                createRefreshToken(email, user.role, user.tokenVersion),
+            );
+
+            return { accessToken: createAccessToken(email, user.role) };
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -55,18 +78,17 @@ export default class UserService {
      * @param signupUserInput
      * @returns renvois le User crée et le token de login
      */
-    async signup(signupUserInput: SignupUserInput): Promise<User> {
+    async signup(signupUserInput: SignupUserInput): Promise<Boolean> {
         try {
             if (signupUserInput.password !== signupUserInput.passwordConfirm)
                 throw new Error("Password and confirm password not matching");
 
-            const userCreated = await this.createOneUser(signupUserInput);
-            return await this.login(
-                userCreated.email,
-                signupUserInput.password,
-            );
+            await this.createOneUser(signupUserInput);
+            return true;
         } catch (err: any) {
-            throw new Error(err.message);
+            throw new Error(
+                `error at back/src/user/User.Service.ts - "signup" : ${err.message}`,
+            );
         }
     }
 
