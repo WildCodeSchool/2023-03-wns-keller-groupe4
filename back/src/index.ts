@@ -22,6 +22,7 @@ import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
 import { User } from "./user/entity/User";
 import cors from "cors";
+import whitelistCORS from "./whitelistCORS";
 
 dotenv.config();
 
@@ -52,7 +53,7 @@ const start = async (): Promise<void> => {
 
     app.use(
         cors({
-            origin: "http://localhost:3000",
+            origin: whitelistCORS,
             credentials: true,
         }),
     );
