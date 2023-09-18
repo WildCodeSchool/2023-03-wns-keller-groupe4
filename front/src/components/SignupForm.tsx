@@ -22,7 +22,7 @@ function SignupForm() {
 
     const [signup] = useMutation(SIGNUP_MUTATION, {
         onCompleted: async () => {
-            navigate("/login");
+            window.location.reload();
         },
         onError: (err) => {
             if (
