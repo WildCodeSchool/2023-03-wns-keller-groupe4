@@ -129,7 +129,7 @@ const start = async (): Promise<void> => {
                 authorization === undefined ||
                 !authorization.startsWith("Bearer ")
             ) {
-                return { req, res };
+                return { req, res, payload: { email: undefined } };
             } else {
                 const token = authorization.split(" ")[1];
                 try {
@@ -137,7 +137,7 @@ const start = async (): Promise<void> => {
                     return { req, res, payload };
                 } catch (err) {
                     console.log(err);
-                    return { req, res };
+                    return { req, res, payload: { email: undefined } };
                 }
             }
         },
