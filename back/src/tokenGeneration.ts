@@ -40,5 +40,8 @@ export const createRefreshToken = (
  * @returns renvois un refreshToken en cookie http only
  */
 export const sendRefreshToken = (res: Response, accessToken: string): void => {
-    res.cookie("jid", accessToken, { httpOnly: true });
+    res.cookie("jid", accessToken, {
+        httpOnly: true,
+        path: "/",
+    });
 };
