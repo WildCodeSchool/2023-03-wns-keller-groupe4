@@ -4,7 +4,6 @@ services:
     env_file:
       - vars.env
     environment:
-      - DATA_FIXTURE=$DATA_FIXTURE
       - DATA_FIXTURE_CATEGORIES=$DATA_FIXTURE_CATEGORIES
       - DATA_FIXTURE_PRODUCTS=$DATA_FIXTURE_PRODUCTS
     ports:
