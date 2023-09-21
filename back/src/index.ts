@@ -22,7 +22,12 @@ import { verify } from "jsonwebtoken";
 import { User } from "./user/entity/User";
 import cors from "cors";
 import whitelistCORS from "./whitelistCORS";
-import { dataFixture, resetMockCategories, resetMockProducts } from "./mock";
+import {
+    dataFixture,
+    resetMockCategories,
+    resetMockProducts,
+    resetMockUsers,
+} from "./mock";
 
 dotenv.config();
 
@@ -145,7 +150,7 @@ const start = async (): Promise<void> => {
         console.log("express server OPEN");
     });
 
-    if (resetMockCategories || resetMockProducts) {
+    if (resetMockCategories || resetMockProducts || resetMockUsers) {
         void dataFixture(categoryRepository, productRepository, productService);
     } else {
         console.log("data fixture off");

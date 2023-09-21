@@ -1,12 +1,19 @@
 import { Repository } from "typeorm";
 import { Category } from "./category/entity/Category";
-import { IMockProduct, categoriesNames, mockProducts } from "./mockDataArray";
+import {
+    IMockProduct,
+    categoriesNames,
+    mockProducts,
+    mockUsers,
+} from "./mockDataArray";
 import { ProductService } from "./product/Product.Service";
+import UserService from "./user/User.Service";
 import { Product } from "./product/entity/Product";
 
 export const resetMockCategories =
     process.env.DATA_FIXTURE_CATEGORIES === "true";
 export const resetMockProducts = process.env.DATA_FIXTURE_PRODUCTS === "true";
+export const resetMockUsers = process.env.DATA_FIXTURE_USERS === "true";
 
 export const dataFixtureWipe = resetMockCategories;
 
@@ -15,7 +22,25 @@ export const dataFixture = async (
     productRepository: Repository<Product>,
     productService: ProductService,
 ): Promise<void> => {
+    if (resetMockUsers) {
+        console.log("resetMockUsers is true");
+
+        for (const user of mockUsers) {
+            const userService = new UserService();
+            try {
+                await userService.getOneUserByEmail(user.email);
+            } catch (error: any) {
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                if (!error.message.includes("not find")) {
+                    console.error(error.message);
+                }
+                await userService.createOneUser(user);
+            }
+        }
+    }
+
     if (resetMockCategories) {
+        console.log("resetMockCategories is true");
         // This creates the different categories, to add one simply modify the JSON in mockData.ts
         for (let index = 0; index < categoriesNames.length; index++) {
             await categoryRepository.save({
@@ -26,6 +51,7 @@ export const dataFixture = async (
 
     // The issue is all the mock data for products doesn't have category provided. In the case where the category property of a product is a null array this aims to finds the matching category using the products name
     if (resetMockProducts) {
+        console.log("resetMockProducts is true");
         // This is getting all the categories previously created so we can bind them to the products
         const categories = await categoryRepository.find();
 
