@@ -21,7 +21,7 @@ services:
 
   frontend:
     build: ./front
-    command: sh -c "npm run build"
+    command: sh -c "npm run compile && npm run build"
     environment:
       - REACT_APP_API_URL=/graphql
     volumes:
