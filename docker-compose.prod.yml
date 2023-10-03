@@ -2,6 +2,8 @@ services:
   backend:
     build: ./back
     command: sh -c "npm run build && npm run prod"
+    env_file:
+      - vars.env
     expose:
       - 4000
     environment:
@@ -20,6 +22,8 @@ services:
   frontend:
     build: ./front
     command: sh -c "npm run build"
+    environment:
+      - REACT_APP_API_URL=/graphql
     volumes:
       - web-client-build:/app/build
     depends_on:
@@ -31,8 +35,6 @@ services:
     restart: always
     env_file:
       - vars.env
-    volumes:
-      - postgres:/var/lib/postgresql/data
 
   adminer:
     image: adminer
