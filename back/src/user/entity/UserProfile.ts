@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+} from "typeorm";
 import { Field, ObjectType } from "type-graphql";
 import { Lang } from "../../lang/entity/Lang";
 
@@ -18,7 +24,9 @@ export class UserProfile {
     lastname: string;
 
     @Field({ nullable: true })
-    @Column({ nullable: true, type: "timestamptz" })
+    // commented out because of non supported type by test sqlite db
+    // @Column({ nullable: true, type: "timestamptz" })
+    @Column({ nullable: true })
     birthday: Date;
 
     @Field({ nullable: true })
@@ -34,7 +42,7 @@ export class UserProfile {
     country: string;
 
     @Field({ nullable: true })
-    @ManyToOne((type) => Lang, (lang) => lang.user_profiles, {nullable: true})
+    @ManyToOne(() => Lang, (lang) => lang.user_profiles, { nullable: true })
     @JoinColumn()
     lang: Lang;
 }

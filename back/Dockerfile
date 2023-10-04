@@ -12,6 +12,8 @@ COPY package-lock.json package-lock.json
 RUN npm install
 
 COPY tsconfig.json tsconfig.json
+COPY jest.config.js jest.config.js
+COPY setupTests.ts setupTests.ts
 
 COPY src src
 

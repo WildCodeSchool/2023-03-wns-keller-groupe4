@@ -39,20 +39,25 @@ export class User {
     role: EnumRoles;
 
     @Field()
-    @OneToOne((type) => UserProfile, { 
-        cascade: true, onDelete: 'CASCADE' 
+    @OneToOne((type) => UserProfile, {
+        cascade: true,
+        onDelete: "CASCADE",
     })
     @JoinColumn()
     user_profile: UserProfile;
 
     @Field()
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column()
     created_at: Date;
 
     @Field()
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column()
     updated_at: Date;
 
-    @Field({nullable: true, description: "readonly"})
+    @Field({ nullable: true, description: "readonly" })
     token?: string;
 }
