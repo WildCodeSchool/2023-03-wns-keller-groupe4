@@ -63,6 +63,8 @@ export class CategoryService {
         updateCategorieInput: UpdateCategoryInput,
     ): Promise<Category> {
         try {
+            console.log(id);
+
             await this.categoryRepository.update({ id }, updateCategorieInput);
 
             const foundCategory = await this.categoryRepository.findOneOrFail({

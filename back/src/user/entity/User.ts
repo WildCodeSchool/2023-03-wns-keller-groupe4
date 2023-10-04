@@ -55,11 +55,15 @@ export class User {
     reservations: Reservation[];
 
     @Field()
-    @Column({ default: () => "CURRENT_TIMESTAMP" })
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column()
     created_at: Date;
 
     @Field()
-    @Column({ default: () => "CURRENT_TIMESTAMP" })
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column()
     updated_at: Date;
 
     @Column({ default: 0 })
