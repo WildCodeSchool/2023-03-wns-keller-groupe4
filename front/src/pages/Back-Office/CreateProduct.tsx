@@ -52,7 +52,9 @@ const CreateProduct = () => {
         });
 
         if (newProduct.data) {
-            navigate(`/admin/stock/${newProduct.data.createProduct.id}`);
+            navigate(
+                `/admin/product/${newProduct.data.createProduct.id}/${newProduct.data.createProduct.name}`,
+            );
         }
         // TODO: handle error (toast ?)
     };
