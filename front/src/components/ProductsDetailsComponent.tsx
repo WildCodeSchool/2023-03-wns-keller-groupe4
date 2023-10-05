@@ -5,6 +5,9 @@ import convertBase64 from "../utils/convertBase64";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PRODUCT } from "../utils/mutations";
 import { GET_ONE_PRODUCT } from "../utils/queries";
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { isWithinInterval } from "date-fns";
 
 export interface IProductProps {
     id: string;
@@ -26,6 +29,31 @@ interface IFormUpdateProduct {
     image?: FileList;
     stock?: number;
     available?: boolean;
+}
+
+// Calendar reservation
+// List of unavailables dates of the product
+const disabledRanges = [
+    [new Date(2023,9,6), new Date(2023,9,11)],
+];
+
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+const tileDisabled = ({ date, view }:any) => {
+    // Add class to tiles in month view only
+    if (view === 'month') {
+      // Check if a date React-Calendar wants to check is within any of the ranges
+      return isWithinRanges(date, disabledRanges);
+    }
+}
+
+const isWithinRange = (date:any, range:any) => {
+    return isWithinInterval(date, { start: range[0], end: range[1] });
+}
+  
+const isWithinRanges = (date:any, ranges:any) => {
+    return ranges.some((range: any) => isWithinRange(date, range));
 }
 
 // This component is Used both for front and back office. For a non admin user it will just display product detail, for an admin it will give the user the possibility to update the product.
@@ -100,10 +128,12 @@ const ProductsDetailsComponent = ({
     const buttonState = available ? false : true;
 
     // Image
-
     const [image, setImage] = useState(picture);
     const [open, setOpen] = useState(false);
     const cancelButtonRef = useRef(null);
+
+    // Calendar reservations
+    const [date, onChange] = useState<Value>(new Date());
 
     // ******************************This is the componnent when used in the back office, for front office use scroll down**************************
     if (isAdmin === true) {
@@ -607,7 +637,7 @@ const ProductsDetailsComponent = ({
                             <div className="flex">
                                 {/* Price */}
                                 <span className="title-font font-medium text-3xl text-gray-900">{ price } €</span>
-                                <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded" 
+                                <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
                                     // disabled={buttonState}
                                     onClick={() => { setOpen(true)}}>
                                     Reservation
@@ -673,18 +703,15 @@ const ProductsDetailsComponent = ({
                                                     as="h3"
                                                     className="text-base font-semibold leading-6 text-gray-900"
                                                 >
-                                                    Le produit {name} a été
-                                                    ajouté au panier
+                                                    <p className="text-center">Dates de réservation souhaitées<br /><span className="text-blue-600">{name}</span></p>
                                                 </Dialog.Title>
                                                 <div className="mt-2">
-                                                    <p className="text-sm text-gray-500">
-                                                        Vous pouvez à présent
-                                                        vous rendre dans votre
-                                                        panier de produits pour
-                                                        confirmer votre/vos
-                                                        réservations ou
-                                                        continuer vos achats.
+                                                    <p className="text-sm text-gray-500 text-center">
+                                                        Veuillez choisir votre durée de location.
                                                     </p>
+                                                </div>
+                                                <div className="mt-2">
+                                                    <Calendar onChange={onChange} value={date} tileDisabled={tileDisabled} selectRange />
                                                 </div>
                                             </div>
                                         </div>
