@@ -9,16 +9,23 @@ import { UpdateProductInput } from "./inputs/UpdateProductInput";
 export class ProductService {
     productRepository;
     categoryService;
-    constructor(productRepository?: any) {
-        this.categoryService = new CategoryService();
-        this.productRepository = dataSource.getRepository(Product);
+    constructor(
+        productRepository?: Repository<Product>,
+        categoryService?: CategoryService,
+    ) {
+        this.categoryService =
+            categoryService !== undefined
+                ? categoryService
+                : new CategoryService();
+        this.productRepository =
+            productRepository !== undefined
+                ? productRepository
+                : dataSource.getRepository(Product);
     }
 
     async getAllProducts(
         getProductsInput?: GetProductsInput,
     ): Promise<Product[]> {
-        console.log("productRepository", this.productRepository);
-
         if (getProductsInput === undefined) {
             try {
                 const products = await this.productRepository.find({

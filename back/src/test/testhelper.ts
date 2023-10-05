@@ -7,36 +7,21 @@ import { Product } from "../product/entity/Product";
 import { User } from "../user/entity/User";
 import { UserProfile } from "../user/entity/UserProfile";
 
-export class TestHelper {
-    private static _instance: TestHelper;
+let inMemoryDb: any;
+export function testDbSetupt(): DataSource {
+    inMemoryDb = new Database(":memory:", { verbose: console.log });
 
-    constructor() {
-        this.testDatasource = new DataSource({
-            type: "sqlite",
-            database: ":memory:",
-            dropSchema: true,
-            entities: [User, UserProfile, Lang, Category, Product],
-            synchronize: true,
-            logging: false,
-        });
-    }
+    const testDatasource = new DataSource({
+        type: "sqlite",
+        database: ":memory:",
+        entities: [User, UserProfile, Lang, Category, Product],
+        synchronize: true,
+        logging: ["error", "query"],
+    });
 
-    public static get instance(): TestHelper {
-        this._instance = new TestHelper();
+    return testDatasource;
+}
 
-        return this._instance;
-    }
-
-    private testdb!: any;
-    public testDatasource!: DataSource;
-
-    setupTestDB(): void {
-        this.testdb = new Database(":memory:", { verbose: console.log });
-    }
-
-    async teardownTestDB(): Promise<void> {
-        // await this.Datasource.dropDatabase();
-        // this.testdb.close();
-        console.log(this.testdb);
-    }
+export function testDbTeardown(): void {
+    inMemoryDb.close();
 }

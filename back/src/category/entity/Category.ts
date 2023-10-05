@@ -15,5 +15,5 @@ export class Category {
 
     @Field(() => [Product])
     @ManyToMany(() => Product, (product) => product.categories, { eager: true })
-    products: Product[];
+    products?: Product[];
 }
