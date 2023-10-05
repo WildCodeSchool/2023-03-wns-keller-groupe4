@@ -10,6 +10,7 @@ import {
 import { Field, ObjectType } from "type-graphql";
 import { Category } from "../../category/entity/Category";
 import { ReservationDetail } from "../../reservation/entity/ReservationDetail";
+import { ReservationDetail } from "../../reservation/entity/ReservationDetail";
 
 @ObjectType()
 @Entity()
