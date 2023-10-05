@@ -4,10 +4,12 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ObjectType } from "type-graphql";
 import { Category } from "../../category/entity/Category";
+import { ReservationDetail } from "../../reservation/entity/ReservationDetail";
 
 @ObjectType()
 @Entity()
@@ -58,4 +60,7 @@ export class Product {
     @ManyToMany(() => Category, (category) => category.products)
     @JoinTable()
     categories: Category[];
+
+    @OneToMany(() => ReservationDetail, detail => detail.product, { cascade: true })
+    productsDetails: ReservationDetail[];
 }
