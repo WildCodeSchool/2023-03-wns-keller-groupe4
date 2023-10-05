@@ -23,7 +23,7 @@ const root = ReactDOM.createRoot(
 );
 
 const httpLink = createHttpLink({
-    uri: process.env.REACT_APP_API_URL,
+    uri: `${process.env.REACT_APP_API_URL}/graphql`,
     credentials: "include",
 });
 
@@ -77,12 +77,6 @@ const client = new ApolloClient({
 });
 
 root.render(
-    <BrowserRouter>
-        <ApolloProvider client={client}>
-            <App />
-            <ToastContainer position="bottom-center" />
-        </ApolloProvider>
-    </BrowserRouter>,
     <BrowserRouter>
         <ApolloProvider client={client}>
             <App />
