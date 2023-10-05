@@ -3,7 +3,7 @@ import UserService from "../user/User.Service";
 import dataSource from "../utils";
 import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
-import ProductReservationInput from "./inputs/ProductReservationInput";
+import DetailReservationInput from "./inputs/DetailReservationInput";
 
 
 export default class ReservationService {
@@ -170,20 +170,25 @@ export default class ReservationService {
      * @param products tableau de d'id de produit + quantité
      * @returns renvois le nouvel état de la réservation
     */
-    async updateProductsQuantitiesFromOneReservation(id: string, products: ProductReservationInput[]): Promise<Reservation> {
+    async updateDetailFromOneReservation(reservation_id: string, detail: DetailReservationInput): Promise<Reservation> {
         try {
-            const reservation = await this.getOneReservationById(id);
-            for (const product of products) {
-                const found = reservation.reservationsDetails.find((detail) => detail.product.id === product.id);
-                // si notre produit existe déjà, alors on modifie juste la quantité
-                if (found !== undefined) found.quantity = product.quantity;
-                // sinon on le rajoute 
-                else reservation.reservationsDetails = [...reservation.reservationsDetails, {
-                    quantity: product.quantity,
-                    reservation,
-                    product: await this.productService.getOneProduct(product.id),
-                }]
+            const reservation = await this.getOneReservationById(reservation_id);
+            const found = reservation.reservationsDetails.find((item) => item.product.id === detail.product_id);
+            // si notre produit existe déjà, alors on modifie juste la quantité
+            if (found !== undefined) {
+                found.quantity = detail.quantity;
+                found.start_at = detail.start_at;
+                found.end_at = detail.end_at;
             }
+            // sinon on le rajoute 
+            else reservation.reservationsDetails = [...reservation.reservationsDetails, {
+                quantity: detail.quantity,
+                reservation,
+                product: await this.productService.getOneProduct(detail.product_id),
+                start_at: detail.start_at,
+                end_at: detail.end_at,
+            }]
+
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message)

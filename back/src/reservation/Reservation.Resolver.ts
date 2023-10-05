@@ -2,7 +2,7 @@ import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import ReservationService from "./Reservation.Service";
 import CreateReservationInput from "./inputs/CreateReservationInput";
-import ProductReservationInput from "./inputs/ProductReservationInput";
+import DetailReservationInput from "./inputs/DetailReservationInput";
 
 @Resolver()
 export default class ReservationResolver {
@@ -72,11 +72,11 @@ export default class ReservationResolver {
     }
 
     @Mutation(() => Reservation)
-    async updateProductsQuantitiesFromReservation(
+    async updateDetailFromReservation(
         @Arg("id") id: string,
-        @Arg("products", (type) => [ProductReservationInput]) products: ProductReservationInput[]
+        @Arg("detail", (type) => DetailReservationInput) detail: DetailReservationInput
     ): Promise<Reservation> {
-        return await this.service.updateProductsQuantitiesFromOneReservation(id, products);
+        return await this.service.updateDetailFromOneReservation(id, detail);
     }
 
     @Mutation(() => Reservation)

@@ -18,6 +18,14 @@ export class ReservationDetail {
     @Column()
     quantity: number;
 
+    @Field()
+    @Column({ type: "timestamptz" })
+    start_at: Date;
+
+    @Field()
+    @Column({ type: "timestamptz" })
+    end_at: Date;
+
     @Field(() => Product)
     @ManyToOne(() => Product, (product) => product.productsDetails)
     product: Product
