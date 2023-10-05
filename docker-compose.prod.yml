@@ -1,14 +1,15 @@
 services:
   backend:
     build: ./back
+    command: sh -c "npm run build && npm run prod"
     env_file:
       - vars.env
+    expose:
+      - 4000
     environment:
       - DATA_FIXTURE=$DATA_FIXTURE
       - DATA_FIXTURE_CATEGORIES=$DATA_FIXTURE_CATEGORIES
       - DATA_FIXTURE_PRODUCTS=$DATA_FIXTURE_PRODUCTS
-    ports:
-      - 4000:4000
     volumes:
       - ./back/src:/app/src
     healthcheck:
@@ -20,12 +21,11 @@ services:
 
   frontend:
     build: ./front
-    ports:
-      - 3000:3000
+    command: sh -c "npm run compile && npm run build"
     environment:
-      - REACT_APP_API_URL=http://localhost:4000
+      - REACT_APP_API_URL=/graphql
     volumes:
-      - ./front/src:/app/src
+      - web-client-build:/app/build
     depends_on:
       backend:
         condition: service_healthy
@@ -35,8 +35,6 @@ services:
     restart: always
     env_file:
       - vars.env
-    volumes:
-      - postgres:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -44,5 +42,18 @@ services:
     ports:
       - 8080:8080
 
+  nginx:
+    image: nginx:1.21.3
+    depends_on:
+      - backend
+      - frontend
+    restart: always
+    ports:
+      - ${GATEWAY_PORT:-8000}:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - web-client-build:/web-client-build
+      - ./logs:/var/log/nginx
+
 volumes:
-  postgres:
+  web-client-build:
