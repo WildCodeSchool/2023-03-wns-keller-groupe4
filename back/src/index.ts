@@ -11,9 +11,6 @@ import { buildSchema } from "type-graphql";
 import { ApolloServer } from "apollo-server-express";
 import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
-import { Category } from "./category/entity/Category";
-import { Product } from "./product/entity/Product";
-import { ProductService } from "./product/Product.Service";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
 import express, { Request, Response } from "express";
@@ -27,7 +24,7 @@ import {
     resetMockCategories,
     resetMockProducts,
     resetMockUsers,
-} from "./mock";
+} from "./fixtures";
 
 dotenv.config();
 
@@ -36,10 +33,6 @@ export interface MyContext {
     res: Response;
     payload?: { email: string };
 }
-
-const categoryRepository = dataSource.getRepository(Category);
-const productRepository = dataSource.getRepository(Product);
-const productService = new ProductService();
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY as string;
 
@@ -151,7 +144,7 @@ const start = async (): Promise<void> => {
     });
 
     if (resetMockCategories || resetMockProducts || resetMockUsers) {
-        void dataFixture(categoryRepository, productRepository, productService);
+        void dataFixture();
     } else {
         console.log("data fixture off");
     }

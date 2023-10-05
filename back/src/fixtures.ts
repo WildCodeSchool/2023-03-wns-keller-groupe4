@@ -1,4 +1,3 @@
-import { Repository } from "typeorm";
 import { Category } from "./category/entity/Category";
 import {
     IMockProduct,
@@ -9,6 +8,7 @@ import {
 import { ProductService } from "./product/Product.Service";
 import UserService from "./user/User.Service";
 import { Product } from "./product/entity/Product";
+import dataSource from "./utils";
 
 export const resetMockCategories =
     process.env.DATA_FIXTURE_CATEGORIES === "true";
@@ -17,11 +17,7 @@ export const resetMockUsers = process.env.DATA_FIXTURE_USERS === "true";
 
 export const dataFixtureWipe = resetMockCategories;
 
-export const dataFixture = async (
-    categoryRepository: Repository<Category>,
-    productRepository: Repository<Product>,
-    productService: ProductService,
-): Promise<void> => {
+export const dataFixture = async (): Promise<void> => {
     if (resetMockUsers) {
         console.log("resetMockUsers is true");
 
@@ -39,6 +35,8 @@ export const dataFixture = async (
         }
     }
 
+    const categoryRepository = dataSource.getRepository(Category);
+
     if (resetMockCategories) {
         console.log("resetMockCategories is true");
         // This creates the different categories, to add one simply modify the JSON in mockData.ts
@@ -52,6 +50,8 @@ export const dataFixture = async (
     // The issue is all the mock data for products doesn't have category provided. In the case where the category property of a product is a null array this aims to finds the matching category using the products name
     if (resetMockProducts) {
         console.log("resetMockProducts is true");
+        const productService = new ProductService();
+
         // This is getting all the categories previously created so we can bind them to the products
         const categories = await categoryRepository.find();
 
@@ -83,6 +83,7 @@ export const dataFixture = async (
         });
 
         // At this stage our products have categories so we can insert them in our database using a method from our productService
+
         const allDbProducts = await productService.getAllProducts();
 
         for (const productsToInsert of poductsWithCategories) {
@@ -101,6 +102,8 @@ export const dataFixture = async (
             });
 
             if (productAlreadyExists === undefined) {
+                const productRepository = dataSource.getRepository(Product);
+
                 const newProduct = await productService.createNewProduct({
                     stock,
                     price,
@@ -110,6 +113,7 @@ export const dataFixture = async (
                     picture,
                     category: categories,
                 });
+
                 await productRepository.save(newProduct);
             }
         }
