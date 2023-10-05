@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { PrevButton } from "./tools/PrevButton";
 import { Dialog, Transition } from '@headlessui/react'
 import convertBase64 from "../utils/convertBase64";
@@ -8,6 +8,8 @@ import { GET_ONE_PRODUCT } from "../utils/queries";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { isWithinInterval } from "date-fns";
+import { set } from "react-hook-form";
+import { on } from "events";
 
 export interface IProductProps {
     id: string;
@@ -120,6 +122,15 @@ const ProductsDetailsComponent = ({
         }
     };
 
+    // Data of product added to cart
+    const addToCart = (date:any, quantity:number) => {
+        let dateStart = date[0];
+        let dateEnd = date[1];
+        alert(quantity + " produit en cours de réservation du " + dateStart + " au " + dateEnd);
+        setOpen(false);
+        initFormState();
+    }
+
     // Description
     description = description !== "" ? description : "No description available";
 
@@ -133,7 +144,40 @@ const ProductsDetailsComponent = ({
     const cancelButtonRef = useRef(null);
 
     // Calendar reservations
-    const [date, onChange] = useState<Value>(new Date());
+    const [date, onDateChange] = useState<Value>();
+    console.log(date);
+
+    // Form elements initialization
+    const initFormState = () => {
+        setSelectedQuantity(0);
+        setDisabledConfirmButton(true);
+        setDisabledQuantity(true);
+        setOptions([0]);
+        onDateChange(undefined);
+    }
+
+    // Quantity and states (enabled or disabled)
+    const [quantity, setQuantity] = useState(5);
+    const [selectedQuantity, setSelectedQuantity] = useState(0);
+    const [disabledQuantity, setDisabledQuantity] = useState(true);
+    const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
+    const [options, setOptions] = useState([0]); 
+
+    useEffect(() => {
+        // If there is a quantity and a date range is selected then we update options values with quantity
+        if (quantity > 0 && typeof date !== 'undefined') {
+            for (let i = 1; i <= quantity; i++) {
+                options.push(i);
+            }
+            setDisabledQuantity(false);
+            // If selected quantity is > 0 then we enable the confirm button
+            if (selectedQuantity > 0) setDisabledConfirmButton(false);
+        } else {
+            initFormState();
+        }
+    }, [quantity, selectedQuantity, date]);
+    
+
 
     // ******************************This is the componnent when used in the back office, for front office use scroll down**************************
     if (isAdmin === true) {
@@ -648,7 +692,7 @@ const ProductsDetailsComponent = ({
                 </div>
             </section>
 
-            {/* Add To Cart Modal */}
+            {/* Add-To-Cart and calendar reservation Modal */}
             <Transition.Root show={open} as={Fragment}>
                 <Dialog
                     as="div"
@@ -682,21 +726,11 @@ const ProductsDetailsComponent = ({
                                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                         <div className="sm:flex sm:items-start">
-                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.5"
-                                                    stroke="currentColor"
-                                                    className="w-6 h-6 font-medium"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-                                                    />
-                                                </svg>
+                                            <div className="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-15 sm:w-15">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-12 h-12">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                                            </svg>
+
                                             </div>
                                             <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                                 <Dialog.Title
@@ -707,51 +741,47 @@ const ProductsDetailsComponent = ({
                                                 </Dialog.Title>
                                                 <div className="mt-2">
                                                     <p className="text-sm text-gray-500 text-center">
-                                                        Veuillez choisir votre durée de location.
+                                                        Veuillez choisir la durée de location.
                                                     </p>
                                                 </div>
                                                 <div className="mt-2">
-                                                    <Calendar onChange={onChange} value={date} tileDisabled={tileDisabled} selectRange />
+                                                    <Calendar 
+                                                        onChange={onDateChange} 
+                                                        minDate={new Date()}
+                                                        value={date} 
+                                                        tileDisabled={tileDisabled} 
+                                                        selectRange 
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
-                                    <h4 className="text-base font-semibold leading-4 text-gray-500 sm:pl-20 pt-5">
-                                        Votre panier contient{" "}
-                                    </h4>
-                                    <div className="flex ps-5 pe-10 md:px-20 lg:px-24 pt-5 pb-10 text-gray-500">
-                                        <div className="flex-1">
-                                            <span className="font-semibold">
-                                                Articles :{" "}
-                                            </span>
-                                            1
+                                    <div className="flex flex-wrap bg-gray-50 px-4 py-3 sm:px-6 text-center">
+                                        <div className="w-full md:w-1/2">
+                                            <select className="appearance-none bg-white border border-gray-400 hover:border-gray-500 px-3 py-2 ms-[90px] rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                                                onChange={(e) => setSelectedQuantity(parseInt(e.target.value))}
+                                                disabled={disabledQuantity}
+                                            >
+                                                <option value="" key="0">Quantité désirée</option>
+                                                {options.map((qty) => {
+                                                    return (
+                                                        <option value={qty} key={qty}>
+                                                            {qty}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
                                         </div>
-                                        <div className="flex-1 text-right">
-                                            <span className="font-semibold">
-                                                Total :{" "}
-                                            </span>{" "}
-                                            {price} €
+                                        <div className="w-full md:w-1/2">
+                                            <button
+                                                type="button"
+                                                className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto mx-auto"
+                                                onClick={() => addToCart(date, selectedQuantity)}
+                                                disabled={disabledConfirmButton}
+                                            >
+                                                Ajouter au panier
+                                            </button>
                                         </div>
-                                    </div>
-
-                                    <hr />
-                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={() => setOpen(false)}
-                                        >
-                                            Voir mon panier
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                            onClick={() => setOpen(false)}
-                                            ref={cancelButtonRef}
-                                        >
-                                            Ajouter d'autres produits
-                                        </button>
                                     </div>
                                 </Dialog.Panel>
                             </Transition.Child>
