@@ -1,9 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import AuthService, { IClientData } from "../utils/authService";
 import { SIGNUP_MUTATION } from "../utils/mutations";
 
 interface IFormSignup {
@@ -13,7 +11,6 @@ interface IFormSignup {
 }
 
 function SignupForm() {
-    const navigate = useNavigate();
     const {
         register,
         watch,
@@ -22,9 +19,8 @@ function SignupForm() {
     } = useForm<IFormSignup>();
 
     const [signup] = useMutation(SIGNUP_MUTATION, {
-        onCompleted: async ({ signup }: { signup: IClientData }) => {
-            AuthService.login(signup);
-            navigate("/");
+        onCompleted: async () => {
+            window.location.reload();
         },
         onError: (err) => {
             if (
@@ -34,7 +30,7 @@ function SignupForm() {
             ) {
                 toast.error("Cet email est déjà utilisé");
             } else {
-                console.log(err.message);
+                console.error(err.message);
                 toast.error("Une erreur est survenue");
             }
         },
