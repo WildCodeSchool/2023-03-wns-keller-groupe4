@@ -25,6 +25,7 @@ import {
     resetMockProducts,
     resetMockUsers,
 } from "./fixtures";
+import ReservationResolver from "./reservation/Reservation.Resolver";
 
 dotenv.config();
 
@@ -99,6 +100,7 @@ const start = async (): Promise<void> => {
             CategoryResolver,
             ProductResolver,
             LangResolver,
+            ReservationResolver
         ],
         authChecker: ({ context }, roles) => {
             const { email, role } = context.payload;
