@@ -20,7 +20,7 @@ export const getIDToken = () => {
 export const refreshToken = async () => {
     try {
         const response = await fetch(
-            `${process.env.REACT_APP_SERVER_URL}/refresh_token`,
+            `${process.env.REACT_APP_API_URL}/refresh_token`,
             {
                 method: "POST",
                 credentials: "include",

@@ -14,7 +14,7 @@ import { getIDToken, refreshToken } from "./jwtHandler";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = createHttpLink({
-    uri: process.env.REACT_APP_SERVER_GRAPHQL_URL!,
+    uri: `${process.env.REACT_APP_API_URL}/graphql`,
     credentials: "include",
 });
 
