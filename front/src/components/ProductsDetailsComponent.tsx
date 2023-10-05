@@ -1,5 +1,4 @@
 import { Fragment, useRef, useState } from "react";
-import defaultImage from "./../assets/products/default.png";
 import { PrevButton } from "./tools/PrevButton";
 import { Dialog, Transition } from '@headlessui/react'
 import convertBase64 from "../utils/convertBase64";
@@ -76,7 +75,7 @@ const ProductsDetailsComponent = ({
             });
             togglingUpdate();
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
