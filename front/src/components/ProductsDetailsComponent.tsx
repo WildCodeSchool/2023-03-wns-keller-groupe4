@@ -1,12 +1,11 @@
 import { Fragment, useRef, useState } from "react";
 import defaultImage from "./../assets/products/default.png";
 import { PrevButton } from "./tools/PrevButton";
-import { Dialog, Transition } from "@headlessui/react";
-import { useMutation } from "@apollo/client";
+import { Dialog, Transition } from '@headlessui/react'
 import convertBase64 from "../utils/convertBase64";
-import { GET_ONE_PRODUCT } from "../utils/queries";
+import { useMutation } from "@apollo/client";
 import { UPDATE_PRODUCT } from "../utils/mutations";
-// import {gql} from "../__generated__";
+import { GET_ONE_PRODUCT } from "../utils/queries";
 
 export interface IProductProps {
     id: string;
@@ -608,16 +607,10 @@ const ProductsDetailsComponent = ({
                             <div className="flex mt-2 items-center pb-5 border-b-2 border-gray-200 mb-5"></div>
                             <div className="flex">
                                 {/* Price */}
-                                <span className="title-font font-medium text-3xl text-gray-900">
-                                    {price} €
-                                </span>
-                                <button
-                                    className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded disabled:bg-red-200"
-                                    disabled={buttonState}
-                                    onClick={() => {
-                                        setOpen(true);
-                                    }}
-                                >
+                                <span className="title-font font-medium text-3xl text-gray-900">{ price } €</span>
+                                <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded" 
+                                    // disabled={buttonState}
+                                    onClick={() => { setOpen(true)}}>
                                     Reservation
                                 </button>
                             </div>
