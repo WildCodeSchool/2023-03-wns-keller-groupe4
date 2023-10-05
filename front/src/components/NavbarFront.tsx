@@ -15,11 +15,11 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
             <nav className="flex items-center justify-between">
                 {/* Open Menu Toggle */}
                 <div className="flex items-center gap-4">
-                    <Link to={"/"}>
+                    {/* <Link to={"/"}>
                         <button className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block">
                             Accueil
                         </button>
-                    </Link>
+                    </Link> */}
                     <button
                         className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
                         onClick={() => setOpenNav(!openNav)}
