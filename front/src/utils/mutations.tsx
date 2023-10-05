@@ -2,11 +2,7 @@ import { gql } from "../__generated__";
 
 export const SIGNUP_MUTATION = gql(`
   mutation Signup($signupUserInput: SignupUserInput!) {
-    signup(signupUserInput: $signupUserInput) {
-      email
-      token
-      role
-    }
+    signup(signupUserInput: $signupUserInput)
   }
 `);
 
@@ -24,5 +20,11 @@ mutation UpdateProduct($updateProductInput: UpdateProductInput!, $updateProductI
 	updateProduct(updateProductInput: $updateProductInput, id: $updateProductId) {
 	  name
 	}
+  }
+`);
+
+export const LOGOUT = gql(`
+  mutation Mutation {
+    logout
   }
 `);

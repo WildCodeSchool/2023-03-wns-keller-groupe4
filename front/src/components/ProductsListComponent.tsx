@@ -18,7 +18,7 @@ const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
             }
         })
         .catch((err) => {
-            console.log(err);
+            console.error(err);
         });
 
     const [image, setImage] = useState(picture);
