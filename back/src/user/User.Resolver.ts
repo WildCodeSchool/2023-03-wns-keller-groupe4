@@ -17,7 +17,7 @@ import { MyContext } from "..";
 @ObjectType()
 export class LoginResponse {
     @Field()
-    accessToken: string;
+    IDToken: string;
 }
 
 @Resolver()

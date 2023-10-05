@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import { GoPerson } from "react-icons/go";
 import { FaShoppingCart } from "react-icons/fa";
-import { getAccessToken } from "../utils/accessToken";
+import { getIDToken } from "../utils/jwtHandler";
 
 interface INavbarFrontProps {
     openNav: boolean;
@@ -75,7 +75,7 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
 
                 {/* User */}
                 <div className="flex gap-4">
-                    <Link to={getAccessToken() ? "/profile" : "/connect"}>
+                    <Link to={getIDToken() ? "/profile" : "/connect"}>
                         <GoPerson
                             aria-label="Go to profile page"
                             className="cursor-pointer"

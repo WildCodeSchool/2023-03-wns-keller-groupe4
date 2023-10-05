@@ -1,12 +1,12 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { decodeToken, getAccessToken } from "./accessToken";
+import { decodeToken, getIDToken } from "./jwtHandler";
 
 interface ProtectedRouteProps {
     allowedRoles: string[];
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-    const token = getAccessToken();
+    const token = getIDToken();
     const location = useLocation();
 
     if (!token) {

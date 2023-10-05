@@ -10,9 +10,9 @@ if (JWT_SECRET === undefined || REFRESH_JWT_SECRET === undefined) {
 
 /**
  * @param email
- * @returns renvois un accessToken
+ * @returns renvois un IDToken
  */
-export const createAccessToken = (email: string, role: string): string => {
+export const createIDToken = (email: string, role: string): string => {
     return sign({ email, role }, JWT_SECRET, {
         expiresIn: "15m",
     });
@@ -36,11 +36,11 @@ export const createRefreshToken = (
 /**
  *
  * @param res
- * @param accessToken
+ * @param refreshToken
  * @returns renvois un refreshToken en cookie http only
  */
-export const sendRefreshToken = (res: Response, accessToken: string): void => {
-    res.cookie("jid", accessToken, {
+export const sendRefreshToken = (res: Response, refreshToken: string): void => {
+    res.cookie("jid", refreshToken, {
         httpOnly: true,
         path: "/",
     });

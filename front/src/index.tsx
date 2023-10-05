@@ -16,7 +16,7 @@ import App from "./App";
 
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
-import { getAccessToken, refreshToken } from "./utils/accessToken";
+import { getIDToken, refreshToken } from "./utils/jwtHandler";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement,
@@ -28,7 +28,7 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-    const token = getAccessToken();
+    const token = getIDToken();
     return {
         headers: {
             ...headers,

@@ -6,7 +6,7 @@ export const LOGIN_GUERY = gql(`
     $password: String!
   ) {
     login(password: $password, email: $email) {
-    accessToken
+      IDToken
   }
   }
 `);

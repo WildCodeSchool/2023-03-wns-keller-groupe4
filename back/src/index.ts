@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
 import dataSource from "./utils";
 import {
-    createAccessToken,
+    createIDToken,
     createRefreshToken,
     sendRefreshToken,
 } from "./tokenGeneration";
@@ -60,7 +60,7 @@ const start = async (): Promise<void> => {
         const token = req.cookies?.jid;
 
         if (token === undefined || token === "") {
-            return res.send({ ok: false, accessToken: "" });
+            return res.send({ ok: false, IDToken: "" });
         }
 
         try {
@@ -74,7 +74,7 @@ const start = async (): Promise<void> => {
                 .findOneBy({ email: payload.email });
 
             if (user === null || user.tokenVersion !== payload.tokenVersion) {
-                return res.send({ ok: false, accessToken: "" });
+                return res.send({ ok: false, IDToken: "" });
             }
 
             sendRefreshToken(
@@ -84,11 +84,11 @@ const start = async (): Promise<void> => {
 
             return res.send({
                 ok: true,
-                accessToken: createAccessToken(payload.email, user.role),
+                IDToken: createIDToken(payload.email, user.role),
             });
         } catch (err) {
             console.error(err);
-            return res.send({ ok: false, accessToken: "" });
+            return res.send({ ok: false, IDToken: "" });
         }
     });
 

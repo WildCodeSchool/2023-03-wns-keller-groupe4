@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import { refreshToken } from "./utils/accessToken";
+import { refreshToken } from "./utils/jwtHandler";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
 import Layout from "./components/Layout";

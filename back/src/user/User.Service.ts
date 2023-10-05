@@ -1,7 +1,7 @@
 import * as argon2 from "argon2";
 import dataSource from "../utils";
 import {
-    createAccessToken,
+    createIDToken,
     createRefreshToken,
     sendRefreshToken,
 } from "../tokenGeneration";
@@ -67,7 +67,7 @@ export default class UserService {
                 createRefreshToken(email, user.role, user.tokenVersion),
             );
 
-            return { accessToken: createAccessToken(email, user.role) };
+            return { IDToken: createIDToken(email, user.role) };
         } catch (err: any) {
             throw new Error(err.message);
         }

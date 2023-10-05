@@ -7,14 +7,14 @@ interface IPayload {
     exp: number;
 }
 
-let accessToken = "";
+let IDToken = "";
 
-export const setAccessToken = (token: string) => {
-    accessToken = token;
+export const setIDToken = (token: string) => {
+    IDToken = token;
 };
 
-export const getAccessToken = () => {
-    return accessToken;
+export const getIDToken = () => {
+    return IDToken;
 };
 
 export const refreshToken = async () => {
@@ -27,9 +27,9 @@ export const refreshToken = async () => {
             },
         );
 
-        const { accessToken } = await response.json();
+        const { IDToken } = await response.json();
 
-        setAccessToken(accessToken);
+        setIDToken(IDToken);
     } catch (error: any) {
         throw Error(error);
     }

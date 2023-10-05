@@ -10,7 +10,7 @@ import {
     Observable,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { getAccessToken, refreshToken } from "./accessToken";
+import { getIDToken, refreshToken } from "./jwtHandler";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = createHttpLink({
@@ -19,7 +19,7 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-    const token = getAccessToken();
+    const token = getIDToken();
     return {
         headers: {
             ...headers,
