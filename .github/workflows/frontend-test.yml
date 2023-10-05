@@ -40,4 +40,4 @@ jobs:
 
       - name: Wait for tests to complete
         run: |
-          until docker-compose logs frontend 2>&1 | grep -q "Test suite passed"; do sleep 5; done
+          until docker-compose logs frontend 2>&1 | grep -q "Ran all test suites."; do sleep 5; done
