@@ -20,6 +20,7 @@ export const dataFixtureWipe = resetMockCategories;
 export const dataFixture = async (): Promise<void> => {
     if (resetMockUsers) {
         console.log("resetMockUsers is true");
+        console.log("mockUsers", mockUsers);
 
         for (const user of mockUsers) {
             const userService = new UserService();
