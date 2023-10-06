@@ -12,8 +12,14 @@ if (JWT_SECRET === undefined || REFRESH_JWT_SECRET === undefined) {
  * @param email
  * @returns renvois un IDToken
  */
-export const createIDToken = (email: string, role: string): string => {
-    return sign({ email, role }, JWT_SECRET, {
+export const createIDToken = (
+    email: string,
+    userId: string,
+    firstname: string,
+    lastname: string,
+    role: string,
+): string => {
+    return sign({ email, userId, firstname, lastname, role }, JWT_SECRET, {
         expiresIn: "15m",
     });
 };
@@ -26,12 +32,19 @@ export const createIDToken = (email: string, role: string): string => {
  */
 export const createRefreshToken = (
     email: string,
+    userId: string,
+    firstname: string,
+    lastname: string,
     role: string,
     tokenVersion: number,
 ): string => {
-    return sign({ email, role, tokenVersion }, REFRESH_JWT_SECRET, {
-        expiresIn: "7d",
-    });
+    return sign(
+        { email, userId, firstname, lastname, role, tokenVersion },
+        REFRESH_JWT_SECRET,
+        {
+            expiresIn: "7d",
+        },
+    );
 };
 /**
  *

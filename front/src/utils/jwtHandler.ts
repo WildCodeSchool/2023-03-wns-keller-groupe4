@@ -2,6 +2,9 @@ import jwtDecode from "jwt-decode";
 
 interface IPayload {
     email: string;
+    userId: string;
+    firstname: string;
+    lastname: string;
     role: string;
     iat: number;
     exp: number;
