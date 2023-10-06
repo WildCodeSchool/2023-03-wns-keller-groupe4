@@ -2,11 +2,13 @@ import {
     Column,
     Entity,
     JoinColumn,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { UserProfile } from "./UserProfile";
+import { Reservation } from "../../reservation/entity/Reservation";
 
 export enum EnumRoles {
     SUPERADMIN = "superAdmin",
@@ -44,6 +46,15 @@ export class User {
     })
     @JoinColumn()
     user_profile: UserProfile;
+
+    @Field(() => [Reservation], { nullable: true })
+    @OneToMany(
+        (type) => Reservation,
+        (reservation) => reservation.user,
+        { nullable: true }
+    )
+    @JoinColumn()
+    reservations: Reservation[];
 
     @Field()
     @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })

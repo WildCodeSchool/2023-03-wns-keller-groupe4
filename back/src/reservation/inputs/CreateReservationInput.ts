@@ -7,15 +7,9 @@ import { ReservationDetail } from "../entity/ReservationDetail";
 @InputType()
 export default class CreateReservationInput {
     @Field()
-    start_at: Date;
-
-    @Field()
-    end_at: Date;
-
-    @Field(() => UserReservationInput)
-    user: User;
+    user_id: string;
 
     reservationsDetails: ReservationDetail[] = []
 
-    status: EnumStatusReservation = EnumStatusReservation.BUILDING;
+    status: EnumStatusReservation = EnumStatusReservation.IN_CART;
 }

@@ -19,18 +19,23 @@ export default class ReservationService {
     */
     async createOneReservation(createReservationInput: CreateReservationInput): Promise<Reservation> {
         try {
-            //  vérifie si la date de début est bien inférieure à la date de fin
-            const { start_at, end_at } = createReservationInput;
-            if (start_at.getTime() >= end_at.getTime()) {
-                throw new Error(
-                    `Start time of the reservation can't be greater or equal to the end time : 
-                    ${start_at.toISOString() + ' >= ' + end_at.toISOString()}`
-                )
-            }
 
-            const newReservation = { ...createReservationInput, reservationsDetails: [] };
-            newReservation.user = await this.userService.getOneUserById(createReservationInput.user.id);
-            return await this.repository.save({ ...newReservation });
+            const cart_already_exists = await this.repository.findOne({
+                relations: this.relations,
+                where: {
+                    user: {
+                        id: createReservationInput.user_id
+                    },
+                    status: EnumStatusReservation.IN_CART
+                },
+            }) ?? false;
+            // Si le user possède déjà un panier, on jette une erreur
+            if (cart_already_exists) throw new Error("User already has a cart");
+
+            let newReservation = new Reservation();
+            newReservation = { ...newReservation, ...createReservationInput, reservationsDetails: [] }
+            newReservation.user = await this.userService.getOneUserById(createReservationInput.user_id);
+            return await this.repository.save(newReservation);
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -84,7 +89,7 @@ export default class ReservationService {
                     user: {
                         id
                     },
-                    status: EnumStatusReservation.BUILDING
+                    status: EnumStatusReservation.IN_CART
                 },
             })
         } catch (err: any) {

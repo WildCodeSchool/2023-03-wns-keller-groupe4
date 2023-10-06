@@ -12,11 +12,11 @@ import { ReservationDetail } from "./ReservationDetail";
 
 
 export enum EnumStatusReservation {
-    BUILDING = "building",
+    IN_CART = "in_cart",
     PAYING = "paying",
-    PROCESSING = "processing",
+    IN_PREPARATION = "in_preparation",
     READY = "ready",
-    TAKEN = "taken",
+    WITHDRAWED = "withdrawed",
     RETURNED = "returned",
 }
 
@@ -33,12 +33,12 @@ export class Reservation {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Field()
-    @Column({ type: "timestamptz" })
+    @Field({ nullable: true })
+    @Column({ type: "timestamptz", nullable: true })
     start_at: Date;
 
-    @Field()
-    @Column({ type: "timestamptz" })
+    @Field({ nullable: true })
+    @Column({ type: "timestamptz", nullable: true })
     end_at: Date;
 
     @Field()
