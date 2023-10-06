@@ -1,10 +1,10 @@
 name: 🧪- tests frontend
 
 on:
-  push
-  # pull_request:
-  #   branches:
-  #     - dev
+  pull_request:
+    branches:
+      - dev
+      # push
 
 jobs:
   tests-frontend:
