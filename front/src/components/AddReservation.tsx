@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useMutation } from "@apollo/client";
-// import { CREATE_RESERVATION } from "../../utils/mutations";
+import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
 import { Dialog, Transition } from '@headlessui/react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -44,11 +44,6 @@ const AddReservation = ({
     setOpenModal
 }: IProduct) => {
 
-    // Create reservation
-    // const [addToReservation, { data, error, loading }] = useMutation(CREATE_RESERVATION, {
-        
-    // });
-
     // Calendar reservations
     const [date, onDateChange] = useState<Value>();
     console.log(date);
@@ -69,7 +64,6 @@ const AddReservation = ({
     const [disabledQuantity, setDisabledQuantity] = useState(true);
     const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
     const [options, setOptions] = useState([0]); 
-    // const [openModal, setOpenModal] = useState(false);
     const cancelButtonRef = useRef(null);
 
     useEffect(() => {
@@ -89,20 +83,37 @@ const AddReservation = ({
     }, [quantity, selectedQuantity, date, openModal]);
 
     // Add product to cart
-    const addToCart = (productId:string, quantity:number, date:any) => {
+    const addToCart = async (productId:string, quantity:number, date:any) => {
         let reservationId = 1;
         let dateStart = date[0];
         let dateEnd = date[1];
         alert(quantity + " produit en cours de réservation du " + dateStart + " au " + dateEnd + " pour le produit id " + productId);
-        addToReservation({ 
-            details: { 
-                product_id: productId,
-                quantity:  quantity,
-                start_at: dateStart,
-                end_at: dateEnd
-            },
-            updateDetailFromReservationId: reservationId
-        });
+        
+        // // Create and update cart
+        // const [createCart] = useMutation(CREATE_CART);
+        // const [updateCart] = useMutation(UPDATE_CART);
+
+        // const createReservationInput = {
+        //     user_id: "a85ae2bc-9765-4ad8-a30b-f4b949550e8c",
+        // };
+
+        // const updateDetailFromReservation = {
+        //     updateDetailFromReservationId: reservationId,
+        //     detail: {
+        //         quantity:  quantity,
+        //         start_at: dateStart,
+        //         end_at: dateEnd,
+        //         product_id: productId,
+        //     }
+        // }
+
+        // const newCart = await createCart({ 
+        //     variables: { createReservationInput } 
+        // });
+
+        // const updateCart = await updateCart({ 
+        //     variables: { updateDetailFromReservation }
+        // });
         setOpenModal(false);
         initFormState();
     }
