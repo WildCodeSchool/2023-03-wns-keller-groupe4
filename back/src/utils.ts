@@ -5,6 +5,8 @@ import { User } from "./user/entity/User";
 import { Category } from "./category/entity/Category";
 import { Product } from "./product/entity/Product";
 import { dataFixtureWipe } from "./fixtures";
+import { Reservation } from "./reservation/entity/Reservation";
+import { ReservationDetail } from "./reservation/entity/ReservationDetail";
 
 console.log("dataFixtureWipe", dataFixtureWipe);
 
@@ -17,7 +19,7 @@ const dataSource = new DataSource({
     password: process.env.POSTGRES_PASSWORD,
     database: "postgres",
     synchronize: true,
-    entities: [User, UserProfile, Lang, Product, Category],
+    entities: [User, UserProfile, Lang, Product, Category, Reservation, ReservationDetail],
     dropSchema: dataFixtureWipe,
 });
 

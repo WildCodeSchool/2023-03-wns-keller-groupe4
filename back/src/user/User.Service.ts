@@ -15,19 +15,18 @@ import SignupUserInput from "./inputs/SignupUserInput";
 import { LoginResponse } from "./User.Resolver";
 
 export default class UserService {
+    repository = dataSource.getRepository(User);
+    relations = ["user_profile.lang", "reservations.reservationsDetails.product"]
+
     /**
-     * Créer un User
-     * @param createUserInput
+     * Créer un User 
+     * @param createUserInput 
      * @returns renvois le User crée
-     */
+    */
     async createOneUser(createUserInput: CreateUserInput): Promise<User> {
         try {
-            createUserInput.hashedPassword = await argon2.hash(
-                createUserInput.password,
-            );
-            return await dataSource
-                .getRepository(User)
-                .save({ ...createUserInput });
+            createUserInput.hashedPassword = await argon2.hash(createUserInput.password);
+            return await this.repository.save({ ...createUserInput });
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -45,9 +44,7 @@ export default class UserService {
         ctx: MyContext,
     ): Promise<LoginResponse> {
         try {
-            const user = await dataSource
-                .getRepository(User)
-                .findOneBy({ email });
+            const user = await this.repository.findOneBy({ email });
 
             if (user === null) {
                 throw new Error("User Not found");
@@ -101,14 +98,15 @@ export default class UserService {
 
     /**
      * Renvois un tableau de tous les users
-     * @returns User[]
-     */
+     * @returns User[] 
+    */
     async getAllUsers(): Promise<User[]> {
         try {
-            return await dataSource.getRepository(User).find({
-                relations: ["user_profile", "user_profile.lang"],
+            return await this.repository.find({
+                relations: this.relations,
             });
         } catch (err: any) {
+            console.log()
             throw new Error(err.message);
         }
     }
@@ -117,11 +115,11 @@ export default class UserService {
      * Renvois un utilisateur via son id
      * @param id - uuid de l'user a modifier
      * @returns User
-     */
+    */
     async getOneUserById(id: string): Promise<User> {
         try {
-            return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang"],
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
                 where: { id },
             });
         } catch (err: any) {
@@ -133,11 +131,11 @@ export default class UserService {
      * Renvois un utilisateur via son email
      * @param email - email de l'user a modifier
      * @returns User
-     */
+    */
     async getOneUserByEmail(email: string): Promise<User> {
         try {
-            return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang"],
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
                 where: { email },
             });
         } catch (err: any) {
@@ -145,48 +143,44 @@ export default class UserService {
         }
     }
 
+
     /**
      * Modifie un user
      * @param id - uuid de l'user a modifier
-     * @param updateUserInput
+     * @param updateUserInput 
      * @returns - true si la modification a réussi, sinon renvois une erreur
-     */
-    async updateOneUser(
-        id: string,
-        updateUserInput: UpdateUserInput,
-    ): Promise<Boolean> {
+    */
+    async updateOneUser(id: string, updateUserInput: UpdateUserInput): Promise<Boolean> {
         try {
             const userToUpdate = await this.getOneUserById(id);
 
             if (updateUserInput.lang_id !== undefined) {
-                updateUserInput.lang = await new LangResolver().getLangById(
-                    updateUserInput.lang_id,
-                );
+                updateUserInput.lang = await (new LangResolver().getLangById(updateUserInput.lang_id));
             }
-            // on supprimme détruit la propriété lang_id poiur ne pas
-            // qu'elle soit pris en compte par la class UserProfile, sinon une erreur apollo apparait
+            // on supprimme détruit la propriété lang_id poiur ne pas 
+            // qu'elle soit pris en compte par la class UserProfile, sinon une erreur apollo apparait 
             // @ts-expect-error
             delete updateUserInput.lang_id;
 
-            await dataSource
-                .getRepository(UserProfile)
+            const result = await dataSource.getRepository(UserProfile)
                 .update({ id: userToUpdate.user_profile.id }, updateUserInput);
 
-            return true;
+            return typeof result.affected === "number" && result.affected > 0;
         } catch (err: any) {
             throw new Error(err.message);
         }
     }
 
+
     /**
      * Supprime une entité user via son id
      * @param id uuid de la ligne bdd du user à supprimer
      * @returns Promise< bool> : si la suppression a bien réussi
-     */
+    */
     async deleteOneUserById(id: string): Promise<Boolean> {
         try {
             const userToDelete = await this.getOneUserById(id);
-            await dataSource.getRepository(User).remove(userToDelete);
+            await this.repository.remove(userToDelete);
             return true;
         } catch (err: any) {
             throw new Error(err.message);
