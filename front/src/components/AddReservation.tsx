@@ -1,11 +1,12 @@
 import { Fragment, useEffect, useRef, useState } from "react";
+import { useMutation } from "@apollo/client";
+// import { CREATE_RESERVATION } from "../../utils/mutations";
 import { Dialog, Transition } from '@headlessui/react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { isWithinInterval } from "date-fns";
-
 interface IProduct {
-    id: string;
+    productId: string;
     name: string;
     openModal: boolean;
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,11 +38,16 @@ const isWithinRanges = (date:any, ranges:any) => {
 }
 
 const AddReservation = ({ 
-    id, 
+    productId, 
     name,
     openModal,
     setOpenModal
 }: IProduct) => {
+
+    // Create reservation
+    // const [addToReservation, { data, error, loading }] = useMutation(CREATE_RESERVATION, {
+        
+    // });
 
     // Calendar reservations
     const [date, onDateChange] = useState<Value>();
@@ -82,11 +88,21 @@ const AddReservation = ({
         else setOpenModal(false);
     }, [quantity, selectedQuantity, date, openModal]);
 
-    // Data of product added to cart
-    const addToCart = (date:any, quantity:number) => {
+    // Add product to cart
+    const addToCart = (productId:string, quantity:number, date:any) => {
+        let reservationId = 1;
         let dateStart = date[0];
         let dateEnd = date[1];
-        alert(quantity + " produit en cours de réservation du " + dateStart + " au " + dateEnd);
+        alert(quantity + " produit en cours de réservation du " + dateStart + " au " + dateEnd + " pour le produit id " + productId);
+        addToReservation({ 
+            details: { 
+                product_id: productId,
+                quantity:  quantity,
+                start_at: dateStart,
+                end_at: dateEnd
+            },
+            updateDetailFromReservationId: reservationId
+        });
         setOpenModal(false);
         initFormState();
     }
@@ -177,7 +193,7 @@ const AddReservation = ({
                                             <button
                                                 type="button"
                                                 className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto mx-auto"
-                                                onClick={() => addToCart(date, selectedQuantity)}
+                                                onClick={() => addToCart(productId, selectedQuantity, date)}
                                                 disabled={disabledConfirmButton}
                                             >
                                                 Ajouter au panier

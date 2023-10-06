@@ -621,7 +621,7 @@ const ProductsDetailsComponent = ({
 
             {/* Reservation form */}
             <AddReservation
-                id = {id}
+                productId = {id}
                 name = {name}
                 openModal = {openModal}
                 setOpenModal = {setOpenModal}
