@@ -36,8 +36,4 @@ jobs:
 
       - name: Run npm test in frontend container
         run: |
-          docker-compose exec -d frontend npm run test
-
-      - name: Wait for tests to complete
-        run: |
-          until docker-compose logs frontend 2>&1 | grep -q "Ran all test suites."; do sleep 5; done
+          docker-compose exec frontend npm run test
