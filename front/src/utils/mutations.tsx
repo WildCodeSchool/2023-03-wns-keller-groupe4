@@ -32,17 +32,7 @@ export const LOGOUT = gql(`
 export const CREATE_CART = gql(`
   mutation CreateReservation($createReservationInput: CreateReservationInput!) {
     createReservation(createReservationInput: $createReservationInput) {
-      user {
-        id
-      }
-      reservationsDetails {
-        quantity
-        start_at
-        end_at
-        product {
-          id
-        }
-      }
+      id
     }
   }
 `);

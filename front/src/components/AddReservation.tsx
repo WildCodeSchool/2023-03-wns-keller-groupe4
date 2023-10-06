@@ -1,10 +1,12 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
+import { GET_CART_BY_USER } from "../utils/queries";
 import { Dialog, Transition } from '@headlessui/react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { isWithinInterval } from "date-fns";
+
 interface IProduct {
     productId: string;
     name: string;
@@ -14,13 +16,20 @@ interface IProduct {
 
 // Calendar reservation
 // List of unavailables dates of the product
+// TODO: Fetch unavailable dates from API
 const disabledRanges = [
     [new Date(2023,9,6), new Date(2023,9,11)],
 ];
 
 type ValuePiece = Date | null;
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+type DateValue = ValuePiece | [ValuePiece, ValuePiece];
+type AddToCartType = {
+    productId: string, 
+    selectedQuantity: number, 
+    date: any
+};
 
+// Calendar : Disabled dates
 const tileDisabled = ({ date, view }:any) => {
     // Add class to tiles in month view only
     if (view === 'month') {
@@ -28,13 +37,11 @@ const tileDisabled = ({ date, view }:any) => {
       return isWithinRanges(date, disabledRanges);
     }
 }
-
-const isWithinRange = (date:any, range:any) => {
+const isWithinRange = (date:Date, range:Date[]) => {
     return isWithinInterval(date, { start: range[0], end: range[1] });
 }
-  
-const isWithinRanges = (date:any, ranges:any) => {
-    return ranges.some((range: any) => isWithinRange(date, range));
+const isWithinRanges = (date:Date, ranges:any) => {
+    return ranges.some((range: Date[]) => isWithinRange(date, range));
 }
 
 const AddReservation = ({ 
@@ -45,10 +52,9 @@ const AddReservation = ({
 }: IProduct) => {
 
     // Calendar reservations
-    const [date, onDateChange] = useState<Value>();
-    console.log(date);
+    const [date, onDateChange] = useState<DateValue>();
 
-    // Form elements initialization
+    // Form elements initialization : reset form after a product is added to cart
     const initFormState = () => {
         setOpenModal(false);
         setSelectedQuantity(0);
@@ -59,7 +65,7 @@ const AddReservation = ({
     }
 
     // Quantity and states (enabled or disabled)
-    const [quantity, setQuantity] = useState(5);
+    const [quantity, setQuantity] = useState(5); // TODO: Refetch quantity on date change
     const [selectedQuantity, setSelectedQuantity] = useState(0);
     const [disabledQuantity, setDisabledQuantity] = useState(true);
     const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
@@ -82,40 +88,56 @@ const AddReservation = ({
         else setOpenModal(false);
     }, [quantity, selectedQuantity, date, openModal]);
 
-    // Add product to cart
-    const addToCart = async (productId:string, quantity:number, date:any) => {
-        let reservationId = 1;
-        let dateStart = date[0];
-        let dateEnd = date[1];
-        alert(quantity + " produit en cours de réservation du " + dateStart + " au " + dateEnd + " pour le produit id " + productId);
+    // Add a product to cart
+    const GetCartByUser = useQuery(GET_CART_BY_USER, {
+        variables: { getCartReservationOfUserId: "a85ae2bc-9765-4ad8-a30b-f4b949550e8c" },
+    });
+    const [createCart] = useMutation(CREATE_CART);
+    const [updateCart] = useMutation(UPDATE_CART);
+
+    const AddToCart = async (FormData:AddToCartType) => {
+        let cartId = "";
+        let productId = FormData.productId;
+        let quantity = FormData.selectedQuantity;
+        let dateStart = null
+        let dateEnd = null
+        if(FormData.date && typeof FormData.date[0] != 'undefined' && typeof FormData.date[1] != 'undefined') { 
+            dateStart = FormData.date[0].toLocaleString("en-US", {timeZone: "Europe/Paris"});
+            dateEnd = FormData.date[1].toLocaleString("en-US", {timeZone: "Europe/Paris"});
+        } else {
+            return;
+        }
         
-        // // Create and update cart
-        // const [createCart] = useMutation(CREATE_CART);
-        // const [updateCart] = useMutation(UPDATE_CART);
-
-        // const createReservationInput = {
-        //     user_id: "a85ae2bc-9765-4ad8-a30b-f4b949550e8c",
-        // };
-
-        // const updateDetailFromReservation = {
-        //     updateDetailFromReservationId: reservationId,
-        //     detail: {
-        //         quantity:  quantity,
-        //         start_at: dateStart,
-        //         end_at: dateEnd,
-        //         product_id: productId,
-        //     }
-        // }
-
-        // const newCart = await createCart({ 
-        //     variables: { createReservationInput } 
-        // });
-
-        // const updateCart = await updateCart({ 
-        //     variables: { updateDetailFromReservation }
-        // });
+        // Retrieve existing cart or create a new one if not exist
+        if(GetCartByUser.data) {
+            cartId = GetCartByUser.data.getCartReservationOfUser.id;
+        } else {
+            const createReservationInput = {
+                user_id: "a85ae2bc-9765-4ad8-a30b-f4b949550e8c",
+            };
+            const newCart = await createCart({ 
+                variables: { createReservationInput } 
+            });
+    
+            if(newCart.data) cartId = newCart.data.createReservation.id;
+        }
+        
+        // Update cart with new product
+        const updateDetailFromReservation = {
+            updateDetailFromReservationId: cartId,
+            detail: {
+                quantity:  selectedQuantity,
+                start_at: dateStart,
+                end_at: dateEnd,
+                product_id: productId,
+            }
+        }
+        const newUpdateCart = await updateCart({ 
+            variables: { ...updateDetailFromReservation }
+        });
         setOpenModal(false);
         initFormState();
+        alert(quantity + " produit ajouté au panier pour une location du " + dateStart + " au " + dateEnd + ". Produit id " + productId);
     }
 
     return (
@@ -204,7 +226,7 @@ const AddReservation = ({
                                             <button
                                                 type="button"
                                                 className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto mx-auto"
-                                                onClick={() => addToCart(productId, selectedQuantity, date)}
+                                                onClick={() => AddToCart({ productId, selectedQuantity, date })}
                                                 disabled={disabledConfirmButton}
                                             >
                                                 Ajouter au panier
@@ -222,31 +244,3 @@ const AddReservation = ({
 };
 
 export default AddReservation;
-
-
-
-
-
-
-    // const [date, setDate] = useState(new Date());
-    // const [addReservation] = useMutation(ADD_RESERVATION);
-    // const onChange = (date:Value) => {
-    //     setDate(date as Date);
-    // }
-    // const onSubmit = (e:any) => {
-    //     e.preventDefault();
-    //     addReservation({ variables: { id, date } });
-    // }
-
-    // return (
-    //     <div>
-    //         <form onSubmit={onSubmit}>
-    //             <Calendar
-    //                 onChange={onChange}
-    //                 value={date}
-    //                 tileDisabled={tileDisabled}
-    //             />
-    //             <button type="submit">Add reservation</button>
-    //         </form>
-    //     </div>
-    // );
