@@ -189,6 +189,15 @@ export default class ReservationService {
                 end_at: detail.end_at,
             }]
 
+            //  vérifie si la date de début est bien inférieure à la date de fin
+            const { start_at, end_at } = detail;
+            if (start_at.getTime() >= end_at.getTime()) {
+                throw new Error(
+                    `Start time of the product can't be greater or equal to the end time : 
+                    ${start_at.toISOString() + ' >= ' + end_at.toISOString()}`
+                )
+            }
+
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message)
