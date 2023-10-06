@@ -611,7 +611,7 @@ const ProductsDetailsComponent = ({
                                 </span>
                                 <button
                                     className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
-                                    // disabled={buttonState}
+                                    disabled={buttonState}
                                     onClick={() => {
                                         setOpen(true);
                                     }}

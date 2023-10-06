@@ -28,7 +28,7 @@ jobs:
 
       - name: Start Docker Compose
         run: |
-          DATA_FIXTURE_CATEGORIES=true DATA_FIXTURE_PRODUCTS=true docker compose up --build -d
+          DATA_FIXTURE_CATEGORIES=true DATA_FIXTURE_PRODUCTS=true DATA_FIXTURE_USERS=true docker compose up --build -d
 
       - name: Wait for frontend container to be healthy
         run: |
@@ -36,4 +36,4 @@ jobs:
 
       - name: Run npm test in frontend container
         run: |
-          docker-compose exec -T frontend npm run test
+          docker-compose exec -T frontend npm run testCI
