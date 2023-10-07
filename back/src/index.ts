@@ -80,12 +80,25 @@ const start = async (): Promise<void> => {
 
             sendRefreshToken(
                 res,
-                createRefreshToken(payload.email, user.role, user.tokenVersion),
+                createRefreshToken(
+                    payload.email,
+                    user.id,
+                    user.user_profile?.firstname || "",
+                    user.user_profile?.lastname || "",
+                    user.role,
+                    user.tokenVersion,
+                ),
             );
 
             return res.send({
                 ok: true,
-                IDToken: createIDToken(payload.email, user.role),
+                IDToken: createIDToken(
+                    payload.email,
+                    user.id,
+                    user.user_profile?.firstname || "",
+                    user.user_profile?.lastname || "",
+                    user.role,
+                ),
             });
         } catch (err) {
             console.error(err);
@@ -100,7 +113,7 @@ const start = async (): Promise<void> => {
             CategoryResolver,
             ProductResolver,
             LangResolver,
-            ReservationResolver
+            ReservationResolver,
         ],
         authChecker: ({ context }, roles) => {
             const { email, role } = context.payload;
