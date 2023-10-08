@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { PrevButton } from "./tools/PrevButton";
 import convertBase64 from "../utils/convertBase64";
 import { useMutation } from "@apollo/client";
