@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import { GoPerson } from "react-icons/go";
 import { FaShoppingCart } from "react-icons/fa";
-import AuthService from "../utils/authService";
+import { getIDToken } from "../utils/jwtHandler";
 
 interface INavbarFrontProps {
     openNav: boolean;
@@ -15,11 +15,11 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
             <nav className="flex items-center justify-between">
                 {/* Open Menu Toggle */}
                 <div className="flex items-center gap-4">
-                    <Link to={"/"}>
+                    {/* <Link to={"/"}>
                         <button className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block">
                             Accueil
                         </button>
-                    </Link>
+                    </Link> */}
                     <button
                         className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
                         onClick={() => setOpenNav(!openNav)}
@@ -75,13 +75,7 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
 
                 {/* User */}
                 <div className="flex gap-4">
-                    <Link
-                        to={
-                            AuthService.getClientData()
-                                ? "/profile"
-                                : "/connect"
-                        }
-                    >
+                    <Link to={getIDToken() ? "/profile" : "/connect"}>
                         <GoPerson
                             aria-label="Go to profile page"
                             className="cursor-pointer"

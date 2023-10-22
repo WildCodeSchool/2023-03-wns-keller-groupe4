@@ -1,15 +1,20 @@
 import {
+    Check,
     Column,
     Entity,
     JoinTable,
     ManyToMany,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ObjectType } from "type-graphql";
 import { Category } from "../../category/entity/Category";
+import { ReservationDetail } from "../../reservation/entity/ReservationDetail";
 
 @ObjectType()
 @Entity()
+@Check(`"stock" >= 0 `)
+@Check(`"price" >= 0 `)
 export class Product {
     @Field()
     @PrimaryGeneratedColumn("uuid")
@@ -61,4 +66,9 @@ export class Product {
     })
     @JoinTable()
     categories: Category[];
+
+    @OneToMany(() => ReservationDetail, (detail) => detail.product, {
+        cascade: true,
+    })
+    productsDetails: ReservationDetail[];
 }

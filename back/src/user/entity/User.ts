@@ -2,11 +2,13 @@ import {
     Column,
     Entity,
     JoinColumn,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { UserProfile } from "./UserProfile";
+import { Reservation } from "../../reservation/entity/Reservation";
 
 export enum EnumRoles {
     SUPERADMIN = "superAdmin",
@@ -30,12 +32,11 @@ export class User {
     @Column({ unique: true })
     email: string;
 
-    @Field()
     @Column()
     hashedPassword: string;
 
     @Field()
-    @Column()
+    @Column({ default: EnumRoles.USER })
     role: EnumRoles;
 
     @Field()
@@ -45,6 +46,13 @@ export class User {
     })
     @JoinColumn()
     user_profile: UserProfile;
+
+    @Field(() => [Reservation], { nullable: true })
+    @OneToMany((type) => Reservation, (reservation) => reservation.user, {
+        nullable: true,
+    })
+    @JoinColumn()
+    reservations: Reservation[];
 
     @Field()
     // commented out because of non supported type "timestamptz" by test sqlite db
@@ -58,6 +66,6 @@ export class User {
     @Column()
     updated_at: Date;
 
-    @Field({ nullable: true, description: "readonly" })
-    token?: string;
+    @Column({ default: 0 })
+    tokenVersion: number;
 }

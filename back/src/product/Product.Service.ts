@@ -1,4 +1,4 @@
-import { ILike, Repository } from "typeorm";
+import { ILike, Repository, In } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import dataSource from "../utils";
 import { Product } from "./entity/Product";
@@ -83,14 +83,24 @@ export class ProductService {
         }
     }
 
+    async getProductsById(ProductsIds: string[]): Promise<Product[]> {
+        try {
+            const products = await this.productRepository.findBy({
+                id: In(ProductsIds),
+            });
+
+            return products;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
     async getOneProduct(id: string): Promise<Product> {
         try {
             const product = await this.productRepository.findOneOrFail({
                 where: { id },
                 relations: { categories: true },
             });
-
-            console.log("insideGetOneProduct", product.categories);
 
             return product;
         } catch (err: any) {

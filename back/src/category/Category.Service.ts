@@ -63,8 +63,6 @@ export class CategoryService {
         updateCategorieInput: UpdateCategoryInput,
     ): Promise<Category> {
         try {
-            console.log(id);
-
             await this.categoryRepository.update({ id }, updateCategorieInput);
 
             const foundCategory = await this.categoryRepository.findOneOrFail({
@@ -82,7 +80,6 @@ export class CategoryService {
     async deleteOneCategory(id: string): Promise<boolean> {
         try {
             await this.categoryRepository.delete({ id });
-            console.log(await this.categoryRepository.delete({ id }));
             // TODO check the DeleteResult Obj to verify that the deletion took place before returning true
 
             return true;

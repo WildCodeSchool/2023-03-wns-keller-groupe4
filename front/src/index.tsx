@@ -1,43 +1,86 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
+import {
+    ApolloClient,
+    ApolloLink,
+    ApolloProvider,
+    InMemoryCache,
+    Observable,
+    createHttpLink,
+} from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 
 import App from "./App";
-import AuthService from "./utils/authService";
 
 import "./index.css";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+import { getIDToken, refreshToken } from "./utils/jwtHandler";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+    document.getElementById("root") as HTMLElement,
 );
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000",
+    uri: `${process.env.REACT_APP_API_URL}/graphql`,
+    credentials: "include",
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = AuthService.getClientData()?.token;
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : "",
-    },
-  };
+    const token = getIDToken();
+    return {
+        headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : "",
+        },
+    };
 });
 
+const errorLink = onError(
+    ({ graphQLErrors, networkError, operation, forward }) => {
+        if (graphQLErrors) {
+            for (const error of graphQLErrors) {
+                if (error.message.includes("Access denied")) {
+                    return new Observable((observer) => {
+                        (async () => {
+                            try {
+                                await refreshToken();
+                                const subscriber = {
+                                    next: observer.next.bind(observer),
+                                    error: observer.error.bind(observer),
+                                    complete: observer.complete.bind(observer),
+                                };
+                                // Retry the operation with the updated token
+                                forward(operation).subscribe(subscriber);
+                            } catch (error) {
+                                observer.error(error);
+                            }
+                        })();
+                    });
+                } else {
+                    console.error(
+                        `[GraphQL error]: Message: ${error.message}, Location: ${error.locations}, Path: ${error.path}`,
+                    );
+                }
+            }
+        }
+        if (networkError) {
+            console.error(`[Network error]: ${networkError}`);
+        }
+    },
+);
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+    link: ApolloLink.from([errorLink, authLink, httpLink]),
+    cache: new InMemoryCache(),
 });
 
 root.render(
-  <BrowserRouter>
-    <ApolloProvider client={client}>
-      <App />
-      <ToastContainer position="bottom-center" />
-    </ApolloProvider>
-  </BrowserRouter>
+    <BrowserRouter>
+        <ApolloProvider client={client}>
+            <App />
+            <ToastContainer position="bottom-center" />
+        </ApolloProvider>
+    </BrowserRouter>,
 );

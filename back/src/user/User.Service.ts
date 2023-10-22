@@ -1,51 +1,90 @@
 import * as argon2 from "argon2";
-import * as jwt from "jsonwebtoken";
-
 import dataSource from "../utils";
-import { JWT_SECRET } from "../index";
+import {
+    createIDToken,
+    createRefreshToken,
+    sendRefreshToken,
+} from "../tokenGeneration";
+import { MyContext } from "../index";
 import { User } from "./entity/User";
 import CreateUserInput from "./inputs/CreateUserInput";
 import { UserProfile } from "./entity/UserProfile";
 import UpdateUserInput from "./inputs/UpdateUserInput";
 import LangResolver from "../lang/Lang.Resolver";
 import SignupUserInput from "./inputs/SignupUserInput";
-
+import { LoginResponse } from "./User.Resolver";
 
 export default class UserService {
+    repository = dataSource.getRepository(User);
+    relations = [
+        "user_profile.lang",
+        "reservations.reservationsDetails.product",
+    ];
 
     /**
-     * Créer un User 
-     * @param createUserInput 
+     * Créer un User
+     * @param createUserInput
      * @returns renvois le User crée
-    */
+     */
     async createOneUser(createUserInput: CreateUserInput): Promise<User> {
         try {
-            createUserInput.hashedPassword = await argon2.hash(createUserInput.password);
-            return await dataSource
-                .getRepository(User)
-                .save({ ...createUserInput });
+            createUserInput.hashedPassword = await argon2.hash(
+                createUserInput.password,
+            );
+            return await this.repository.save({ ...createUserInput });
         } catch (err: any) {
             throw new Error(err.message);
         }
     }
 
-
     /**
      * Créer la signature JWT pour se connecter au site
-     * @param email 
-     * @param password 
+     * @param email
+     * @param password
      * @returns renvois le token si l'authentification réussi, sinon renvois une erreur
-    */
-    async login(email: string, password: string): Promise<User> {
+     */
+    async login(
+        email: string,
+        password: string,
+        ctx: MyContext,
+    ): Promise<LoginResponse> {
         try {
-            const user = await dataSource
-                .getRepository(User)
-                .findOneByOrFail({ email });
+            const user = await this.repository.findOneBy({ email });
 
-            if (await argon2.verify(user.hashedPassword, password)) {
-                const token = jwt.sign({ email }, JWT_SECRET);
-                return {...user, token}
-            } else throw new Error("passwords not matching");
+            if (user === null) {
+                throw new Error("User Not found");
+            }
+
+            const verifyPassword = await argon2.verify(
+                user.hashedPassword,
+                password,
+            );
+
+            if (!verifyPassword) {
+                throw new Error("Wrong password");
+            }
+
+            sendRefreshToken(
+                ctx.res,
+                createRefreshToken(
+                    email,
+                    user.id,
+                    user.user_profile?.firstname || "",
+                    user.user_profile?.lastname || "",
+                    user.role,
+                    user.tokenVersion,
+                ),
+            );
+
+            return {
+                IDToken: createIDToken(
+                    email,
+                    user.id,
+                    user.user_profile?.firstname,
+                    user.user_profile?.lastname,
+                    user.role,
+                ),
+            };
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -53,16 +92,25 @@ export default class UserService {
 
     /**
      * Créer un User et se connect directement apres
-     * @param signupUserInput 
+     * @param signupUserInput
      * @returns renvois le User crée et le token de login
-    */
-     async signup(signupUserInput: SignupUserInput): Promise<User> {
+     */
+    async signup(signupUserInput: SignupUserInput): Promise<Boolean> {
         try {
-            if(signupUserInput.password !== signupUserInput.passwordConfirm)
-                throw new Error("Password and confirm password not matching")
+            if (signupUserInput.password !== signupUserInput.passwordConfirm)
+                throw new Error("Password and confirm password not matching");
 
-            const userCreated = await this.createOneUser(signupUserInput);
-            return await this.login(userCreated.email, signupUserInput.password);
+            await this.createOneUser(signupUserInput);
+            return true;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async logout(ctx: MyContext): Promise<Boolean> {
+        try {
+            sendRefreshToken(ctx.res, "");
+            return true;
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -70,15 +118,15 @@ export default class UserService {
 
     /**
      * Renvois un tableau de tous les users
-     * @returns User[] 
-    */
+     * @returns User[]
+     */
     async getAllUsers(): Promise<User[]> {
         try {
-            return await dataSource.getRepository(User).find({
-                relations: ["user_profile", "user_profile.lang"],
+            return await this.repository.find({
+                relations: this.relations,
             });
         } catch (err: any) {
-            console.log()
+            console.log();
             throw new Error(err.message);
         }
     }
@@ -87,11 +135,11 @@ export default class UserService {
      * Renvois un utilisateur via son id
      * @param id - uuid de l'user a modifier
      * @returns User
-    */
+     */
     async getOneUserById(id: string): Promise<User> {
         try {
-            return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang"],
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
                 where: { id },
             });
         } catch (err: any) {
@@ -103,11 +151,11 @@ export default class UserService {
      * Renvois un utilisateur via son email
      * @param email - email de l'user a modifier
      * @returns User
-    */
-     async getOneUserByEmail(email: string): Promise<User> {
+     */
+    async getOneUserByEmail(email: string): Promise<User> {
         try {
-            return await dataSource.getRepository(User).findOneOrFail({
-                relations: ["user_profile", "user_profile.lang"],
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
                 where: { email },
             });
         } catch (err: any) {
@@ -115,45 +163,48 @@ export default class UserService {
         }
     }
 
-
     /**
      * Modifie un user
      * @param id - uuid de l'user a modifier
-     * @param updateUserInput 
+     * @param updateUserInput
      * @returns - true si la modification a réussi, sinon renvois une erreur
-    */
-    async updateOneUser(id: string, updateUserInput: UpdateUserInput): Promise<Boolean> {
+     */
+    async updateOneUser(
+        id: string,
+        updateUserInput: UpdateUserInput,
+    ): Promise<Boolean> {
         try {
             const userToUpdate = await this.getOneUserById(id);
 
-            if(updateUserInput.lang_id !== undefined){
-                updateUserInput.lang = await (new LangResolver().getLangById(updateUserInput.lang_id));
-            } 
-            // on supprimme détruit la propriété lang_id poiur ne pas 
-            // qu'elle soit pris en compte par la class UserProfile, sinon une erreur apollo apparait 
+            if (updateUserInput.lang_id !== undefined) {
+                updateUserInput.lang = await new LangResolver().getLangById(
+                    updateUserInput.lang_id,
+                );
+            }
+            // on supprimme détruit la propriété lang_id poiur ne pas
+            // qu'elle soit pris en compte par la class UserProfile, sinon une erreur apollo apparait
             // @ts-expect-error
             delete updateUserInput.lang_id;
 
-            await dataSource
+            const result = await dataSource
                 .getRepository(UserProfile)
-                .update({id: userToUpdate.user_profile.id}, updateUserInput);
+                .update({ id: userToUpdate.user_profile.id }, updateUserInput);
 
-            return true;
+            return typeof result.affected === "number" && result.affected > 0;
         } catch (err: any) {
             throw new Error(err.message);
         }
     }
 
-
     /**
      * Supprime une entité user via son id
      * @param id uuid de la ligne bdd du user à supprimer
      * @returns Promise< bool> : si la suppression a bien réussi
-    */
-     async deleteOneUserById(id: string): Promise<Boolean> {
+     */
+    async deleteOneUserById(id: string): Promise<Boolean> {
         try {
             const userToDelete = await this.getOneUserById(id);
-            await dataSource.getRepository(User).remove(userToDelete);
+            await this.repository.remove(userToDelete);
             return true;
         } catch (err: any) {
             throw new Error(err.message);

@@ -14,6 +14,8 @@ export class Category {
     name: string;
 
     @Field(() => [Product])
-    @ManyToMany(() => Product, (product) => product.categories)
-    products?: Product[];
+    @ManyToMany(() => Product, (product) => product.categories, {
+        eager: true,
+    })
+    products: Product[];
 }
