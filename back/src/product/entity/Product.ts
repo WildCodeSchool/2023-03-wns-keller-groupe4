@@ -56,7 +56,9 @@ export class Product {
     updated_by?: string;
 
     @Field(() => [Category])
-    @ManyToMany(() => Category, (category) => category.products)
+    @ManyToMany(() => Category, (category) => category.products, {
+        cascade: true,
+    })
     @JoinTable()
     categories: Category[];
 }

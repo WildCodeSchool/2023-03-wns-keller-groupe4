@@ -28,7 +28,8 @@ if (isDbWippingNecessary) {
 console.log("dataFixtureWipe", dataFixtureWipe);
 
 const dataSource = new DataSource({
-    logging: ["query", "error"],
+    // logging: ["query", "error"],
+    logging: ["error"],
     type: "postgres",
     host: "db",
     port: 5432,

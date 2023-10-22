@@ -1,8 +1,8 @@
 // import { sum } from "../sum";
 // import { ProductService } from "./Product.Service";
 // import {
-//     createProductInputMock,
-//     createProductResponseMock,
+//     createNewProductInputMock,
+//     createProductResponseMocks,
 // } from "./mocks/productMock";
 // import * as typeorm from "typeorm"; // Import the typeorm library
 
@@ -10,14 +10,14 @@
 //     expect(sum(1, 2)).toBe(3);
 // });
 
-// const createMock = jest.fn().mockReturnValue(createProductResponseMock);
-// const saveMock = jest.fn().mockReturnValue(createProductResponseMock);
+// const createMock = jest.fn().mockReturnValue(createNewProductInputMock);
+// const saveMock = jest.fn().mockReturnValue(createProductResponseMocks);
 
 // jest.mock("typeorm", () => ({
 //     getRepository: jest.fn(() => ({
 //         create: createMock,
 //         save: saveMock,
-//         findOneOrFail: jest.fn().mockReturnValue(createProductInputMock),
+//         findOneOrFail: jest.fn(),
 //     })),
 // }));
 
@@ -25,7 +25,7 @@
 //     let productService: ProductService;
 
 //     beforeAll(() => {
-//         productService = new ProductService();
+//         productService = new ProductService(prod);
 //     });
 
 //     describe("createNewProduct", () => {

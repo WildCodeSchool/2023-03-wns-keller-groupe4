@@ -1,21 +1,21 @@
 import { CreateProductInput } from "../inputs/CreateProductInput";
 
-export const createProductInputMocks: CreateProductInput[] = [
+export const createTestProductInput = {
+    name: "FGHIJ",
+    price: 100,
+    stock: 50,
+    available: true,
+    description: "FGHIJ",
+    picture: "BASE64PIC",
+};
+
+export const createNewProductInputMock: CreateProductInput[] = [
     {
         name: "ABCDE",
         price: 50,
         stock: 0,
         available: false,
         description: "ABCDEF",
-        picture: "BASE64PIC",
-        category: ["8a1e61e7-e8f6-4630-b000-eb17f34ee489"],
-    },
-    {
-        name: "FGHIJ",
-        price: 100,
-        stock: 50,
-        available: true,
-        description: "FGHIJ",
         picture: "BASE64PIC",
         category: ["8a1e61e7-e8f6-4630-b000-eb17f34ee489"],
     },
