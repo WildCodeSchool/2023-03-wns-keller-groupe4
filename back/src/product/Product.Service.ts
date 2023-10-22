@@ -92,6 +92,8 @@ export class ProductService {
                 relations: { categories: true },
             });
 
+            console.log("insideGetOneProduct", product.categories);
+
             return product;
         } catch (err: any) {
             throw new Error(err.message);

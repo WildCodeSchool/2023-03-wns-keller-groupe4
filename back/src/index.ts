@@ -36,7 +36,13 @@ export interface MyContext {
     payload?: { email: string };
 }
 
+dotenv.config();
+
 export const JWT_SECRET = process.env.JWT_SECRET_KEY as string;
+export const DATA_FIXTURE_CATEGORIES = process.env
+    .DATA_FIXTURE_CATEGORIES as string;
+export const DATA_FIXTURE_PRODUCTS = process.env
+    .DATA_FIXTURE_PRODUCTS as string;
 
 if (JWT_SECRET === undefined) {
     throw Error("JWT secret undefined");
