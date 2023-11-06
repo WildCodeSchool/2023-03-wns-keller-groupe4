@@ -24,9 +24,8 @@ export class UserProfile {
     lastname: string;
 
     @Field({ nullable: true })
-    // commented out because of non supported type by test sqlite db
-    // @Column({ nullable: true, type: "timestamptz" })
-    @Column({ nullable: true })
+    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
+    @Column({ nullable: true, type: "datetime" })
     birthday: Date;
 
     @Field({ nullable: true })

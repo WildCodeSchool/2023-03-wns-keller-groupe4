@@ -10,7 +10,6 @@ import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { User } from "../../user/entity/User";
 import { ReservationDetail } from "./ReservationDetail";
 
-
 export enum EnumStatusReservation {
     IN_CART = "in_cart",
     PAYING = "paying",
@@ -22,9 +21,8 @@ export enum EnumStatusReservation {
 
 registerEnumType(EnumStatusReservation, {
     name: "EnumStatusReservation",
-    description: "Liste des status possible pour une réservation"
+    description: "Liste des status possible pour une réservation",
 });
-
 
 @ObjectType()
 @Entity()
@@ -34,11 +32,13 @@ export class Reservation {
     id: string;
 
     @Field({ nullable: true })
-    @Column({ type: "timestamptz", nullable: true })
+    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
+    @Column({ type: "datetime", nullable: true })
     start_at: Date;
 
     @Field({ nullable: true })
-    @Column({ type: "timestamptz", nullable: true })
+    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
+    @Column({ type: "datetime", nullable: true })
     end_at: Date;
 
     @Field()
@@ -46,23 +46,33 @@ export class Reservation {
     status: EnumStatusReservation;
 
     @Field()
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
+    @Column({
+        type: "datetime",
+        default: () => "CURRENT_TIMESTAMP",
+        nullable: true,
+    })
     created_at: Date;
 
     @Field()
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
+    @Column({
+        type: "datetime",
+        default: () => "CURRENT_TIMESTAMP",
+        nullable: true,
+    })
     updated_at: Date;
-
 
     // relations :
 
     @Field(() => User)
-    @ManyToOne((type) => User, user => user.reservations)
+    @ManyToOne((type) => User, (user) => user.reservations)
     @JoinColumn()
     user: User;
 
-
     @Field(() => [ReservationDetail])
-    @OneToMany(() => ReservationDetail, detail => detail.reservation, { cascade: true })
+    @OneToMany(() => ReservationDetail, (detail) => detail.reservation, {
+        cascade: true,
+    })
     reservationsDetails: ReservationDetail[];
 }
