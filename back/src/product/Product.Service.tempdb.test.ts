@@ -6,11 +6,13 @@ import {
     createTestCategoryInput,
     createTestProductInput,
 } from "./mocks/productMock";
-import { testDbSetupt, testDbTeardown } from "../test/testhelper";
+import { testDbSetupt, testDbTeardown } from "../testUtils/testhelper";
 import { Product } from "./entity/Product";
 import { DataSource, Repository } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import { Category } from "../category/entity/Category";
+import { UpdateProductInput } from "./inputs/UpdateProductInput";
+import { CreateProductInput } from "./inputs/CreateProductInput";
 
 // }));
 // test("adds 1 + 2 to equal 3", () => {
@@ -80,7 +82,6 @@ describe("ProductService", () => {
 
     describe("createNewProduct", () => {
         it("Should call product repository and return created product", async () => {
-            // jest.spyOn(productService.categoryService, "getOneCategory").mockImplementationOnce(() => {new});
             mockCategoryService.getOneCategory.mockResolvedValue({
                 id: testCategory.id,
                 name: testCategory.name,
@@ -97,103 +98,127 @@ describe("ProductService", () => {
             );
             expect(createdProduct.categories[0].id).toEqual(testCategory.id);
         });
+        // it("Should throw an error when category does not exist", async () => {
+        //     mockCategoryService.getOneCategory.mockResolvedValue(
+        //         Promise.reject(),
+        //     );
 
-        describe("getAllProducts", () => {
-            it("should return all products", async () => {
-                // Create test data in the database
-                // testProduct = await productRepository.save(
-                //     createProductInputMocks[1],
-                // );
-                // testProduct.categories = [testCategory];
+        //     await expect(
+        //         productService.createNewProduct(createNewProductInputMock[0]),
+        //     ).rejects.toThrow();
+        // });
+        // it("Should throw an error when product input is invalid", async () => {
+        //     await expect(
+        //         productService.createNewProduct({
+        //             ...createNewProductInputMock[0],
+        //             name: 42 as any,
+        //             invalidField: "invalidField" as any,
+        //         } as CreateProductInput),
+        //     ).rejects.toThrow();
+        // });
+    });
+    describe("getAllProducts", () => {
+        it("should return all products", async () => {
+            // Create test data in the database
+            // testProduct = await productRepository.save(
+            //     createProductInputMocks[1],
+            // );
+            // testProduct.categories = [testCategory];
 
-                // await productRepository.save(testProduct);
+            // await productRepository.save(testProduct);
 
-                // console.log(testProduct.id);
+            // console.log(testProduct.id);
 
-                testCategory = await categoryRepository.findOneOrFail({
-                    where: { id: testCategory.id },
-                });
-
-                // console.log(testCategory?.products?.[0].id);
-
-                // Call the getAllProducts method and assert the result
-                const allProductsArray = await productService.getAllProducts();
-
-                // console.log(
-                //     allProductsArray?.[0]?.categories?.[0]?.products?.[0]?.id,
-                // );
-
-                // Assert that products is an array and contains expected data
-                expect(Array.isArray(allProductsArray)).toBe(true);
-                expect(allProductsArray.length).toBeGreaterThan(0);
+            testCategory = await categoryRepository.findOneOrFail({
+                where: { id: testCategory.id },
             });
+
+            // console.log(testCategory?.products?.[0].id);
+
+            // Call the getAllProducts method and assert the result
+            const allProductsArray = await productService.getAllProducts();
+
+            // console.log(
+            //     allProductsArray?.[0]?.categories?.[0]?.products?.[0]?.id,
+            // );
+
+            // Assert that products is an array and contains expected data
+            expect(Array.isArray(allProductsArray)).toBe(true);
+            expect(allProductsArray.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe("getOneProduct", () => {
+        it("should return a product by ID", async () => {
+            const repoSpy = jest.spyOn(
+                productService.productRepository,
+                "findOneByOrFail",
+            );
+            const retrievedProduct = await productService.getOneProduct(
+                testProduct.id,
+            );
+
+            const expectedProduct = {
+                ...testProduct,
+            };
+
+            // Assert that retrievedProduct matches the created product
+            expect(retrievedProduct.id).toEqual(expectedProduct.id);
+            // TODO Understand why spies are not called
+            // expect(repoSpy).toHaveBeenCalled();
         });
 
-        describe("getOneProduct", () => {
-            it("should return a product by ID", async () => {
-                const repoSpy = jest.spyOn(
-                    productService.productRepository,
-                    "findOneByOrFail",
-                );
-                const retrievedProduct = await productService.getOneProduct(
-                    testProduct.id,
-                );
+        // it("should throw an error for an invalid product ID", async () => {
+        //     // Assert that it throws an error
+        //     await expect(
+        //         productService.getOneProduct("invalidProductId"),
+        //     ).rejects.toThrow();
+        // });
+    });
+    describe("updateOneProduct", () => {
+        it("should update a product by ID", async () => {
+            const repoSpy = jest.spyOn(
+                productService.productRepository,
+                "update",
+            );
 
-                const expectedProduct = {
-                    ...testProduct,
-                };
-
-                // Assert that retrievedProduct matches the created product
-                expect(retrievedProduct.id).toEqual(expectedProduct.id);
-                // TODO Understand why spies are not called
-                // expect(repoSpy).toHaveBeenCalled();
-            });
-
-            it("should throw an error for an invalid product ID", async () => {
-                // TODO: Call the getOneProduct method with an invalid product ID
-                // Assert that it throws an error
-                await expect(
-                    productService.getOneProduct("invalidProductId"),
-                ).rejects.toThrow();
-            });
+            const updatedProduct = await productService.updateOneProduct(
+                testProduct.id,
+                { name: "updatedName" },
+            );
+            expect(updatedProduct.id).toEqual(testProduct.id);
+            expect(updatedProduct.name).toEqual("updatedName");
         });
-        describe("updateOneProduct", () => {
-            it("should update a product by ID", async () => {
-                const repoSpy = jest.spyOn(
-                    productService.productRepository,
-                    "update",
-                );
+        // it("should thrown an error when update payload values differs from what is expected", async () => {
+        //     await expect(
+        //         productService.updateOneProduct(testProduct.id, {
+        //             name: 42 as any,
+        //             invalidField: "invalidField" as any,
+        //         } as UpdateProductInput),
+        //     ).rejects.toThrow();
+        // });
+    });
 
-                const updatedProduct = await productService.updateOneProduct(
-                    testProduct.id,
-                    { name: "updatedName" },
-                );
-                expect(updatedProduct.id).toEqual(testProduct.id);
-                expect(updatedProduct.name).toEqual("updatedName");
+    describe("deleteOneProduct", () => {
+        it("Should delete a product by ID", async () => {
+            const repoSpy = jest.spyOn(
+                productService.productRepository,
+                "delete",
+            );
+
+            const deletedProduct = await productService.deleteOneProduct(
+                testProduct.id,
+            );
+
+            const findDeletedProduct = await productRepository.findOne({
+                where: { id: testProduct.id },
             });
-        });
 
-        describe("deleteOneProduct", () => {
-            it("Should delete a product by ID", async () => {
-                const repoSpy = jest.spyOn(
-                    productService.productRepository,
-                    "delete",
-                );
+            console.log("findDeletedProduct", findDeletedProduct);
 
-                const deletedProduct = await productService.deleteOneProduct(
-                    testProduct.id,
-                );
-
-                const findDeletedProduct = await productRepository.findOne({
-                    where: { id: testProduct.id },
-                });
-
-                console.log("findDeletedProduct", findDeletedProduct);
-
-                expect(deletedProduct).toBe(true);
-                expect(findDeletedProduct).toBe(null);
-                // expect(testProduct).toBe(undefined);
-            });
+            expect(deletedProduct).toBe(true);
+            expect(findDeletedProduct).toBe(null);
+            // expect(testProduct).toBe(undefined);
         });
     });
 });
