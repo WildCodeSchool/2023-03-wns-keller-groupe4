@@ -45,17 +45,14 @@ export class Product {
     picture: string;
 
     @Field({ nullable: true })
-    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
     @Column({
-        type: "datetime",
         default: () => "CURRENT_TIMESTAMP",
         nullable: true,
     })
     created_at: Date;
 
     @Field()
-    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
-    @Column({ type: "datetime", nullable: true })
+    @Column({ nullable: true })
     updated_at?: Date;
 
     @Field()

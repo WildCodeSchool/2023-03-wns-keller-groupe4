@@ -14,13 +14,11 @@ export class ReservationDetail {
     quantity: number;
 
     @Field()
-    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
-    @Column({ type: "datetime" })
+    @Column()
     start_at: Date;
 
     @Field()
-    // changed type"timestampz" to datetime because "timestamptz" is not supported  by test sqlite db
-    @Column({ type: "datetime" })
+    @Column()
     end_at: Date;
 
     @Field(() => Product)
