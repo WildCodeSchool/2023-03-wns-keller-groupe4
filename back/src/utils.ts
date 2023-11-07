@@ -1,12 +1,12 @@
-import { UserProfile } from "./user/entity/UserProfile";
-import { Lang } from "./lang/entity/Lang";
 import { DataSource } from "typeorm";
-import { User } from "./user/entity/User";
 import { Category } from "./category/entity/Category";
+import { dataFixtureWipe } from "./fixtures/fixtures";
+import { Lang } from "./lang/entity/Lang";
 import { Product } from "./product/entity/Product";
-import { dataFixtureWipe } from "./fixtures";
 import { Reservation } from "./reservation/entity/Reservation";
 import { ReservationDetail } from "./reservation/entity/ReservationDetail";
+import { User } from "./user/entity/User";
+import { UserProfile } from "./user/entity/UserProfile";
 
 console.log("dataFixtureWipe", dataFixtureWipe);
 
