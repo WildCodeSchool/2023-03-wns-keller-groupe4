@@ -2,7 +2,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../utils/jwtHandler";
 import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
-import { GET_CART_BY_USER } from "../utils/queries";
+import { GET_USER_CART } from "../utils/queries";
 import { Dialog, Transition } from '@headlessui/react';
 import Calendar from 'react-calendar';
 import { isWithinInterval } from "date-fns";
@@ -87,7 +87,7 @@ const AddReservation = ({
     }, [availableQuantity, selectedQuantity, date]);
 
     // Add a product to cart
-    const GetCartByUser = useQuery(GET_CART_BY_USER, {
+    const GetCartByUser = useQuery(GET_USER_CART, {
         variables: { getCartReservationOfUserId: userId },
     });
     const [createCart] = useMutation(CREATE_CART);

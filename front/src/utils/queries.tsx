@@ -92,29 +92,29 @@ export const GET_ONE_PRODUCT = gql(`
   }
 `);
 
-export const GET_CART_BY_USER = gql(`
-  query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
-    getCartReservationOfUser(id: $getCartReservationOfUserId) {
-      id
-      start_at
-      end_at
-      status
-      created_at
-      updated_at
-      user {
-        id
-      }
-      reservationsDetails {
-        quantity
-        start_at
-        end_at
-        product {
-          id
-        }
-      }
-    }
-  }
-`);
+// export const GET_CART_BY_USER = gql(`
+//   query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
+//     getCartReservationOfUser(id: $getCartReservationOfUserId) {
+//       id
+//       start_at
+//       end_at
+//       status
+//       created_at
+//       updated_at
+//       user {
+//         id
+//       }
+//       reservationsDetails {
+//         quantity
+//         start_at
+//         end_at
+//         product {
+//           id
+//         }
+//       }
+//     }
+//   }
+// `);
 
 // export const GET_USER_CART = gql(`
 //   query GetCartReservationOfUser($getCartReservationOfUserId: String!) {

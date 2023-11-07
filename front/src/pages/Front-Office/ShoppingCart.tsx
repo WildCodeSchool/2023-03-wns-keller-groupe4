@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
+import { decodeToken, getIDToken } from "../utils/jwtHandler";
 import { GET_USER_CART } from "../../utils/queries";
 import { Interface } from "readline";
 
@@ -27,10 +28,11 @@ interface IProduct {
 }
 
 const ShoppingCart = () => {
+    const userId = decodeToken(getIDToken()).userId;
     const [show, setShow] = useState(false);
 
     const { loading, error, data } = useQuery(GET_USER_CART, {
-        variables: { getCartReservationOfUserId: "a85ae2bc-9765-4ad8-a30b-f4b949550e8c" },
+        variables: { getCartReservationOfUserId: userId },
     });
 
     if (loading) return <p>Chargement du panier en cours...</p>;
