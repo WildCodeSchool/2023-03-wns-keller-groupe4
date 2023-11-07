@@ -9,6 +9,8 @@ import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import { Product } from "../product/entity/Product";
 import dataSource from "../utils";
+import ReservationService from "../reservation/Reservation.Service";
+import { EnumStatusReservation } from "../reservation/entity/Reservation";
 
 export const resetMockCategories =
     process.env.DATA_FIXTURE_CATEGORIES === "true";
@@ -18,24 +20,8 @@ export const resetMockUsers = process.env.DATA_FIXTURE_USERS === "true";
 export const dataFixtureWipe = resetMockCategories;
 
 export const dataFixture = async (): Promise<void> => {
-    if (resetMockUsers) {
-        console.log("resetMockUsers is true");
-
-        for (const user of mockUsers) {
-            const userService = new UserService();
-            try {
-                await userService.getOneUserByEmail(user.email);
-            } catch (error: any) {
-                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-                if (!error.message.includes("not find")) {
-                    console.error(error.message);
-                }
-                await userService.createOneUser(user);
-            }
-        }
-    }
-
     const categoryRepository = dataSource.getRepository(Category);
+    const productRepository = dataSource.getRepository(Product);
 
     if (resetMockCategories) {
         console.log("resetMockCategories is true");
@@ -113,6 +99,104 @@ export const dataFixture = async (): Promise<void> => {
                     picture,
                     category: categories,
                 });
+            }
+        }
+    }
+
+    if (resetMockUsers) {
+        console.log("resetMockUsers is true");
+
+        for (const user of mockUsers) {
+            const userService = new UserService();
+            const reservationService = new ReservationService();
+            try {
+                const foundUser = await userService.getOneUserByEmail(
+                    user.email,
+                );
+
+                let user_id = foundUser.id;
+
+                // Use the found user to create a reservation
+
+                const userReservation =
+                    await reservationService.createOneReservation({
+                        user_id,
+                        status: EnumStatusReservation.IN_CART,
+                        reservationsDetails: [],
+                    });
+
+                console.log(userReservation);
+
+                // find product id's from productRepository.find()
+
+                const foundProductArray = await productRepository.find();
+                console.log(foundProductArray[0]);
+
+                // add product detail to reservation detail by providing product id
+                for (let i = 10; i < 10; i++) {
+                    console.log("in for loop");
+
+                    await reservationService.updateDetailFromOneReservation(
+                        userReservation.id,
+
+                        {
+                            product_id: foundProductArray[i].id,
+                            quantity: 1,
+                            start_at: new Date(),
+                            end_at: new Date(new Date().getDay() + 1),
+                        },
+                    );
+                }
+
+                // For each user of the usermock array create a reservation with a random number of products for random dates
+            } catch (error: any) {
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                if (!error.message.includes("not find")) {
+                    console.error(error.message);
+                }
+                await userService.createOneUser(user);
+                const foundUser = await userService.getOneUserByEmail(
+                    user.email,
+                );
+
+                let user_id = foundUser.id;
+
+                // Use the found user to create a reservation
+
+                const userReservation =
+                    await reservationService.createOneReservation({
+                        user_id,
+                        status: EnumStatusReservation.IN_CART,
+                        reservationsDetails: [],
+                    });
+
+                console.log(userReservation);
+
+                // find product id's from productRepository.find()
+
+                const foundProductArray = await productRepository.find();
+                console.log(foundProductArray[0].id);
+
+                // add product detail to reservation detail by providing product id
+
+                for (let i = 0; i < 10; i++) {
+                    console.log("in for loop");
+                    const startDate = new Date();
+                    const endDate = new Date();
+                    startDate.setDate(startDate.getDate() + i - 5);
+                    endDate.setDate(endDate.getDate() + i + 5);
+
+                    await reservationService.updateDetailFromOneReservation(
+                        userReservation.id,
+
+                        {
+                            product_id: foundProductArray[i].id,
+                            quantity: 1,
+                            start_at: startDate,
+                            end_at: endDate,
+                        },
+                    );
+                }
             }
         }
     }
