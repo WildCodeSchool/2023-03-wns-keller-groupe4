@@ -1,10 +1,10 @@
-import { Fragment, useRef, useState } from "react";
+import { useState } from "react";
 import { PrevButton } from "./tools/PrevButton";
-import { Dialog, Transition } from '@headlessui/react'
 import convertBase64 from "../utils/convertBase64";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PRODUCT } from "../utils/mutations";
 import { GET_ONE_PRODUCT } from "../utils/queries";
+import AddReservation from "./AddReservation";
 
 export interface IProductProps {
     id: string;
@@ -100,10 +100,8 @@ const ProductsDetailsComponent = ({
     const buttonState = available ? false : true;
 
     // Image
-
     const [image, setImage] = useState(picture);
-    const [open, setOpen] = useState(false);
-    const cancelButtonRef = useRef(null);
+    const [openModal, setOpenModal] = useState(false);
 
     // ******************************This is the componnent when used in the back office, for front office use scroll down**************************
     if (isAdmin === true) {
@@ -607,9 +605,12 @@ const ProductsDetailsComponent = ({
                             <div className="flex">
                                 {/* Price */}
                                 <span className="title-font font-medium text-3xl text-gray-900">{ price } €</span>
-                                <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded" 
+                                <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
                                     // disabled={buttonState}
-                                    onClick={() => { setOpen(true)}}>
+                                    onClick={(e) => { 
+                                        e.preventDefault();
+                                        setOpenModal(true)
+                                    }}>
                                     Reservation
                                 </button>
                             </div>
@@ -618,120 +619,13 @@ const ProductsDetailsComponent = ({
                 </div>
             </section>
 
-            {/* Add To Cart Modal */}
-            <Transition.Root show={open} as={Fragment}>
-                <Dialog
-                    as="div"
-                    className="relative z-10"
-                    initialFocus={cancelButtonRef}
-                    onClose={setOpen}
-                >
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                    </Transition.Child>
-
-                    <div className="fixed inset-0 z-10 overflow-y-auto">
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                enterTo="opacity-100 translate-y-0 sm:scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                            >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
-                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.5"
-                                                    stroke="currentColor"
-                                                    className="w-6 h-6 font-medium"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
-                                                    />
-                                                </svg>
-                                            </div>
-                                            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                <Dialog.Title
-                                                    as="h3"
-                                                    className="text-base font-semibold leading-6 text-gray-900"
-                                                >
-                                                    Le produit {name} a été
-                                                    ajouté au panier
-                                                </Dialog.Title>
-                                                <div className="mt-2">
-                                                    <p className="text-sm text-gray-500">
-                                                        Vous pouvez à présent
-                                                        vous rendre dans votre
-                                                        panier de produits pour
-                                                        confirmer votre/vos
-                                                        réservations ou
-                                                        continuer vos achats.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <h4 className="text-base font-semibold leading-4 text-gray-500 sm:pl-20 pt-5">
-                                        Votre panier contient{" "}
-                                    </h4>
-                                    <div className="flex ps-5 pe-10 md:px-20 lg:px-24 pt-5 pb-10 text-gray-500">
-                                        <div className="flex-1">
-                                            <span className="font-semibold">
-                                                Articles :{" "}
-                                            </span>
-                                            1
-                                        </div>
-                                        <div className="flex-1 text-right">
-                                            <span className="font-semibold">
-                                                Total :{" "}
-                                            </span>{" "}
-                                            {price} €
-                                        </div>
-                                    </div>
-
-                                    <hr />
-                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                        <button
-                                            type="button"
-                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                                            onClick={() => setOpen(false)}
-                                        >
-                                            Voir mon panier
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                            onClick={() => setOpen(false)}
-                                            ref={cancelButtonRef}
-                                        >
-                                            Ajouter d'autres produits
-                                        </button>
-                                    </div>
-                                </Dialog.Panel>
-                            </Transition.Child>
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition.Root>
+            {/* Reservation form */}
+            <AddReservation
+                productId = {id}
+                name = {name}
+                openModal = {openModal}
+                setOpenModal = {setOpenModal}
+            />
         </>
     );
 };
