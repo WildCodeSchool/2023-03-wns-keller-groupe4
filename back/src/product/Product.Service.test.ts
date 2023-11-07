@@ -67,135 +67,157 @@ describe("ProductService", () => {
         await productRepository.delete(testProduct.id);
     });
 
-    afterAll(async () => {
-        await testDataSource.dropDatabase();
-
-        testDbTeardown();
-    });
+    // afterAll(async () => {
+    //     await TestHelper.instance.teardownTestDB();
+    // });
 
     describe("createNewProduct", () => {
         it("Should call product repository and return created product", async () => {
-            // We mock the categoryService to return the testCategory (created in the beforeAll hook)
-            // when the getOneCategory method is called
-            mockCategoryService.getOneCategory.mockResolvedValue({
-                id: testCategory.id,
-                name: testCategory.name,
-                products: testCategory.products,
-            });
-            // Why spy on the real implementation productRepository.save
-            const repoSpy = jest.spyOn(
-                productService.productRepository,
-                "save",
-            );
+            jest.spyOn(productService.categoryService, "getOneCategory");
 
-            // We call the createNewProduct method that we want to test
-            createdProduct = await productService.createNewProduct(
-                createNewProductInputMock[0],
+            const createdProduct = await productService.createNewProduct(
+                createProductInputMock,
             );
-
-            // We write our assertions to verify expected behaviour
-            expect(mockCategoryService.getOneCategory).toBeCalledTimes(1);
+            expect(productService.categoryService).toBeCalledTimes(1);
             expect(createdProduct).toBeDefined();
-            expect(createdProduct.name).toEqual(
-                createNewProductInputMock[0].name,
-            );
-            expect(createdProduct.categories[0].id).toEqual(testCategory.id);
-            expect(repoSpy).toHaveBeenCalled();
-        });
 
-        it("Should throw an error when category does not exist", async () => {
-            mockCategoryService.getOneCategory.mockResolvedValue(
-                Promise.reject(),
-            );
+            afterAll(async () => {
+                await testDataSource.dropDatabase();
 
-            await expect(
-                productService.createNewProduct(createNewProductInputMock[0]),
-            ).rejects.toThrow();
-        });
-
-        it("Should throw an error when product input is invalid", async () => {
-            await expect(
-                productService.createNewProduct({
-                    ...createNewProductInputMock[0],
-                    name: 42 as any,
-                    invalidField: "invalidField" as any,
-                } as CreateProductInput),
-            ).rejects.toThrow();
-        });
-    });
-    describe("getAllProducts", () => {
-        it("should return all products", async () => {
-            const allProductsArray = await productService.getAllProducts();
-
-            expect(Array.isArray(allProductsArray)).toBe(true);
-            expect(allProductsArray.length).toBeGreaterThan(0);
-        });
-    });
-
-    describe("getOneProduct", () => {
-        it("should return a product by ID", async () => {
-            const repoSpy = jest.spyOn(
-                productService.productRepository,
-                "findOneOrFail",
-            );
-            const retrievedProduct = await productService.getOneProduct(
-                testProduct.id,
-            );
-
-            expect(retrievedProduct.id).toEqual(testProduct.id);
-            expect(repoSpy).toHaveBeenCalled();
-        });
-
-        it("should throw an error for an invalid product ID", async () => {
-            await expect(
-                productService.getOneProduct("invalidProductId"),
-            ).rejects.toThrow();
-        });
-    });
-
-    describe("updateOneProduct", () => {
-        it("should update a product by ID", async () => {
-            const repoSpy = jest.spyOn(
-                productService.productRepository,
-                "update",
-            );
-
-            const updatedProduct = await productService.updateOneProduct(
-                testProduct.id,
-                { name: "updatedName" },
-            );
-            expect(updatedProduct.id).toEqual(testProduct.id);
-            expect(updatedProduct.name).toEqual("updatedName");
-            expect(repoSpy).toHaveBeenCalled();
-        });
-        it("should thrown an error when update payload values differs from what is expected", async () => {
-            await expect(
-                productService.updateOneProduct(testProduct.id, {
-                    name: 42 as any,
-                    invalidField: "invalidField" as any,
-                } as UpdateProductInput),
-            ).rejects.toThrow();
-        });
-    });
-
-    describe("deleteOneProduct", () => {
-        it("Should delete a product by ID", async () => {
-            const repoSpy = jest.spyOn(
-                productService.productRepository,
-                "delete",
-            );
-
-            const deletedProduct = await productService.deleteOneProduct(
-                testProduct.id,
-            );
-
-            const findDeletedProduct = await productRepository.findOne({
-                where: { id: testProduct.id },
+                testDbTeardown();
             });
 
-            expect(deletedProduct).toBe(true);
-            expect(findDeletedProduct).toBe(null);
-            expect(repoSpy).toHaveBeenCalled();
+            describe("createNewProduct", () => {
+                it("Should call product repository and return created product", async () => {
+                    // We mock the categoryService to return the testCategory (created in the beforeAll hook)
+                    // when the getOneCategory method is called
+                    mockCategoryService.getOneCategory.mockResolvedValue({
+                        id: testCategory.id,
+                        name: testCategory.name,
+                        products: testCategory.products,
+                    });
+                    // Why spy on the real implementation productRepository.save
+                    const repoSpy = jest.spyOn(
+                        productService.productRepository,
+                        "save",
+                    );
+
+                    // We call the createNewProduct method that we want to test
+                    createdProduct = await productService.createNewProduct(
+                        createNewProductInputMock[0],
+                    );
+
+                    // We write our assertions to verify expected behaviour
+                    expect(mockCategoryService.getOneCategory).toBeCalledTimes(
+                        1,
+                    );
+                    expect(createdProduct).toBeDefined();
+                    expect(createdProduct.name).toEqual(
+                        createNewProductInputMock[0].name,
+                    );
+                    expect(createdProduct.categories[0].id).toEqual(
+                        testCategory.id,
+                    );
+                    expect(repoSpy).toHaveBeenCalled();
+                });
+
+                it("Should throw an error when category does not exist", async () => {
+                    mockCategoryService.getOneCategory.mockResolvedValue(
+                        Promise.reject(),
+                    );
+
+                    await expect(
+                        productService.createNewProduct(
+                            createNewProductInputMock[0],
+                        ),
+                    ).rejects.toThrow();
+                });
+
+                it("Should throw an error when product input is invalid", async () => {
+                    await expect(
+                        productService.createNewProduct({
+                            ...createNewProductInputMock[0],
+                            name: 42 as any,
+                            invalidField: "invalidField" as any,
+                        } as CreateProductInput),
+                    ).rejects.toThrow();
+                });
+            });
+            describe("getAllProducts", () => {
+                it("should return all products", async () => {
+                    const allProductsArray =
+                        await productService.getAllProducts();
+
+                    expect(Array.isArray(allProductsArray)).toBe(true);
+                    expect(allProductsArray.length).toBeGreaterThan(0);
+                });
+            });
+
+            describe("getOneProduct", () => {
+                it("should return a product by ID", async () => {
+                    const repoSpy = jest.spyOn(
+                        productService.productRepository,
+                        "findOneOrFail",
+                    );
+                    const retrievedProduct = await productService.getOneProduct(
+                        testProduct.id,
+                    );
+
+                    expect(retrievedProduct.id).toEqual(testProduct.id);
+                    expect(repoSpy).toHaveBeenCalled();
+                });
+
+                it("should throw an error for an invalid product ID", async () => {
+                    await expect(
+                        productService.getOneProduct("invalidProductId"),
+                    ).rejects.toThrow();
+                });
+            });
+
+            describe("updateOneProduct", () => {
+                it("should update a product by ID", async () => {
+                    const repoSpy = jest.spyOn(
+                        productService.productRepository,
+                        "update",
+                    );
+
+                    const updatedProduct =
+                        await productService.updateOneProduct(testProduct.id, {
+                            name: "updatedName",
+                        });
+                    expect(updatedProduct.id).toEqual(testProduct.id);
+                    expect(updatedProduct.name).toEqual("updatedName");
+                    expect(repoSpy).toHaveBeenCalled();
+                });
+                it("should thrown an error when update payload values differs from what is expected", async () => {
+                    await expect(
+                        productService.updateOneProduct(testProduct.id, {
+                            name: 42 as any,
+                            invalidField: "invalidField" as any,
+                        } as UpdateProductInput),
+                    ).rejects.toThrow();
+                });
+            });
+
+            describe("deleteOneProduct", () => {
+                it("Should delete a product by ID", async () => {
+                    const repoSpy = jest.spyOn(
+                        productService.productRepository,
+                        "delete",
+                    );
+
+                    const deletedProduct =
+                        await productService.deleteOneProduct(testProduct.id);
+
+                    const findDeletedProduct = await productRepository.findOne({
+                        where: { id: testProduct.id },
+                    });
+
+                    expect(deletedProduct).toBe(true);
+                    expect(findDeletedProduct).toBe(null);
+                    expect(repoSpy).toHaveBeenCalled();
+                });
+            });
         });
     });
 });
