@@ -26,6 +26,7 @@ import {
     resetMockProducts,
     resetMockUsers,
 } from "./fixtures/fixtures";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ const start = async (): Promise<void> => {
         }),
     );
 
+    app.use(bodyParser.json({ limit: "50 mb" }));
     app.use(cookieParser());
 
     app.get("/", (req: Request, res: Response) => res.send("hello"));
