@@ -111,6 +111,30 @@ export const GET_PRODUCT_COUNT = gql(`
   }
 `);
 
+export const GET_RESERVATIONS = gql(`
+  query allReservations {
+      getReservations {
+        id
+        created_at
+        end_at
+        reservationsDetails {
+          product {
+            id
+            name
+          }
+          quantity
+        }
+        start_at
+        status
+        updated_at
+        user {
+          email
+          id
+        }
+      }
+    }
+`);
+
 export const GET_ONE_PRODUCT = gql(`
   query getProduct($getProductId: String!) {
     getProduct(id: $getProductId) {
@@ -156,4 +180,16 @@ export const GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT = gql(`
   query GetProductReservationQuantityByDates($getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput) {
     getProductReservationQuantityByDates(getProductReservationQuantityByDatesInput: $getProductReservationQuantityByDatesInput)
   }
+`);
+export const GET_RESERVATIONS_BY_ID = gql(`
+query GetReservationsByUserId($getReservationByIdId: String!) {
+  getReservationById(id: $getReservationByIdId) {
+    id
+    user {
+      email
+    }
+    end_at
+    start_at
+  }
+}
 `);
