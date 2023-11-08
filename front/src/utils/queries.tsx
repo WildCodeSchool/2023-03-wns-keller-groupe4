@@ -11,6 +11,39 @@ export const LOGIN_GUERY = gql(`
   }
 `);
 
+export const GET_USER = gql(`
+  query getUserById($getUserByIdId: String!) {
+    getUserById(id: $getUserByIdId) {
+      id
+      email
+      role
+      user_profile {
+        id
+        firstname
+        lastname
+        birthday
+        street
+        postal_code
+        country
+        lang {
+          id
+          name
+        }
+      }
+      reservations {
+        id
+        start_at
+        end_at
+        status
+        created_at
+        updated_at
+      }
+      created_at
+      updated_at
+    }
+  }
+`);
+
 export const GET_CATEGORIES = gql(`
   query GetCategories {
     getCategories {

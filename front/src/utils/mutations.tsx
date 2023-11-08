@@ -57,3 +57,29 @@ export const UPDATE_CART = gql(`
     }
   }
 `);
+
+export const UPDATE_RESERVATION_STATUS = gql(`
+  mutation UpdateStatusOfReservation($status: EnumStatusReservation!, $updateStatusOfReservationId: String!) {
+    updateStatusOfReservation(status: $status, id: $updateStatusOfReservationId) {
+      id
+      start_at
+      end_at
+      status
+      created_at
+      updated_at
+    }
+  }
+`);
+
+export const REMOVE_PRODUCT_FROM_RESERVATION = gql(`
+  mutation removeProductsFromReservation($productsIds: [String!]!, $removeProductsFromReservationId: String!) {
+    removeProductsFromReservation(products_ids: $productsIds, id: $removeProductsFromReservationId) {
+      id
+      start_at
+      end_at
+      status
+      created_at
+      updated_at
+    }
+  }
+`);
