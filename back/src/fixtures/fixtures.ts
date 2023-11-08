@@ -12,10 +12,16 @@ import dataSource from "../utils";
 import ReservationService from "../reservation/Reservation.Service";
 import { EnumStatusReservation } from "../reservation/entity/Reservation";
 
-export const resetMockCategories =
-    process.env.DATA_FIXTURE_CATEGORIES === "true";
-export const resetMockProducts = process.env.DATA_FIXTURE_PRODUCTS === "true";
-export const resetMockUsers = process.env.DATA_FIXTURE_USERS === "true";
+export let resetMockCategories = process.env.DATA_FIXTURE_CATEGORIES === "true";
+export let resetMockProducts = process.env.DATA_FIXTURE_PRODUCTS === "true";
+export let resetMockUsers = process.env.DATA_FIXTURE_USERS === "true";
+export const resetAllMockData = process.env.ALL_DATA_FIXTURES === "true";
+
+if (resetAllMockData) {
+    resetMockCategories = true;
+    resetMockProducts = true;
+    resetMockUsers = true;
+}
 
 export const dataFixtureWipe = resetMockCategories;
 
@@ -110,43 +116,7 @@ export const dataFixture = async (): Promise<void> => {
             const userService = new UserService();
             const reservationService = new ReservationService();
             try {
-                const foundUser = await userService.getOneUserByEmail(
-                    user.email,
-                );
-
-                let user_id = foundUser.id;
-
-                // Use the found user to create a reservation
-
-                const userReservation =
-                    await reservationService.createOneReservation({
-                        user_id,
-                        status: EnumStatusReservation.IN_CART,
-                        reservationsDetails: [],
-                    });
-
-                console.log(userReservation);
-
-                // find product id's from productRepository.find()
-
-                const foundProductArray = await productRepository.find();
-                console.log(foundProductArray[0]);
-
-                // add product detail to reservation detail by providing product id
-                for (let i = 10; i < 10; i++) {
-                    console.log("in for loop");
-
-                    await reservationService.updateDetailFromOneReservation(
-                        userReservation.id,
-
-                        {
-                            product_id: foundProductArray[i].id,
-                            quantity: 1,
-                            start_at: new Date(),
-                            end_at: new Date(new Date().getDay() + 1),
-                        },
-                    );
-                }
+                await userService.getOneUserByEmail(user.email);
 
                 // For each user of the usermock array create a reservation with a random number of products for random dates
             } catch (error: any) {
@@ -183,14 +153,23 @@ export const dataFixture = async (): Promise<void> => {
                     console.log("in for loop");
                     const startDate = new Date();
                     const endDate = new Date();
-                    startDate.setDate(startDate.getDate() + i - 5);
+                    startDate.setDate(
+                        i < 2
+                            ? startDate.getDate() + i - 1
+                            : startDate.getDate() + i - (i - 2),
+                    );
                     endDate.setDate(endDate.getDate() + i + 5);
+                    console.log("startDate", startDate);
+                    console.log("endDate", endDate);
 
                     await reservationService.updateDetailFromOneReservation(
                         userReservation.id,
 
                         {
-                            product_id: foundProductArray[i].id,
+                            product_id:
+                                foundProductArray[
+                                    Math.floor(Math.random() * 63)
+                                ].id,
                             quantity: 1,
                             start_at: startDate,
                             end_at: endDate,

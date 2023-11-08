@@ -7,36 +7,43 @@ import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
 import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
 
-
 export default class ReservationService {
     repository = dataSource.getRepository(Reservation);
     userService = new UserService();
     productService = new ProductService();
-    relations = ["user", "reservationsDetails.product"]
+    relations = ["user", "reservationsDetails.product"];
 
     /**
-     * Créer un une Reservation 
-     * @param CreateReservationInput 
+     * Créer un une Reservation
+     * @param CreateReservationInput
      * @returns renvois le User crée
-    */
-    async createOneReservation(createReservationInput: CreateReservationInput): Promise<Reservation> {
+     */
+    async createOneReservation(
+        createReservationInput: CreateReservationInput,
+    ): Promise<Reservation> {
         try {
-
-            const cart_already_exists = await this.repository.findOne({
-                relations: this.relations,
-                where: {
-                    user: {
-                        id: createReservationInput.user_id
+            const cart_already_exists =
+                (await this.repository.findOne({
+                    relations: this.relations,
+                    where: {
+                        user: {
+                            id: createReservationInput.user_id,
+                        },
+                        status: EnumStatusReservation.IN_CART,
                     },
-                    status: EnumStatusReservation.IN_CART
-                },
-            }) ?? false;
+                })) ?? false;
             // Si le user possède déjà un panier, on jette une erreur
             if (cart_already_exists) throw new Error("User already has a cart");
 
             let newReservation = new Reservation();
-            newReservation = { ...newReservation, ...createReservationInput, reservationsDetails: [] }
-            newReservation.user = await this.userService.getOneUserById(createReservationInput.user_id);
+            newReservation = {
+                ...newReservation,
+                ...createReservationInput,
+                reservationsDetails: [],
+            };
+            newReservation.user = await this.userService.getOneUserById(
+                createReservationInput.user_id,
+            );
             return await this.repository.save(newReservation);
         } catch (err: any) {
             throw new Error(err.message);
@@ -45,15 +52,15 @@ export default class ReservationService {
 
     /**
      * Renvois un tableau de toutes les réservations
-     * @returns Reservations[] 
-    */
+     * @returns Reservations[]
+     */
     async getAllReservations(): Promise<Reservation[]> {
         try {
             return await this.repository.find({
-                relations: this.relations
+                relations: this.relations,
             });
         } catch (err: any) {
-            console.log()
+            console.log();
             throw new Error(err.message);
         }
     }
@@ -61,16 +68,16 @@ export default class ReservationService {
     /**
      * Renvois un tableau de toutes les réservations d'un utilisateur
      * @param id uuid de l'utilisateur qui possède les réservations
-     * @returns Reservations[] 
-    */
+     * @returns Reservations[]
+     */
     async getAllReservationsByUserId(id: string): Promise<Reservation[]> {
         try {
             return await this.repository.find({
                 relations: this.relations,
                 where: {
                     user: {
-                        id
-                    }
+                        id,
+                    },
                 },
             });
         } catch (err: any) {
@@ -82,18 +89,18 @@ export default class ReservationService {
      * Renvois la réservation courante, c.a.d., le panier d'un utilisateur
      * @param id uuid de l'utilisateur qui possède la reservation
      * @returns Reservation
-    */
+     */
     async getCartReservationOfUserByUserId(id: string): Promise<Reservation> {
         try {
             return await this.repository.findOneOrFail({
                 relations: this.relations,
                 where: {
                     user: {
-                        id
+                        id,
                     },
-                    status: EnumStatusReservation.IN_CART
+                    status: EnumStatusReservation.IN_CART,
                 },
-            })
+            });
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -103,7 +110,7 @@ export default class ReservationService {
      * Renvois une réservation via son id
      * @param id - uuid de la reservation a modifier
      * @returns Reservation
-    */
+     */
     async getOneReservationById(id: string): Promise<Reservation> {
         try {
             return await this.repository.findOneOrFail({
@@ -173,7 +180,7 @@ export default class ReservationService {
      * Supprime une entité reservation via son id
      * @param id uuid de la ligne bdd de la reservation  à supprimer
      * @returns Promise< bool> : si la suppression a bien réussi
-    */
+     */
     async deleteOneReservationById(id: string): Promise<Boolean> {
         try {
             const reservationToDelete = await this.getOneReservationById(id);
@@ -190,15 +197,19 @@ export default class ReservationService {
      * @param startAt nouvelle date de début
      * @param endAt nouevlle date de fin
      * @returns renvois le nouvelle état de la reservation
-    */
-    async updateDateOfOneReservation(id: string, startAt: Date, endAt: Date): Promise<Reservation> {
+     */
+    async updateDateOfOneReservation(
+        id: string,
+        startAt: Date,
+        endAt: Date,
+    ): Promise<Reservation> {
         try {
             // vérifie si la date de début est bien inférieure à la date de fin
             if (startAt.getTime() >= endAt.getTime()) {
                 throw new Error(
                     `Start time of the reservation can't be greater or equal to the end time : 
-                    ${startAt.toISOString() + ' >= ' + endAt.toISOString()}`
-                )
+                    ${startAt.toISOString() + " >= " + endAt.toISOString()}`,
+                );
             }
             const reservation = await this.getOneReservationById(id);
             reservation.start_at = startAt;
@@ -212,10 +223,13 @@ export default class ReservationService {
     /**
      * Modifie le status d'une réservation
      * @param id - uuid de la reservation a modifer
-     * @param status - une value du status 
+     * @param status - une value du status
      * @returns renvois le nouvelle état de la reservation
-    */
-    async updateStatusOfOneReservation(id: string, status: EnumStatusReservation): Promise<Reservation> {
+     */
+    async updateStatusOfOneReservation(
+        id: string,
+        status: EnumStatusReservation,
+    ): Promise<Reservation> {
         try {
             const reservation = await this.getOneReservationById(id);
             reservation.status = status;
@@ -230,38 +244,53 @@ export default class ReservationService {
      * @param id uuid de la reservation a modifer
      * @param products tableau de d'id de produit + quantité
      * @returns renvois le nouvel état de la réservation
-    */
-    async updateDetailFromOneReservation(reservation_id: string, detail: DetailReservationInput): Promise<Reservation> {
+     */
+    async updateDetailFromOneReservation(
+        reservation_id: string,
+        detail: DetailReservationInput,
+    ): Promise<Reservation> {
         try {
-            const reservation = await this.getOneReservationById(reservation_id);
-            const found = reservation.reservationsDetails.find((item) => item.product.id === detail.product_id);
+            const reservation = await this.getOneReservationById(
+                reservation_id,
+            );
+            const found = reservation.reservationsDetails.find(
+                (item) => item.product.id === detail.product_id,
+            );
             // si notre produit existe déjà, alors on modifie juste la quantité
             if (found !== undefined) {
                 found.quantity = detail.quantity;
                 found.start_at = detail.start_at;
                 found.end_at = detail.end_at;
             }
-            // sinon on le rajoute 
-            else reservation.reservationsDetails = [...reservation.reservationsDetails, {
-                quantity: detail.quantity,
-                reservation,
-                product: await this.productService.getOneProduct(detail.product_id),
-                start_at: detail.start_at,
-                end_at: detail.end_at,
-            }]
+            // sinon on le rajoute
+            else
+                reservation.reservationsDetails = [
+                    ...reservation.reservationsDetails,
+                    {
+                        quantity: detail.quantity,
+                        reservation,
+                        product: await this.productService.getOneProduct(
+                            detail.product_id,
+                        ),
+                        start_at: detail.start_at,
+                        end_at: detail.end_at,
+                    },
+                ];
 
             //  vérifie si la date de début est bien inférieure à la date de fin
             const { start_at, end_at } = detail;
             if (start_at.getTime() >= end_at.getTime()) {
                 throw new Error(
                     `Start time of the product can't be greater or equal to the end time : 
-                    ${start_at.toISOString() + ' >= ' + end_at.toISOString()}`
-                )
+                    ${start_at.toISOString() + " >= " + end_at.toISOString()}`,
+                );
             }
+
+            this.SettingGlobalReservationDate(start_at, end_at, reservation);
 
             return await this.repository.save(reservation);
         } catch (err: any) {
-            throw new Error(err.message)
+            throw new Error(err.message);
         }
     }
 
@@ -270,11 +299,17 @@ export default class ReservationService {
      * @param id uuid de la reservation a modifer
      * @param products_ids tableau des id des produits à enlever
      * @returns renvois le nouvel état de la réservation
-    */
-    async removeManyProductsFromOneReservation(id: string, productsIds: string[]): Promise<Reservation> {
+     */
+    async removeManyProductsFromOneReservation(
+        id: string,
+        productsIds: string[],
+    ): Promise<Reservation> {
         try {
             const reservation = await this.getOneReservationById(id);
-            reservation.reservationsDetails = reservation.reservationsDetails.filter(detail => !productsIds.includes(detail.product.id))
+            reservation.reservationsDetails =
+                reservation.reservationsDetails.filter(
+                    (detail) => !productsIds.includes(detail.product.id),
+                );
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message);
@@ -285,14 +320,30 @@ export default class ReservationService {
      * Supprime tout les produits de la réservation
      * @param id uuid de la reservation a modifer
      * @returns le nouvel état de la réservation
-    */
-    async removeAllProductsFromOneReservation(id: string): Promise<Reservation> {
+     */
+    async removeAllProductsFromOneReservation(
+        id: string,
+    ): Promise<Reservation> {
         try {
             const reservation = await this.getOneReservationById(id);
             reservation.reservationsDetails = [];
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message);
+        }
+    }
+
+    private SettingGlobalReservationDate(
+        startDate: Date,
+        endDate: Date,
+        reservation: Reservation,
+    ) {
+        if (startDate < reservation.start_at || reservation.start_at === null) {
+            reservation.start_at = startDate;
+        }
+
+        if (endDate > reservation.end_at || reservation.end_at === null) {
+            reservation.end_at = endDate;
         }
     }
 }

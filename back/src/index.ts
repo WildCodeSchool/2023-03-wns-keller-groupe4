@@ -22,6 +22,7 @@ import whitelistCORS from "./whitelistCORS";
 import ReservationResolver from "./reservation/Reservation.Resolver";
 import {
     dataFixture,
+    resetAllMockData,
     resetMockCategories,
     resetMockProducts,
     resetMockUsers,
@@ -166,7 +167,12 @@ const start = async (): Promise<void> => {
         console.log("express server OPEN");
     });
 
-    if (resetMockCategories || resetMockProducts || resetMockUsers) {
+    if (
+        resetMockCategories ||
+        resetMockProducts ||
+        resetMockUsers ||
+        resetAllMockData
+    ) {
         void dataFixture();
     } else {
         console.log("data fixture off");
