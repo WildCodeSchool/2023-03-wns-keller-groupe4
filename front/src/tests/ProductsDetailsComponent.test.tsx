@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from "../utils/testCustomRender";
 import ProductsDetailsComponent from "../components/ProductsDetailsComponent";
+import jwtDecode from 'jwt-decode';
 
 class ResizeObserver {
     observe() {}
@@ -7,8 +8,11 @@ class ResizeObserver {
     disconnect() {}
 }
 
+jest.mock('jwt-decode', () => jest.fn());
+
 describe("Products details", () => {
     window.ResizeObserver = ResizeObserver;
+    (jwtDecode as jest.Mock).mockImplementationOnce(() => ({ exp: 12345 }));
 
     it("renders product details component", () => {
         render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={true} isAdmin={false} />);
@@ -45,7 +49,7 @@ describe("Products details", () => {
     }); 
 
     describe("When user clicks on the reservation button", () => {
-        it("should open a modal showing a preview of the cart", async () => {
+        it("should open a modal showing a calendar", async () => {
             render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"test"} available={true} isAdmin={false} />);
             
             const buttonElement = screen.getByRole("button", { 
@@ -57,7 +61,7 @@ describe("Products details", () => {
             
             fireEvent.click(buttonElement);
             await act(() => {
-                expect(screen.getByText(/Le produit brouette a été ajouté au panier/i)).toBeInTheDocument();
+                expect(screen.getByText(/Veuillez choisir la durée de location./i)).toBeInTheDocument();;
             });
         });
     });

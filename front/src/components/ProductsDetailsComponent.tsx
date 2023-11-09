@@ -606,7 +606,7 @@ const ProductsDetailsComponent = ({
                                 {/* Price */}
                                 <span className="title-font font-medium text-3xl text-gray-900">{ price } €</span>
                                 <button className="flex ml-auto text-white sm:text-xs lg:text-lg bg-red-500 border-0 p-2 sm:px-3 md:px-4 lg:px-6 focus:outline-none hover:bg-red-600 rounded"
-                                    // disabled={buttonState}
+                                    disabled={buttonState}
                                     onClick={(e) => { 
                                         e.preventDefault();
                                         setOpenModal(true)

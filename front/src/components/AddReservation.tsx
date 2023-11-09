@@ -59,14 +59,15 @@ const AddReservation = ({
         onDateChange(undefined);
     }
 
+    const userId = getIDToken().length > 0 ? decodeToken(getIDToken()).userId : "";
+    const cancelButtonRef = useRef(null);
+
     const [date, onDateChange] = useState<DateValue>();
     const [availableQuantity, setAvailableQuantity] = useState(5); // TODO: Refetch quantity on date change
     const [selectedQuantity, setSelectedQuantity] = useState(0);
     const [disabledQuantity, setDisabledQuantity] = useState(true);
     const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
     const [options, setOptions] = useState([0]); 
-    const userId = decodeToken(getIDToken()).userId;
-    const cancelButtonRef = useRef(null);
 
     useEffect(() => {
         // If there is a quantity and a date range is selected then we update options values with quantity
@@ -87,14 +88,24 @@ const AddReservation = ({
     }, [availableQuantity, selectedQuantity, date]);
 
     // Add a product to cart
-    const GetCartByUser = useQuery(GET_USER_CART, {
-        variables: { getCartReservationOfUserId: userId },
+    const getUserCart = useQuery(GET_USER_CART, {
+        variables: { getCartReservationOfUserId: userId},
+        skip: userId === "",
     });
     const [createCart] = useMutation(CREATE_CART);
     const [updateCart] = useMutation(UPDATE_CART);
 
     const submitForm = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if(!userId) {
+            toast.error("Vous devez être connecté pour ajouter un produit à votre panier de réservation.", { 
+                icon: <TfiShoppingCartFull size="2rem" />,
+            });
+
+            return;
+        }
+
         let cartId = "";
         let dateStart = null
         let dateEnd = null
@@ -104,8 +115,8 @@ const AddReservation = ({
             dateEnd = date[1].toLocaleString("en-US", {timeZone: "Europe/Paris"});
         
             // Retrieve existing cart or create a new one if not exist
-            if(GetCartByUser.data) {
-                cartId = GetCartByUser.data.getCartReservationOfUser.id;
+            if(getUserCart.data) {
+                cartId = getUserCart.data.getCartReservationOfUser.id;
             } else {
                 const createReservationInput = {
                     user_id: userId,
