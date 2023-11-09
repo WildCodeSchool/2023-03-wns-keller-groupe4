@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../utils/jwtHandler";
 import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
@@ -69,6 +70,19 @@ const AddReservation = ({
     const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
     const [options, setOptions] = useState([0]); 
 
+    // Component to display a toast message when non-logged user try to add a product to cart
+    const LoginButton = ({ closeToast, toastProps }:any) => (
+        <div className="items-center text-center font-bold relative z-50">
+            Vous devez être connecté pour ajouter un produit à votre panier de réservation.
+            <Link to="/connect">
+                <button className="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-md mt-4"
+                >
+                    Se connecter / S'inscrire
+                </button>
+            </Link>
+        </div>
+    );
+
     useEffect(() => {
         // If there is a quantity and a date range is selected then we update options values with quantity
         if (availableQuantity > 0 && typeof date !== 'undefined') {
@@ -99,10 +113,7 @@ const AddReservation = ({
         e.preventDefault();
 
         if(!userId) {
-            toast.error("Vous devez être connecté pour ajouter un produit à votre panier de réservation.", { 
-                icon: <TfiShoppingCartFull size="2rem" />,
-            });
-
+            toast.error(<LoginButton />);
             return;
         }
 
