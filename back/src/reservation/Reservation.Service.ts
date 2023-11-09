@@ -1,4 +1,4 @@
-import { ILike, Raw } from "typeorm";
+import { ILike, LessThanOrEqual, MoreThanOrEqual, Raw } from "typeorm";
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
@@ -7,6 +7,7 @@ import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
 import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
+import { SearchReservationInput } from "./inputs/SearchReservationInput";
 
 export default class ReservationService {
     repository = dataSource.getRepository(Reservation);
@@ -86,7 +87,7 @@ export default class ReservationService {
         }
     }
 
-    async getAllReservationByUserEmail(email: string): Promise<Reservation[]> {
+    async getAllReservationsByUserEmail(email: string): Promise<Reservation[]> {
         console.log(email);
 
         try {
@@ -101,6 +102,126 @@ export default class ReservationService {
             console.log(foundReservations);
 
             return foundReservations;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async getAllReservationsByDate(
+        startDate?: Date,
+        endDate?: Date,
+    ): Promise<Reservation[]> {
+        console.log("startDate", startDate);
+        console.log("endDate", endDate);
+        try {
+            if (startDate === undefined || endDate === undefined) {
+                throw new Error("startDate or endDate are required");
+            }
+            let whereConditions: Record<string, any> = {};
+
+            if (startDate && endDate) {
+                whereConditions = {
+                    start_at: MoreThanOrEqual(startDate),
+                    end_at: LessThanOrEqual(endDate),
+                };
+            }
+
+            if (startDate && !endDate) {
+                whereConditions = {
+                    start_at: MoreThanOrEqual(startDate),
+                };
+            }
+
+            if (!startDate && endDate) {
+                whereConditions = {
+                    end_at: LessThanOrEqual(endDate),
+                };
+            }
+
+            const foundReservations = await this.repository.find({
+                relations: this.relations,
+                where: whereConditions,
+            });
+
+            console.log(foundReservations);
+
+            return foundReservations ?? [];
+
+            // try {
+            //     if (startDate && endDate) {
+            //         foundReservations = await this.repository.find({
+            //             relations: this.relations,
+            //             where: {
+            //                 start_at: MoreThanOrEqual(startDate),
+            //                 end_at: LessThanOrEqual(endDate),
+            //             },
+            //         });
+            //     }
+            //     if (startDate && !endDate) {
+            //         foundReservations = await this.repository.find({
+            //             relations: this.relations,
+            //             where: {
+            //                 start_at: MoreThanOrEqual(startDate),
+            //             },
+            //         });
+            //     }
+            //     if (!startDate && endDate) {
+            //         foundReservations = await this.repository.find({
+            //             relations: this.relations,
+            //             where: {
+            //                 end_at: LessThanOrEqual(endDate),
+            //             },
+            //         });
+            //     }
+            //     console.log(foundReservations);
+
+            //     return foundReservations ?? [];
+        } catch (err: any) {
+            console.log(err.message);
+
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Renvois les réservations correspondant aux critères de recherche
+     * @param searchInput critères de recherche
+     * @returns Reservations[]
+     */
+    async getReservationsBySearchFilter(
+        searchInput: SearchReservationInput,
+    ): Promise<Reservation[]> {
+        const where: any = {};
+
+        if (searchInput.status) {
+            where.status = searchInput.status;
+        }
+
+        if (searchInput.userEmail) {
+            where.user = {
+                email: ILike(`%${searchInput.userEmail}%`),
+            };
+        }
+
+        if (searchInput.date?.startDate) {
+            where.start_at = MoreThanOrEqual(searchInput.date?.startDate);
+        }
+
+        if (searchInput.date?.endDate) {
+            where.end_at = LessThanOrEqual(searchInput.date?.endDate);
+        }
+
+        if (searchInput.id) {
+            where.id = Raw(
+                (alias) => `CAST(${alias} AS TEXT) ILIKE '%${searchInput.id}%'`,
+            );
+        }
+
+        try {
+            return await this.repository.find({
+                relations: this.relations,
+                where,
+            });
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -169,12 +290,14 @@ export default class ReservationService {
      * @returns La quantité réservée
      */
     async getOneProductReservationQuantityByDates(
-                getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
+        getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
     ): Promise<number> {
-    
         try {
-            console.log("DEBUT : ",getProductReservationQuantityByDatesInput.start_at, 
-                "FIN : ", getProductReservationQuantityByDatesInput.end_at
+            console.log(
+                "DEBUT : ",
+                getProductReservationQuantityByDatesInput.start_at,
+                "FIN : ",
+                getProductReservationQuantityByDatesInput.end_at,
             );
             const productDetails = await this.repository.find({
                 relations: this.relations,
@@ -205,7 +328,10 @@ export default class ReservationService {
             });
             let reservedQuantity = 0;
             productDetails.forEach((reservation) => {
-                console.log("PRODUCT DETAILS: ",reservation.reservationsDetails);
+                console.log(
+                    "PRODUCT DETAILS: ",
+                    reservation.reservationsDetails,
+                );
                 reservation.reservationsDetails.forEach((detail) => {
                     reservedQuantity += detail.quantity;
                 });

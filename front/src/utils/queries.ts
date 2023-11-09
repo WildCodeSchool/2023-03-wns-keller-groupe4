@@ -241,3 +241,51 @@ query SearchReservationById($searchReservationByIdId: String!) {
   }
 }
 `);
+
+export const GET_RESERVATIONS_BY_DATES =
+    gql(`query GetReservationsByDates($endDate: DateTime!, $startDate: DateTime!) {
+  getReservationsByDates(endDate: $endDate, startDate: $startDate) {
+    id
+    created_at
+    end_at
+    reservationsDetails {
+      product {
+        id
+        name
+      }
+      quantity
+    }
+    start_at
+    status
+    updated_at
+    user {
+      email
+      id
+    }
+  }
+}
+`);
+
+export const GET_RESERVATIONS_BY_SEARCH_FILTER = gql(`
+query GetReservationsBySearchFilter($searchReservationInput: SearchReservationInput!) {
+  getReservationsBySearchFilter(searchReservationInput: $searchReservationInput) {
+    id
+    created_at
+    end_at
+    reservationsDetails {
+      product {
+        id
+        name
+      }
+      quantity
+    }
+    start_at
+    status
+    updated_at
+    user {
+      email
+      id
+    }
+  }
+}
+`);

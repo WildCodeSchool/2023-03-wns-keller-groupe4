@@ -2,17 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import {
     GET_RESERVATIONS,
+    GET_RESERVATIONS_BY_DATES,
     GET_RESERVATIONS_BY_ID,
+    GET_RESERVATIONS_BY_SEARCH_FILTER,
     GET_RESERVATIONS_BY_USER_EMAIL,
     SEARCH_RESERVATION_BY_ID,
 } from "../../utils/queries";
-import { set } from "react-hook-form";
+import Calendar from "react-calendar";
+import { createTypeReferenceDirectiveResolutionCache } from "typescript";
+
+type ValuePiece = Date | null;
+
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const AdminReservationList = () => {
     const [idSearchInput, setIdSearchInput] = useState("");
     const [emailSearchInput, setEmailSearchInput] = useState("");
-    const [dateSearchInput, setDateSearchInput] = useState("");
+    // const [dateSearchInput, setDateSearchInput] = useState("");
     const [filterClear, setFilterClear] = useState(false);
+    const [dateSearchInput, setDateSearchInput] = useState({
+        startDate: "",
+        endDate: "",
+    });
+    const [multipleFilters, setMultipleFilters] = useState(false);
+
+    // const [dateValue, setDateValue] = useState<Value>(new Date());
 
     // const { loading, error, data } = useQuery(GET_RESERVATIONS);
 
@@ -22,8 +36,13 @@ const AdminReservationList = () => {
 
     const [searchReservationById, { data: idFilteredReservations }] =
         useLazyQuery(SEARCH_RESERVATION_BY_ID);
+    const [searchReservationsByDate, { data: dateFilteredReservations }] =
+        useLazyQuery(GET_RESERVATIONS_BY_DATES);
     const [filteredReservationList, setFilteredReservationList] =
         useState<any>();
+
+    const [searchReservationByFilters, { data: filteredReservations }] =
+        useLazyQuery(GET_RESERVATIONS_BY_SEARCH_FILTER);
 
     useEffect(() => {
         if (!idSearchInput && !emailSearchInput) {
@@ -42,43 +61,75 @@ const AdminReservationList = () => {
         e.preventDefault();
         console.log("in submit function");
 
-        if (emailSearchInput) {
-            console.log("emailSearchInput", emailSearchInput);
-            const res = await getReservationByUserEmail({
-                variables: {
-                    email: emailSearchInput,
+        const res = await searchReservationByFilters({
+            variables: {
+                searchReservationInput: {
+                    id: idSearchInput,
+                    userEmail: emailSearchInput,
+                    date: {
+                        startDate: "2023/11/10",
+                    },
                 },
-            });
-            console.log(
-                "getResaByUserEmailResponse",
-                res.data?.getReservationsByUserEmail,
-            );
+            },
+        });
 
-            setFilteredReservationList(res.data?.getReservationsByUserEmail);
-        }
+        console.log(dateSearchInput.startDate);
+        console.log(
+            "filteredRequestResponse",
+            res.data?.getReservationsBySearchFilter,
+        );
 
-        if (idSearchInput) {
-            console.log("idSearchInput", idSearchInput);
+        // setFilteredReservationList(res.data?.getReservationsBySearchFilter);
 
-            const res = await searchReservationById({
-                variables: {
-                    searchReservationByIdId: idSearchInput,
-                },
-            });
+        // if (emailSearchInput) {
+        //     console.log("emailSearchInput", emailSearchInput);
+        //     const res = await getReservationByUserEmail({
+        //         variables: {
+        //             email: emailSearchInput,
+        //         },
+        //     });
+        //     console.log(
+        //         "getResaByUserEmailResponse",
+        //         res.data?.getReservationsByUserEmail,
+        //     );
 
-            setFilteredReservationList(res.data?.searchReservationById);
-        }
+        //     setFilteredReservationList(res.data?.getReservationsByUserEmail);
+        //     if (emailSearchInput && multipleFilters) {
+        // }
 
-        // setEmailSearchInput("");
+        // if (idSearchInput) {
+        //     console.log("idSearchInput", idSearchInput);
 
-        if (idSearchInput) {
-            console.log("idSearchInput", idSearchInput);
-        }
+        //     const res = await searchReservationById({
+        //         variables: {
+        //             searchReservationByIdId: idSearchInput,
+        //         },
+        //     });
+
+        //     setFilteredReservationList(res.data?.searchReservationById);
+        // }
+
+        // // setEmailSearchInput("");
+
+        // if (dateSearchInput.startDate || dateSearchInput.endDate) {
+        //     const res = await searchReservationsByDate({
+        //         variables: {
+        //             startDate: dateSearchInput.startDate,
+        //             endDate: dateSearchInput.endDate,
+        //         },
+        //     });
+        //     setFilteredReservationList(res.data?.getReservationsByDates);
+        // }
     }
 
     function handleFilterClear() {
         setIdSearchInput("");
         setEmailSearchInput("");
+        setDateSearchInput({
+            startDate: "",
+            endDate: "",
+        });
+
         setFilterClear(!filterClear);
     }
 
@@ -106,19 +157,47 @@ const AdminReservationList = () => {
                             Submit
                         </button>
                     </form>
-                    {/* <form className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
+                    {/* <Calendar onChange={setDateValue} value={dateValue} /> */}
+                    <form className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
                         <label htmlFor="search">Par id</label>
                         <input
                             type="date"
-                            name="search"
-                            id="search"
+                            name="startDateSearchInput"
+                            id="startDateSearchInput"
+                            value={dateSearchInput.startDate}
+                            onChange={(e) =>
+                                setDateSearchInput({
+                                    ...dateSearchInput,
+                                    startDate: e.target.value,
+                                })
+                            }
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
                         />
-                        <button className="hidden" type="submit">
+                        {/* <button className="hidden" type="submit">
                             Submit
-                        </button>
-                    </form>  */}
+                        </button> */}
+                    </form>
+                    <form className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
+                        <label htmlFor="search">Par id</label>
+                        <input
+                            type="date"
+                            name="endDateSearchInput"
+                            id="endDateSearchInput"
+                            value={dateSearchInput.endDate}
+                            onChange={(e) =>
+                                setDateSearchInput({
+                                    ...dateSearchInput,
+                                    endDate: e.target.value,
+                                })
+                            }
+                            className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
+                            placeholder="Rechercher une réservation"
+                        />
+                        {/* <button className="hidden" type="submit">
+                            Submit
+                        </button> */}
+                    </form>
                     <form
                         className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0"
                         onSubmit={handleSubmit}
