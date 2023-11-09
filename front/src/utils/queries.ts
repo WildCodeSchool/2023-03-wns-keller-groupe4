@@ -193,3 +193,51 @@ query GetReservationsByUserId($getReservationByIdId: String!) {
   }
 }
 `);
+
+export const GET_RESERVATIONS_BY_USER_EMAIL = gql(` 
+query GetReservationsByUserEmail($email: String!) {    
+    getReservationsByUserEmail(email: $email) {
+      id
+      created_at
+      end_at
+      reservationsDetails {
+        product {
+          id
+          name
+        }
+        quantity
+      }
+      start_at
+      status
+      updated_at
+      user {
+        email
+        id
+      }
+    }
+  }
+`);
+
+export const SEARCH_RESERVATION_BY_ID = gql(`
+query SearchReservationById($searchReservationByIdId: String!) {
+  searchReservationById(id: $searchReservationByIdId) {
+    id
+    created_at
+    end_at
+    reservationsDetails {
+      product {
+        id
+        name
+      }
+      quantity
+    }
+    start_at
+    status
+    updated_at
+    user {
+      email
+      id
+    }
+  }
+}
+`);
