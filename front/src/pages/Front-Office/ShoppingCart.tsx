@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
 import { GET_USER, GET_USER_CART } from "../../utils/queries";
-import { REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS } from "../../utils/mutations";
+import { REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES } from "../../utils/mutations";
 import { EnumStatusReservation } from "../../__generated__/graphql";
 import { toast } from "react-toastify";
 import { BsBox2Fill, BsCartCheckFill } from "react-icons/bs";
 import { GrValidate } from "react-icons/gr";
 import { FaShippingFast } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { PrevButton } from "../../components/tools/PrevButton";
 
 interface ICartSummary {
     id: string,
@@ -40,6 +41,7 @@ const ShoppingCart = () => {
     const [profileClass, setProfileClass] = useState("border-gray-200 dark:bg-gray-100 dark:border-gray-200");
     const [payButtonColor, setPayButtonColor] = useState("bg-gray-500 border-gray-600 ring-gray-500");
     const [payButtonDisabled, setPayButtonDisabled] = useState(true);
+    const [errorStartDate, setErrorStartDate] = useState("hidden");
 
     const { loading, error, data, refetch } = useQuery(GET_USER_CART, {
         variables: { getCartReservationOfUserId: userId },
@@ -49,6 +51,7 @@ const ShoppingCart = () => {
         variables: { getUserByIdId: userId },
     });
     const [updateCart] = useMutation(UPDATE_RESERVATION_STATUS);
+    const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
 
     if (loading) return <p>Chargement du panier en cours...</p>;
@@ -59,6 +62,8 @@ const ShoppingCart = () => {
     let products:any = null;
     let productDuration:number = 0;
     let totalSubtotal = 0;
+    let reservation_start_at = 0;
+    let reservation_end_at = 0;
     let tSubtotal = "0";
     let totalTaxes = "0";
     let payingButton = "Panier vide";
@@ -78,8 +83,8 @@ const ShoppingCart = () => {
                 stock: reservation.product.stock,
                 available: reservation.product.available,
                 reservedQuantity: reservation.quantity,
-                start_at: new Date(reservation.start_at).toLocaleDateString("fr-FR"),
-                end_at: new Date(reservation.end_at).toLocaleDateString("fr-FR"),
+                start_at: new Date(reservation.start_at),
+                end_at: new Date(reservation.end_at),
                 duration: productDuration,
                 subtotal: reservation.product.price * reservation.quantity * productDuration,
                 totalSubtotal: totalSubtotal += reservation.product.price * reservation.quantity * productDuration,
@@ -110,27 +115,41 @@ const ShoppingCart = () => {
     // Submit cart when payment is validated
     const submitCart = async (e:React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const cartId = cartSummary?.id;
+        if(errorStartDate == "hidden") {
+            const cartId = cartSummary?.id;
 
-        if(cartId) {
-            const updatedCart = await updateCart({ 
-                variables: {
-                    status: EnumStatusReservation.Paying,
-                    updateStatusOfReservationId: cartId,
-                } 
-            });
+            if(cartId) {
 
-            if(updatedCart) {
-                toast.success(
-                    "Votre réservation est validée.", { 
-                    icon: <GrValidate size="2rem" />,
+                const paidReservation = await updateReservationDates({
+                    variables: {
+                        startAt: new Date(reservation_start_at).toISOString(),
+                        endAt: new Date(reservation_end_at).toISOString(),
+                        updateDateOfReservationId: cartId,
+                    }
+                })
+                .then((res:any) => {
+                    console.log(res);
+                    updateCart({ 
+                        variables: {
+                            status: EnumStatusReservation.Paying,
+                            updateStatusOfReservationId: cartId,
+                        } 
+                    });
+                    refetch();
+                    toast.success(
+                        "Votre réservation est validée.", { 
+                        icon: <GrValidate size="2rem" />,
+                    });
+                })
+                .catch((err:any) => {
+                    console.log(err);
+                    toast.error("Erreur : La réservation n'a pas pu être confirmée.");
                 });
-                refetch();
-            } else {
-                toast.error("Erreur : La réservation n'a pas pu être confirmée.");
             }
+        } else {
+            toast.error("Erreur : La date de début de réservation de tous les produits du panier n'est pas identique.");
         }
-    }
+    };
 
     // Remove a specific product from cart
     const removeProduct = async (e:React.FormEvent<HTMLAnchorElement>, product:string) => {
@@ -146,11 +165,14 @@ const ShoppingCart = () => {
             });
 
             if(removedProduct) {
+                if(errorStartDate == "visible") {
+                    setErrorStartDate("hidden");
+                }
+                refetch();
                 toast.success(
                     "Le produit a été supprimé du panier.", { 
                     icon: <GrValidate size="2rem" />,
                 });
-                refetch();
             } else {
                 toast.error("Erreur : Impossible de supprimer le produit.");
             }
@@ -159,55 +181,79 @@ const ShoppingCart = () => {
 
     return (
         <>
-            <div className="w-full h-full" id="chec-div">
-                <div className="w-full absolute z-10 h-full overflow-x-hidden" id="checkout">
+            <div className="w-full h-full">
+                <div className="w-full absolute z-10 h-full overflow-x-hidden">
                     <div className="flex md:flex-row flex-col" id="cart">
                         <div 
-                            className="w-3/4 md:pl-10 pl-4 pr-10 md:pr-4 md:py-12 py-6 bg-white overflow-y-auto overflow-x-hidden h-screen" 
+                            className="w-3/4 md:pl-10 pl-4 pr-10 md:pr-4 md:py-12 py-6 mr-5 bg-white overflow-y-auto overflow-x-hidden h-screen" 
                             id="scroll"
                         >
+                        <PrevButton />
                             { products ? (
-                                <p className="text-3xl font-black leading-10 text-gray-800 py-4">
-                                    <BsCartCheckFill size="2rem" className="inline mr-3" />
-                                    Votre panier de réservation
-                                </p> 
-                                && products.map((product:any) => (
-                                <div className="md:flex items-center py-4 border-t border-gray-200">
-                                    <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                        <img src={ product.picture } className="w-full h-full object-center object-cover" />
-                                    </div>
-                                    <div className="w-1/2 ml-5 leading-none">
-                                        <p className="text-base font-black text-gray-800 pb-2">{ product.name }</p>
-                                        <p className="text-sm text-gray-600">Mis à disposition le : { product.start_at }</p>
-                                        <p className="text-sm text-gray-600">A retourner le : { product.end_at }</p>
-                                        <p className="text-sm text-gray-600">Durée de location : { product.duration } jours</p>
-                                    </div>
-                                    <div className="md:pl-3 md:w-1/2">
-                                        <div className="flex flex-row-reverse w-full">
-                                            <div className="items-center">
-                                                <div className="p-3 bg-gray-200 mx-auto focus:outline-none border rounded-lg">
-                                                    <BsBox2Fill size="0.9rem" className="inline mr-2" />
-                                                    { product.reservedQuantity } pièces
-                                                </div>
-                                                <a 
-                                                    href="#"
-                                                    onClick={(e) => { 
-                                                        removeProduct(e, product.id);
-                                                    }}
-                                                    className="mt-2 text-xs text-center underline text-red-500 cursor-pointer"
-                                                >
-                                                    <MdDelete size="1rem" className="inline mr-1" />
-                                                    Supprimer
-                                                </a>
+                                // Cart with products
+                                [
+                                    <p className="text-3xl font-black leading-10 text-gray-800 py-4">
+                                        <BsCartCheckFill size="2rem" className="inline mr-3" />
+                                        Votre panier de réservation
+                                    </p>,
+
+                                    <div className={ errorStartDate + " bg-red-100 border border-red-400 text-red-700 text-center px-4 py-3 rounded relative"} role="alert">
+                                        <strong className="font-bold">Attention ! </strong>
+                                        <span className="block sm:inline">La date de début de réservation de chaque produit doit être identique. Veuillez corriger ce problème.</span>
+                                    </div>,
+                                    
+                                    // Products list
+                                    products.map((product:any) => (
+                                        // Set start and end date of the global reservation
+                                        reservation_start_at == 0 ? ( 
+                                            reservation_start_at = product.start_at.getTime()
+                                        ) : (
+                                            reservation_start_at !== product.start_at.getTime() && errorStartDate == "hidden" ? (
+                                                // Set error message if start date is not the same for all products
+                                                setErrorStartDate("visible")
+                                            ) : ("") 
+                                        ),
+                                        
+                                        reservation_end_at = reservation_end_at < product.end_at.getTime() ? product.end_at.getTime() : reservation_end_at,
+                                        
+                                        <div className="md:flex items-center py-4 border-t border-gray-200">
+                                            <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                <img src={ product.picture } className="w-full h-full object-center object-cover" />
                                             </div>
-                                        </div>
-                                        <div className="pt-10">
-                                            <p className="text-base text-right font-black leading-none text-gray-600">Sous-total produit: { product.subtotal } €</p>
-                                        </div>
-                                    </div>
-                                </div>    
-                                ))
-                                && <div className="pt-5 mb-20">
+                                            <div className="w-1/2 ml-5 leading-none">
+                                                <p className="text-base font-black text-gray-800 pb-2">{ product.name }</p>
+                                                <p className="text-sm text-gray-600">Mis à disposition le : { product.start_at.toLocaleDateString("fr-FR") }</p>
+                                                <p className="text-sm text-gray-600">A retourner le : { product.end_at.toLocaleDateString("fr-FR") }</p>
+                                                <p className="text-sm text-gray-600">Durée de location : { product.duration } jours</p>
+                                            </div>
+                                            <div className="md:pl-3 md:w-1/2">
+                                                <div className="flex flex-row-reverse w-full">
+                                                    <div className="items-center">
+                                                        <div className="p-3 bg-gray-200 mx-auto focus:outline-none border rounded-lg">
+                                                            <BsBox2Fill size="0.9rem" className="inline mr-2" />
+                                                            { product.reservedQuantity } pièces
+                                                        </div>
+                                                        <a 
+                                                            href="#"
+                                                            onClick={(e) => { 
+                                                                removeProduct(e, product.id);
+                                                            }}
+                                                            className="mt-2 text-xs text-center underline text-red-500 cursor-pointer"
+                                                        >
+                                                            <MdDelete size="1rem" className="inline mr-1" />
+                                                            Supprimer
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div className="pt-10">
+                                                    <p className="text-base text-right font-black leading-none text-gray-600">Sous-total produit: { product.subtotal } €</p>
+                                                </div>
+                                            </div>
+                                        </div>    
+                                    )),
+                                    
+                                    // Shopping address
+                                    <div className="pt-5 mb-20">
                                         <div className="text-3xl font-black leading-10 text-gray-800 py-4 mt-5">
                                             <FaShippingFast className="inline mr-3" size="2rem" />
                                             Votre adresse de livraison
@@ -219,40 +265,44 @@ const ShoppingCart = () => {
                                                 <span>{ userPostalCode + ' ' + userCity }</span>
                                                 <span>{ userCountry }</span>
                                                 <div className="flex mt-4 space-x-3 md:mt-6">
-                                                    <a 
-                                                        href="#" 
-                                                        onClick={(e) => e.preventDefault() }
-                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">Modifier</a>
+                                                    <Link to={getIDToken() ? "/profile" : "/connect"} 
+                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                                                        Modifier
+                                                    </Link>
                                                     <a 
                                                         href="#" 
                                                         onClick={(e) => { 
                                                             e.preventDefault(); 
-                                                            setProfileClass("border-blue-700 bg-gray-300 dark:border-blue-700 dark:bg-gray-300");
+                                                            setProfileClass("border-orange-500 ring-4 ring-orange-500 bg-gray-100 dark:border-orange-500");
                                                             setPayButtonDisabled(false);
-                                                            setPayButtonColor("bg-green-500 border-green-600 ring-green-500"); 
+                                                            setPayButtonColor("bg-orange-500 border-orange-600 ring-orange-500"); 
                                                         }}
-                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Valider</a>
+                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:outline-none dark:bg-orange-600 dark:hover:bg-orange-700">Valider</a>
                                                 </div>
                                             </div>
                                         </div>
-                                </div>
-                                ) : (
-                                    <div className="flex items-stretch h-full">   
-                                        <div className="self-center w-full max-w-lg mx-auto text-center p-6 bg-white border border-gray-200 rounded-lg shadow">
-                                            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">Oups, votre panier de réservation est vide</h5>
-                                            <p className="mb-3 font-normal text-gray-700">Et si vous commenciez une nouvelle réservation ?</p>
-                                            <Link to={"/products/list/all"} className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                                                Voir tous nos produits
-                                                <svg className="w-3.5 h-3.5 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                                                </svg>
-                                            </Link>
-                                        </div>
                                     </div>
-                                )
-                            }
+                                ]
+                            ) : (
+                                // Empty cart
+                                <div className="flex items-stretch h-full">   
+                                    <div className="self-center w-full max-w-lg mx-auto text-center p-10 mt-[-6rem] bg-white border border-gray-300 rounded-lg shadow-lg">
+                                    <BsCartCheckFill size="2rem" className="inline mb-3" />
+                                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">Oups,<br /> Votre panier de réservation est vide</h5>
+                                        <p className="mb-3 font-normal text-gray-700">Et si vous commenciez une nouvelle réservation ?</p>
+                                        <Link to={"/products/list/all"} className="inline-flex items-center px-3 py-2 mt-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                                            Voir tous nos produits
+                                            <svg className="w-3.5 h-3.5 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                                            </svg>
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <div className="sm:w-1/2 md:w-1/4 xl:w-1/4 w-full bg-gray-100 h-full fixed bottom-0 right-0 top-[70px]">
+
+                        {/* Payment details */}
+                        <div className="sm:w-1/2 md:w-1/4 xl:w-1/4 w-full bg-gray-100 shadow-sm h-full fixed bottom-0 right-5 top-[4rem]">
                             <div className="flex flex-col md:h-screen p-10 pb-24 justify-between overflow-y-auto">
                                 <div>
                                     <p className="text-2xl text-center font-black leading-9 text-gray-800">Détails du paiement</p>

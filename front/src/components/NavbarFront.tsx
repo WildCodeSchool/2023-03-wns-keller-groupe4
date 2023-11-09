@@ -11,7 +11,7 @@ interface INavbarFrontProps {
 
 function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
     return (
-        <header className="sticky inset-0 z-10 h-max max-w-full rounded-none bg-white py-2 px-4 shadow-sm lg:px-8 lg:py-4">
+        <header className="sticky inset-0 z-10 h-max max-w-full rounded-none py-2 px-4 shadow-sm lg:px-8 lg:py-4 border-gray-200 bg-gray-100">
             <nav className="flex items-center justify-between">
                 {/* Open Menu Toggle */}
                 <div className="flex items-center gap-4">

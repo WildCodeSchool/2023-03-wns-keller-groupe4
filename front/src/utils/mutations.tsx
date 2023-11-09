@@ -83,3 +83,16 @@ export const REMOVE_PRODUCT_FROM_RESERVATION = gql(`
     }
   }
 `);
+
+export const UPDATE_RESERVATION_DATES = gql(`
+  mutation updateDateOfReservation($endAt: DateTime!, $startAt: DateTime!, $updateDateOfReservationId: String!) {
+    updateDateOfReservation(endAt: $endAt, startAt: $startAt, id: $updateDateOfReservationId) {
+      id
+      start_at
+      end_at
+      status
+      created_at
+      updated_at
+    }
+  }
+`);
