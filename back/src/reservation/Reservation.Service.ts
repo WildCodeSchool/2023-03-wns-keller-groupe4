@@ -1,3 +1,4 @@
+import { ILike, Raw } from "typeorm";
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
@@ -85,6 +86,26 @@ export default class ReservationService {
         }
     }
 
+    async getAllReservationByUserEmail(email: string): Promise<Reservation[]> {
+        console.log(email);
+
+        try {
+            const foundReservations = await this.repository.find({
+                relations: this.relations,
+                where: {
+                    user: {
+                        email: ILike(`%${email}%`),
+                    },
+                },
+            });
+            console.log(foundReservations);
+
+            return foundReservations;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
     /**
      * Renvois la réservation courante, c.a.d., le panier d'un utilisateur
      * @param id uuid de l'utilisateur qui possède la reservation
@@ -116,6 +137,26 @@ export default class ReservationService {
             return await this.repository.findOneOrFail({
                 relations: this.relations,
                 where: { id },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async searchOneReservationById(searchInput: string): Promise<any> {
+        console.log("searchInput", searchInput);
+
+        try {
+            return await this.repository.find({
+                relations: this.relations,
+                // we have to use Raw to type SQL query here
+                // cause we need to cast UUID as a string to be able to use ILIKE
+                where: {
+                    id: Raw(
+                        (alias) =>
+                            `CAST(${alias} AS TEXT) ILIKE '%${searchInput}%'`,
+                    ),
+                },
             });
         } catch (err: any) {
             throw new Error(err.message);

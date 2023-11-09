@@ -12,10 +12,10 @@ export default class ReservationResolver {
         this.service = new ReservationService();
     }
 
-
     @Mutation(() => Reservation)
     async createReservation(
-        @Arg("createReservationInput") createReservationInput: CreateReservationInput
+        @Arg("createReservationInput")
+        createReservationInput: CreateReservationInput,
     ): Promise<Reservation> {
         return await this.service.createOneReservation(createReservationInput);
     }
@@ -30,14 +30,24 @@ export default class ReservationResolver {
     // pour activer l'autorisation par token
     // @Authorized()
     @Query(() => [Reservation])
-    async getReservationsByUserId(@Arg("id") id: string): Promise<Reservation[]> {
+    async getReservationsByUserId(
+        @Arg("id") id: string,
+    ): Promise<Reservation[]> {
         return await this.service.getAllReservationsByUserId(id);
+    }
+    @Query(() => [Reservation])
+    async getReservationsByUserEmail(
+        @Arg("email") email: string,
+    ): Promise<Reservation[]> {
+        return await this.service.getAllReservationByUserEmail(email);
     }
 
     // pour activer l'autorisation par token
     // @Authorized()
     @Query(() => Reservation)
-    async getCartReservationOfUser(@Arg("id") id: string): Promise<Reservation> {
+    async getCartReservationOfUser(
+        @Arg("id") id: string,
+    ): Promise<Reservation> {
         return await this.service.getCartReservationOfUserByUserId(id);
     }
 
@@ -55,13 +65,17 @@ export default class ReservationResolver {
         @Arg("getProductReservationQuantityByDatesInput", { nullable: true })
         getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
     ): Promise<number> {
-        return await this.service.getOneProductReservationQuantityByDates(getProductReservationQuantityByDatesInput);
+        return await this.service.getOneProductReservationQuantityByDates(
+            getProductReservationQuantityByDatesInput,
+        );
+    }
+    @Query(() => [Reservation])
+    async searchReservationById(@Arg("id") id: string): Promise<any> {
+        return await this.service.searchOneReservationById(id);
     }
 
     @Mutation(() => Boolean)
-    async deleteReservationById(
-        @Arg("id") id: string
-    ): Promise<Boolean> {
+    async deleteReservationById(@Arg("id") id: string): Promise<Boolean> {
         return await this.service.deleteOneReservationById(id);
     }
 
@@ -71,13 +85,18 @@ export default class ReservationResolver {
         @Arg("startAt") startAt: Date,
         @Arg("endAt") endAt: Date,
     ): Promise<Reservation> {
-        return await this.service.updateDateOfOneReservation(id, startAt, endAt);
+        return await this.service.updateDateOfOneReservation(
+            id,
+            startAt,
+            endAt,
+        );
     }
 
     @Mutation(() => Reservation)
     async updateStatusOfReservation(
         @Arg("id") id: string,
-        @Arg("status", (type) => EnumStatusReservation) status: EnumStatusReservation,
+        @Arg("status", (type) => EnumStatusReservation)
+        status: EnumStatusReservation,
     ): Promise<Reservation> {
         return await this.service.updateStatusOfOneReservation(id, status);
     }
@@ -85,7 +104,8 @@ export default class ReservationResolver {
     @Mutation(() => Reservation)
     async updateDetailFromReservation(
         @Arg("id") id: string,
-        @Arg("detail", (type) => DetailReservationInput) detail: DetailReservationInput
+        @Arg("detail", (type) => DetailReservationInput)
+        detail: DetailReservationInput,
     ): Promise<Reservation> {
         return await this.service.updateDetailFromOneReservation(id, detail);
     }
@@ -93,14 +113,17 @@ export default class ReservationResolver {
     @Mutation(() => Reservation)
     async removeProductsFromReservation(
         @Arg("id") id: string,
-        @Arg("products_ids", (type) => [String]) productsIds: string[]
+        @Arg("products_ids", (type) => [String]) productsIds: string[],
     ): Promise<Reservation> {
-        return await this.service.removeManyProductsFromOneReservation(id, productsIds);
+        return await this.service.removeManyProductsFromOneReservation(
+            id,
+            productsIds,
+        );
     }
 
     @Mutation(() => Reservation)
     async removeAllProductsFromReservation(
-        @Arg("id") id: string
+        @Arg("id") id: string,
     ): Promise<Reservation> {
         return await this.service.removeAllProductsFromOneReservation(id);
     }

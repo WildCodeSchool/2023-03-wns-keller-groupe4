@@ -150,7 +150,7 @@ export const dataFixture = async (): Promise<void> => {
                 // add product detail to reservation detail by providing product id
 
                 for (let i = 0; i < 10; i++) {
-                    console.log("in for loop");
+                    // console.log("in for loop");
                     const startDate = new Date();
                     const endDate = new Date();
                     startDate.setDate(
@@ -159,8 +159,8 @@ export const dataFixture = async (): Promise<void> => {
                             : startDate.getDate() + i - (i - 2),
                     );
                     endDate.setDate(endDate.getDate() + i + 5);
-                    console.log("startDate", startDate);
-                    console.log("endDate", endDate);
+                    // console.log("startDate", startDate);
+                    // console.log("endDate", endDate);
 
                     await reservationService.updateDetailFromOneReservation(
                         userReservation.id,
