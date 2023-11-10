@@ -43,7 +43,7 @@ const ShoppingCart = () => {
     const [payButtonDisabled, setPayButtonDisabled] = useState(true);
     const [errorStartDate, setErrorStartDate] = useState("hidden");
 
-    const { loading, error, data, refetch } = useQuery(GET_USER_CART, {
+    const { loading, data, refetch } = useQuery(GET_USER_CART, {
         variables: { getCartReservationOfUserId: userId },
     });
 
@@ -54,8 +54,7 @@ const ShoppingCart = () => {
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
 
-    if (loading) return <p>Chargement du panier en cours...</p>;
-    // if (error) return <p>Erreur : Impossible d'afficher le panier</p>;
+    if (loading) return <p className="text-center p-10">Chargement du panier en cours...</p>;
 
     let cartSummary:ICartSummary|null = null;
     let cartReservations:IReservation[]|null = null;
@@ -177,22 +176,24 @@ const ShoppingCart = () => {
                 toast.error("Erreur : Impossible de supprimer le produit.");
             }
         }
-    }
+    };
 
     return (
         <>
             <div className="w-full h-full">
                 <div className="w-full absolute z-10 h-full overflow-x-hidden">
-                    <div className="flex md:flex-row flex-col" id="cart">
+                    <div className="flex md:flex-row flex-col">
                         <div 
-                            className="w-3/4 md:pl-10 pl-4 pr-10 md:pr-4 md:py-12 py-6 mr-5 bg-white overflow-y-auto overflow-x-hidden h-screen" 
+                            className="md:w-3/5 lg:w-3/4 w-full md:pl-10 pl-4 pr-4 md:pr-4 md:py-12 py-6 lg:mr-5 mr-0 bg-white overflow-y-auto overflow-x-hidden lg:h-screen h-auto" 
                             id="scroll"
                         >
-                        <PrevButton />
+                            <div className="lg:block hidden">
+                                <PrevButton />
+                            </div>
                             { products ? (
                                 // Cart with products
                                 [
-                                    <p className="text-3xl font-black leading-10 text-gray-800 py-4">
+                                    <p className="text-3xl text-center lg:text-left font-black leading-10 text-orange-600 py-4">
                                         <BsCartCheckFill size="2rem" className="inline mr-3" />
                                         Votre panier de réservation
                                     </p>,
@@ -216,18 +217,52 @@ const ShoppingCart = () => {
                                         
                                         reservation_end_at = reservation_end_at < product.end_at.getTime() ? product.end_at.getTime() : reservation_end_at,
                                         
-                                        <div className="md:flex items-center py-4 border-t border-gray-200">
-                                            <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                <img src={ product.picture } className="w-full h-full object-center object-cover" />
+                                        <div className="lg:flex items-center py-4 border-t border-gray-200">
+                                            {/* Product name (mobile) */}
+                                            <p className="block lg:hidden text-base text-center font-black text-blue-800 pb-2">{ product.name }</p>
+                                            
+                                            {/* Product image */}
+                                            <div className="basis-1/5 lg:basis-1/6 relative mx-auto lg:mx-0 pb-2 md:pb-0 overflow-hidden rounded-md border border-b-0 lg:border-b border-gray-200 shadow-md lg:shadow-none">
+                                                <img src={ product.picture } className="w-24 h-24 object-center object-cover mx-auto" />
+                                                
+                                                {/* Product quantity (mobile) */}
+                                                <span className="block lg:hidden absolute top-1 left-1 items-center rounded-md bg-gray-100 p-2 text-sm font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                                                    { product.reservedQuantity } pièces
+                                                </span>
+
+                                                {/* Delete button (mobile) */}
+                                                <a 
+                                                    className="block lg:hidden absolute top-1 right-1"
+                                                    href="#"
+                                                    onClick={(e) => { 
+                                                        removeProduct(e, product.id);
+                                                    }}
+                                                >
+                                                    <MdDelete size="1.4rem" />
+                                                </a>
                                             </div>
-                                            <div className="w-1/2 ml-5 leading-none">
+
+                                            {/* Product reserved dates and subtotal (mobile) */}
+                                            <div className="basis-1/5 lg:basis-1/6 relative visible lg:hidden mx-auto p-2 text-center lg:mx-0 mt-[-0.2rem] overflow-hidden rounded-md rounded-t-none border border-t-0 border-gray-200 bg-gray-200 shadow-md lg:shadow-none">
+                                                <p className="text-sm text-gray-600 leading-5">
+                                                    Location du { product.start_at.toLocaleDateString("fr-FR") } au { product.end_at.toLocaleDateString("fr-FR") } ({ product.duration } jours)
+                                                </p>
+                                                <p className="text-base font-black text-gray-800">
+                                                    Sous-total produit: { product.subtotal } €
+                                                </p>
+                                            </div>
+
+                                            {/* Product reserved dates and subtotal (desktop) */}
+                                            <div className="basis-4/5 lg:basis-3/6 hidden lg:block text-center lg:text-left mt-5 lg:mt-0 ml-0 lg:ml-5 leading-none">
                                                 <p className="text-base font-black text-gray-800 pb-2">{ product.name }</p>
                                                 <p className="text-sm text-gray-600">Mis à disposition le : { product.start_at.toLocaleDateString("fr-FR") }</p>
                                                 <p className="text-sm text-gray-600">A retourner le : { product.end_at.toLocaleDateString("fr-FR") }</p>
                                                 <p className="text-sm text-gray-600">Durée de location : { product.duration } jours</p>
                                             </div>
-                                            <div className="md:pl-3 md:w-1/2">
-                                                <div className="flex flex-row-reverse w-full">
+
+                                            {/* Product quantity and delete button (desktop) */}
+                                            <div className="basis-full lg:basis-2/6 sm:grow hidden lg:block ml-10">
+                                                <div className="lg:flex flex-row-reverse w-full">
                                                     <div className="items-center">
                                                         <div className="p-3 bg-gray-200 mx-auto focus:outline-none border rounded-lg">
                                                             <BsBox2Fill size="0.9rem" className="inline mr-2" />
@@ -252,13 +287,13 @@ const ShoppingCart = () => {
                                         </div>    
                                     )),
                                     
-                                    // Shopping address
-                                    <div className="pt-5 mb-20">
-                                        <div className="text-3xl font-black leading-10 text-gray-800 py-4 mt-5">
+                                    // Shipping address
+                                    <div className="mt-5 mb-20">
+                                        <div className="text-3xl text-center lg:text-left font-black leading-10 text-orange-600 py-4 mt-5">
                                             <FaShippingFast className="inline mr-3" size="2rem" />
                                             Votre adresse de livraison
                                         </div>
-                                        <div className={ "w-full max-w-sm items-center border rounded-lg shadow" + profileClass}>
+                                        <div className={ "w-full max-w-sm items-center mx-auto mt-5 border rounded-lg shadow" + profileClass}>
                                             <div className="flex flex-col items-center p-5 text-sm text-gray-600">
                                                 <h5 className="mb-1 text-xl font-medium text-gray-800">{ userFirstName + ' ' + userLastName }</h5>
                                                 <span>{ userStreet }</span>
@@ -285,8 +320,8 @@ const ShoppingCart = () => {
                                 ]
                             ) : (
                                 // Empty cart
-                                <div className="flex items-stretch h-full">   
-                                    <div className="self-center w-full max-w-lg mx-auto text-center p-10 mt-[-6rem] bg-white border border-gray-300 rounded-lg shadow-lg">
+                                <div className="flex items-stretch sm:w-full w-auto lg:h-full">   
+                                    <div className="self-center w-full max-w-lg mx-auto text-center p-10 lg:mt-[-6rem] mt-0 bg-white border border-gray-300 rounded-lg shadow-lg">
                                     <BsCartCheckFill size="2rem" className="inline mb-3" />
                                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">Oups,<br /> Votre panier de réservation est vide</h5>
                                         <p className="mb-3 font-normal text-gray-700">Et si vous commenciez une nouvelle réservation ?</p>
@@ -302,8 +337,8 @@ const ShoppingCart = () => {
                         </div>
 
                         {/* Payment details */}
-                        <div className="sm:w-1/2 md:w-1/4 xl:w-1/4 w-full bg-gray-100 shadow-sm h-full fixed bottom-0 top-[4rem]">
-                            <div className="flex flex-col md:h-screen p-10 pb-24 justify-between overflow-y-auto">
+                        <div className="md:w-1/2 lg:w-1/4 w-full bg-gray-100 shadow-sm h-full sm:relative lg:fixed lg:bottom-0 lg:right-0 lg:top-0">
+                            <div className="flex flex-col md:h-full p-10 pb-24 justify-between overflow-y-hidden">
                                 <div>
                                     <p className="text-2xl text-center font-black leading-9 text-gray-800">Détails du paiement</p>
                                     <div className="flex items-center justify-between pt-16">
