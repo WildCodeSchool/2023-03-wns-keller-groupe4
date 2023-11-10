@@ -10,140 +10,119 @@ import {
 } from "../../utils/queries";
 import Calendar from "react-calendar";
 import { createTypeReferenceDirectiveResolutionCache } from "typescript";
-
-type ValuePiece = Date | null;
-
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+import {
+    EnumStatusReservation,
+    SearchReservationInput,
+} from "../../__generated__/graphql";
 
 const AdminReservationList = () => {
-    const [idSearchInput, setIdSearchInput] = useState("");
-    const [emailSearchInput, setEmailSearchInput] = useState("");
-    // const [dateSearchInput, setDateSearchInput] = useState("");
-    const [filterClear, setFilterClear] = useState(false);
-    const [dateSearchInput, setDateSearchInput] = useState({
-        startDate: "",
-        endDate: "",
-    });
-    const [multipleFilters, setMultipleFilters] = useState(false);
-
-    // const [dateValue, setDateValue] = useState<Value>(new Date());
-
-    // const { loading, error, data } = useQuery(GET_RESERVATIONS);
-
-    const [getAllReservation] = useLazyQuery(GET_RESERVATIONS);
-    const [getReservationByUserEmail, { data: emailFilteredReservations }] =
-        useLazyQuery(GET_RESERVATIONS_BY_USER_EMAIL);
-
-    const [searchReservationById, { data: idFilteredReservations }] =
-        useLazyQuery(SEARCH_RESERVATION_BY_ID);
-    const [searchReservationsByDate, { data: dateFilteredReservations }] =
-        useLazyQuery(GET_RESERVATIONS_BY_DATES);
     const [filteredReservationList, setFilteredReservationList] =
         useState<any>();
+    // const [idSearchInput, setIdSearchInput] = useState("");
+    // const [emailSearchInput, setEmailSearchInput] = useState("");
+    // const [dateSearchInput, setDateSearchInput] = useState("");
+    const [filterClear, setFilterClear] = useState(false);
+    // const [dateSearchInput, setDateSearchInput] = useState({
+    //     startDate: "",
+    //     endDate: "",
+    // });
+    let reservationStatusEnum = EnumStatusReservation;
 
+    const reservationStatusOptions = Object.values(reservationStatusEnum).map(
+        (status) => {
+            return <option value={status}>{status}</option>;
+        },
+    );
+
+    const [searchInputs, setSearchInputs] = useState({
+        idSearchInput: "",
+        emailSearchInput: "",
+        dateSearchInput: {
+            startDate: "",
+            endDate: "",
+        },
+        status: "",
+    });
+
+    const [getAllReservation] = useLazyQuery(GET_RESERVATIONS);
     const [searchReservationByFilters, { data: filteredReservations }] =
         useLazyQuery(GET_RESERVATIONS_BY_SEARCH_FILTER);
 
     useEffect(() => {
-        if (!idSearchInput && !emailSearchInput) {
+        getAllReservation().then((res) => {
+            setFilteredReservationList(res.data?.getReservations);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        if (areAllValuesEmpty(searchInputs)) {
             getAllReservation().then((res) => {
                 setFilteredReservationList(res.data?.getReservations);
             });
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterClear]);
 
     console.log("filteredList", filteredReservationList);
 
-    // I need a submit fonction for 3 possibles input (id, email, date), the functions has to be called when the user click on the button or press enter
-
     async function handleSubmit(e: any) {
         e.preventDefault();
         console.log("in submit function");
 
-        console.log(dateSearchInput.startDate);
-
         const searchReservationInput = {
-            id: idSearchInput,
-            userEmail: emailSearchInput,
+            id: searchInputs.idSearchInput,
+            userEmail: searchInputs.emailSearchInput,
             date: {
                 startDate:
-                    dateSearchInput.startDate === ""
+                    searchInputs.dateSearchInput.startDate === ""
                         ? undefined
-                        : dateSearchInput.startDate,
+                        : searchInputs.dateSearchInput.startDate,
                 endDate:
-                    dateSearchInput.endDate === ""
+                    searchInputs.dateSearchInput.endDate === ""
                         ? undefined
-                        : dateSearchInput.endDate,
+                        : searchInputs.dateSearchInput.endDate,
             },
-            status: null,
+            status:
+                searchInputs.status === ""
+                    ? undefined
+                    : Object.values(EnumStatusReservation).find(
+                          (value) => value === searchInputs.status,
+                      ),
         };
-        console.log(searchReservationInput);
 
         const res = await searchReservationByFilters({
             variables: {
                 searchReservationInput,
             },
         });
-
-        console.log(dateSearchInput.startDate);
-        console.log(
-            "filteredRequestResponse",
-            res.data?.getReservationsBySearchFilter,
-        );
-
         setFilteredReservationList(res.data?.getReservationsBySearchFilter);
-
-        // if (emailSearchInput) {
-        //     console.log("emailSearchInput", emailSearchInput);
-        //     const res = await getReservationByUserEmail({
-        //         variables: {
-        //             email: emailSearchInput,
-        //         },
-        //     });
-        //     console.log(
-        //         "getResaByUserEmailResponse",
-        //         res.data?.getReservationsByUserEmail,
-        //     );
-
-        //     setFilteredReservationList(res.data?.getReservationsByUserEmail);
-        //     if (emailSearchInput && multipleFilters) {
-        // }
-
-        // if (idSearchInput) {
-        //     console.log("idSearchInput", idSearchInput);
-
-        //     const res = await searchReservationById({
-        //         variables: {
-        //             searchReservationByIdId: idSearchInput,
-        //         },
-        //     });
-
-        //     setFilteredReservationList(res.data?.searchReservationById);
-        // }
-
-        // // setEmailSearchInput("");
-
-        // if (dateSearchInput.startDate || dateSearchInput.endDate) {
-        //     const res = await searchReservationsByDate({
-        //         variables: {
-        //             startDate: dateSearchInput.startDate,
-        //             endDate: dateSearchInput.endDate,
-        //         },
-        //     });
-        //     setFilteredReservationList(res.data?.getReservationsByDates);
-        // }
     }
 
     function handleFilterClear() {
-        setIdSearchInput("");
-        setEmailSearchInput("");
-        setDateSearchInput({
-            startDate: "",
-            endDate: "",
+        setSearchInputs({
+            idSearchInput: "",
+            emailSearchInput: "",
+            dateSearchInput: {
+                startDate: "",
+                endDate: "",
+            },
+            status: "",
         });
 
         setFilterClear(!filterClear);
+    }
+
+    function areAllValuesEmpty(obj: SearchReservationInput | Object): boolean {
+        return Object.values(obj).every((objValues) => {
+            if (typeof objValues === "object") {
+                return areAllValuesEmpty(objValues);
+            } else if (objValues !== "") {
+                return false;
+            }
+            return true;
+        });
     }
 
     return (
@@ -161,8 +140,13 @@ const AdminReservationList = () => {
                             type="search"
                             name="idSearchInput"
                             id="idSearchInput"
-                            value={idSearchInput}
-                            onChange={(e) => setIdSearchInput(e.target.value)}
+                            value={searchInputs.idSearchInput}
+                            onChange={(e) =>
+                                setSearchInputs((prevInputs) => ({
+                                    ...prevInputs,
+                                    idSearchInput: e.target.value,
+                                }))
+                            }
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
                         />
@@ -177,12 +161,15 @@ const AdminReservationList = () => {
                             type="date"
                             name="startDateSearchInput"
                             id="startDateSearchInput"
-                            value={dateSearchInput.startDate}
+                            value={searchInputs.dateSearchInput.startDate}
                             onChange={(e) =>
-                                setDateSearchInput({
-                                    ...dateSearchInput,
-                                    startDate: e.target.value,
-                                })
+                                setSearchInputs((prevInputs) => ({
+                                    ...prevInputs,
+                                    dateSearchInput: {
+                                        ...prevInputs.dateSearchInput,
+                                        startDate: e.target.value,
+                                    },
+                                }))
                             }
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
@@ -197,12 +184,15 @@ const AdminReservationList = () => {
                             type="date"
                             name="endDateSearchInput"
                             id="endDateSearchInput"
-                            value={dateSearchInput.endDate}
+                            value={searchInputs.dateSearchInput.endDate}
                             onChange={(e) =>
-                                setDateSearchInput({
-                                    ...dateSearchInput,
-                                    endDate: e.target.value,
-                                })
+                                setSearchInputs((prevInputs) => ({
+                                    ...prevInputs,
+                                    dateSearchInput: {
+                                        ...prevInputs.dateSearchInput,
+                                        endDate: e.target.value,
+                                    },
+                                }))
                             }
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
@@ -220,13 +210,42 @@ const AdminReservationList = () => {
                             type="search"
                             name="emailSearchInput"
                             id="emailSearchInput"
-                            value={emailSearchInput}
+                            value={searchInputs.emailSearchInput}
                             onChange={(e) =>
-                                setEmailSearchInput(e.target.value)
+                                setSearchInputs((prevInputs) => ({
+                                    ...prevInputs,
+                                    emailSearchInput: e.target.value,
+                                }))
                             }
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
                         />
+                        <button className="" type="submit">
+                            Submit
+                        </button>
+                    </form>
+                    <form
+                        className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0"
+                        onSubmit={handleSubmit}
+                    >
+                        <label htmlFor="search">Par Status</label>
+                        <select
+                            className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
+                            name="statusSearchInput"
+                            id="statusSearchInput"
+                            onChange={(e) =>
+                                setSearchInputs((prevInputs) => ({
+                                    ...prevInputs,
+                                    status: e.target.value,
+                                }))
+                            }
+                            value={searchInputs.status}
+                        >
+                            <option defaultChecked value="">
+                                Status
+                            </option>
+                            {reservationStatusOptions}
+                        </select>
                         <button className="" type="submit">
                             Submit
                         </button>
@@ -259,6 +278,12 @@ const AdminReservationList = () => {
                                     Client{" "}
                                 </button>
                             </th>
+                            <th className="border-b p-4 w-9/12">
+                                <button className="opacity-50 flex items-center gap-2">
+                                    {" "}
+                                    status{" "}
+                                </button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -283,6 +308,9 @@ const AdminReservationList = () => {
                                 </td>
                                 <td className="border-b p-4">
                                     {reservation.user.email}
+                                </td>
+                                <td className="border-b p-4">
+                                    {reservation.status}
                                 </td>
                             </tr>
                         ))}
