@@ -61,15 +61,28 @@ const AdminReservationList = () => {
         e.preventDefault();
         console.log("in submit function");
 
+        console.log(dateSearchInput.startDate);
+
+        const searchReservationInput = {
+            id: idSearchInput,
+            userEmail: emailSearchInput,
+            date: {
+                startDate:
+                    dateSearchInput.startDate === ""
+                        ? undefined
+                        : dateSearchInput.startDate,
+                endDate:
+                    dateSearchInput.endDate === ""
+                        ? undefined
+                        : dateSearchInput.endDate,
+            },
+            status: null,
+        };
+        console.log(searchReservationInput);
+
         const res = await searchReservationByFilters({
             variables: {
-                searchReservationInput: {
-                    id: idSearchInput,
-                    userEmail: emailSearchInput,
-                    date: {
-                        startDate: "2023/11/10",
-                    },
-                },
+                searchReservationInput,
             },
         });
 
@@ -79,7 +92,7 @@ const AdminReservationList = () => {
             res.data?.getReservationsBySearchFilter,
         );
 
-        // setFilteredReservationList(res.data?.getReservationsBySearchFilter);
+        setFilteredReservationList(res.data?.getReservationsBySearchFilter);
 
         // if (emailSearchInput) {
         //     console.log("emailSearchInput", emailSearchInput);

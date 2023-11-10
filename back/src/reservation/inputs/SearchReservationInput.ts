@@ -22,7 +22,6 @@ export class SearchReservationInput {
 
     @Field({ nullable: true })
     @IsOptional()
-    @IsEmail()
     userEmail?: string;
 
     @Field(() => EnumStatusReservation, {
@@ -36,8 +35,8 @@ export class SearchReservationInput {
 @InputType()
 class SearchReservationDateInput {
     @Field(() => Date, { nullable: true })
-    startDate: Date;
+    startDate?: Date;
 
     @Field(() => Date, { nullable: true })
-    endDate: Date;
+    endDate?: Date;
 }
