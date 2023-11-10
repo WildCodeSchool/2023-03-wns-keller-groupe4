@@ -2,14 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import {
     GET_RESERVATIONS,
-    GET_RESERVATIONS_BY_DATES,
-    GET_RESERVATIONS_BY_ID,
     GET_RESERVATIONS_BY_SEARCH_FILTER,
-    GET_RESERVATIONS_BY_USER_EMAIL,
-    SEARCH_RESERVATION_BY_ID,
 } from "../../utils/queries";
-import Calendar from "react-calendar";
-import { createTypeReferenceDirectiveResolutionCache } from "typescript";
 import {
     EnumStatusReservation,
     SearchReservationInput,
@@ -18,21 +12,6 @@ import {
 const AdminReservationList = () => {
     const [filteredReservationList, setFilteredReservationList] =
         useState<any>();
-    // const [idSearchInput, setIdSearchInput] = useState("");
-    // const [emailSearchInput, setEmailSearchInput] = useState("");
-    // const [dateSearchInput, setDateSearchInput] = useState("");
-    const [filterClear, setFilterClear] = useState(false);
-    // const [dateSearchInput, setDateSearchInput] = useState({
-    //     startDate: "",
-    //     endDate: "",
-    // });
-    let reservationStatusEnum = EnumStatusReservation;
-
-    const reservationStatusOptions = Object.values(reservationStatusEnum).map(
-        (status) => {
-            return <option value={status}>{status}</option>;
-        },
-    );
 
     const [searchInputs, setSearchInputs] = useState({
         idSearchInput: "",
@@ -44,9 +23,20 @@ const AdminReservationList = () => {
         status: "",
     });
 
+    const [filterClear, setFilterClear] = useState(false);
+
     const [getAllReservation] = useLazyQuery(GET_RESERVATIONS);
+
     const [searchReservationByFilters, { data: filteredReservations }] =
         useLazyQuery(GET_RESERVATIONS_BY_SEARCH_FILTER);
+
+    let reservationStatusEnum = EnumStatusReservation;
+
+    const reservationStatusOptions = Object.values(reservationStatusEnum).map(
+        (status) => {
+            return <option value={status}>{status}</option>;
+        },
+    );
 
     useEffect(() => {
         getAllReservation().then((res) => {
@@ -154,7 +144,6 @@ const AdminReservationList = () => {
                             Submit
                         </button>
                     </form>
-                    {/* <Calendar onChange={setDateValue} value={dateValue} /> */}
                     <form className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
                         <label htmlFor="search">Par id</label>
                         <input
@@ -174,9 +163,6 @@ const AdminReservationList = () => {
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
                         />
-                        {/* <button className="hidden" type="submit">
-                            Submit
-                        </button> */}
                     </form>
                     <form className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
                         <label htmlFor="search">Par id</label>
@@ -197,14 +183,8 @@ const AdminReservationList = () => {
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
                         />
-                        {/* <button className="hidden" type="submit">
-                            Submit
-                        </button> */}
                     </form>
-                    <form
-                        className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0"
-                        onSubmit={handleSubmit}
-                    >
+                    <form className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0">
                         <label htmlFor="search">Par Email</label>
                         <input
                             type="search"
@@ -220,9 +200,6 @@ const AdminReservationList = () => {
                             className="px-2 py-1 w-full rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                             placeholder="Rechercher une réservation"
                         />
-                        <button className="" type="submit">
-                            Submit
-                        </button>
                     </form>
                     <form
                         className="px-2 my-4 flex gap-4 justify-between sm:justify-center sm:p-0"

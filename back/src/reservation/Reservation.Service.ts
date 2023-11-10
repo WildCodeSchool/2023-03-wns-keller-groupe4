@@ -87,102 +87,6 @@ export default class ReservationService {
         }
     }
 
-    async getAllReservationsByUserEmail(email: string): Promise<Reservation[]> {
-        console.log(email);
-
-        try {
-            const foundReservations = await this.repository.find({
-                relations: this.relations,
-                where: {
-                    user: {
-                        email: ILike(`%${email}%`),
-                    },
-                },
-            });
-            console.log(foundReservations);
-
-            return foundReservations;
-        } catch (err: any) {
-            throw new Error(err.message);
-        }
-    }
-
-    async getAllReservationsByDate(
-        startDate?: Date,
-        endDate?: Date,
-    ): Promise<Reservation[]> {
-        console.log("startDate", startDate);
-        console.log("endDate", endDate);
-        try {
-            if (startDate === undefined || endDate === undefined) {
-                throw new Error("startDate or endDate are required");
-            }
-            let whereConditions: Record<string, any> = {};
-
-            if (startDate && endDate) {
-                whereConditions = {
-                    start_at: MoreThanOrEqual(startDate),
-                    end_at: LessThanOrEqual(endDate),
-                };
-            }
-
-            if (startDate && !endDate) {
-                whereConditions = {
-                    start_at: MoreThanOrEqual(startDate),
-                };
-            }
-
-            if (!startDate && endDate) {
-                whereConditions = {
-                    end_at: LessThanOrEqual(endDate),
-                };
-            }
-
-            const foundReservations = await this.repository.find({
-                relations: this.relations,
-                where: whereConditions,
-            });
-
-            console.log(foundReservations);
-
-            return foundReservations ?? [];
-
-            // try {
-            //     if (startDate && endDate) {
-            //         foundReservations = await this.repository.find({
-            //             relations: this.relations,
-            //             where: {
-            //                 start_at: MoreThanOrEqual(startDate),
-            //                 end_at: LessThanOrEqual(endDate),
-            //             },
-            //         });
-            //     }
-            //     if (startDate && !endDate) {
-            //         foundReservations = await this.repository.find({
-            //             relations: this.relations,
-            //             where: {
-            //                 start_at: MoreThanOrEqual(startDate),
-            //             },
-            //         });
-            //     }
-            //     if (!startDate && endDate) {
-            //         foundReservations = await this.repository.find({
-            //             relations: this.relations,
-            //             where: {
-            //                 end_at: LessThanOrEqual(endDate),
-            //             },
-            //         });
-            //     }
-            //     console.log(foundReservations);
-
-            //     return foundReservations ?? [];
-        } catch (err: any) {
-            console.log(err.message);
-
-            throw new Error(err.message);
-        }
-    }
-
     /**
      * Renvois les réservations correspondant aux critères de recherche
      * @param searchInput critères de recherche
@@ -258,26 +162,6 @@ export default class ReservationService {
             return await this.repository.findOneOrFail({
                 relations: this.relations,
                 where: { id },
-            });
-        } catch (err: any) {
-            throw new Error(err.message);
-        }
-    }
-
-    async searchOneReservationById(searchInput: string): Promise<any> {
-        console.log("searchInput", searchInput);
-
-        try {
-            return await this.repository.find({
-                relations: this.relations,
-                // we have to use Raw to type SQL query here
-                // cause we need to cast UUID as a string to be able to use ILIKE
-                where: {
-                    id: Raw(
-                        (alias) =>
-                            `CAST(${alias} AS TEXT) ILIKE '%${searchInput}%'`,
-                    ),
-                },
             });
         } catch (err: any) {
             throw new Error(err.message);

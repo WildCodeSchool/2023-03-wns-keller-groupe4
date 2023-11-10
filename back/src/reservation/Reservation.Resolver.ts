@@ -35,11 +35,15 @@ export default class ReservationResolver {
     ): Promise<Reservation[]> {
         return await this.service.getAllReservationsByUserId(id);
     }
+
     @Query(() => [Reservation])
-    async getReservationsByUserEmail(
-        @Arg("email") email: string,
+    async getReservationsBySearchFilter(
+        @Arg("searchReservationInput")
+        searchReservationInput: SearchReservationInput,
     ): Promise<Reservation[]> {
-        return await this.service.getAllReservationByUserEmail(email);
+        return await this.service.getReservationsBySearchFilter(
+            searchReservationInput,
+        );
     }
 
     // pour activer l'autorisation par token
