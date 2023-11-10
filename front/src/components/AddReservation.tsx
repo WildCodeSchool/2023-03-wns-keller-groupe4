@@ -57,14 +57,14 @@ const AddReservation = ({
         setDisabledConfirmButton(true);
         setDisabledQuantity(true);
         setOptions([0]);
-        onDateChange(undefined);
+        SetDate(undefined);
     }
 
     const userId = getIDToken().length > 0 ? decodeToken(getIDToken()).userId : "";
     const cancelButtonRef = useRef(null);
 
-    const [date, onDateChange] = useState<DateValue>();
-    const [availableQuantity, setAvailableQuantity] = useState(5); // TODO: Refetch quantity on date change
+    const [date, SetDate] = useState<DateValue>();
+    const [availableQuantity, setAvailableQuantity] = useState(5);
     const [selectedQuantity, setSelectedQuantity] = useState(0);
     const [disabledQuantity, setDisabledQuantity] = useState(true);
     const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
@@ -216,7 +216,7 @@ const AddReservation = ({
                                                     </div>
                                                     <div className="mt-2">
                                                         <Calendar 
-                                                            onChange={onDateChange} 
+                                                            onChange={SetDate} 
                                                             minDate={new Date()}
                                                             value={date} 
                                                             tileDisabled={tileDisabled} 
