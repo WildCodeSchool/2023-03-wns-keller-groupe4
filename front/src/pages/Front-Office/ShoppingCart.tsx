@@ -302,7 +302,7 @@ const ShoppingCart = () => {
                         </div>
 
                         {/* Payment details */}
-                        <div className="sm:w-1/2 md:w-1/4 xl:w-1/4 w-full bg-gray-100 shadow-sm h-full fixed bottom-0 right-5 top-[4rem]">
+                        <div className="sm:w-1/2 md:w-1/4 xl:w-1/4 w-full bg-gray-100 shadow-sm h-full fixed bottom-0 top-[4rem]">
                             <div className="flex flex-col md:h-screen p-10 pb-24 justify-between overflow-y-auto">
                                 <div>
                                     <p className="text-2xl text-center font-black leading-9 text-gray-800">Détails du paiement</p>
