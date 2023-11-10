@@ -72,7 +72,6 @@ const AddReservation = ({
     const [disabledQuantity, setDisabledQuantity] = useState(true);
     const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
     const [options, setOptions] = useState([0]); 
-    const [dataProductReserved, setDataProductReserved] = useState<any>([]);
 
     // Component to display a toast message when non-logged user try to add a product to cart
     const LoginButton = ({ closeToast, toastProps }:any) => (
@@ -88,7 +87,7 @@ const AddReservation = ({
     );
 
     // Details of a product already rented
-    const [productReserved, { loading, error, data }] = useLazyQuery(GET_DETAILS_OF_ONE_PRODUCT_RESERVED);
+    const [productReserved] = useLazyQuery(GET_DETAILS_OF_ONE_PRODUCT_RESERVED);
 
     // User cart
     const GetUserCart = useQuery(GET_USER_CART, {
@@ -99,9 +98,9 @@ const AddReservation = ({
     const [createCart] = useMutation(CREATE_CART);
     const [updateCart] = useMutation(UPDATE_CART);
 
-    useEffect(() => {
-        if(date && date[0] && date[1]) {
-            let dataProduct = productReserved({
+    const p = async() => {
+        if(date && Array.isArray(date) && date[0] && date[1]) {
+            let { data } = await productReserved({
                 variables: { 
                     getProductReservedInput: {
                         product_id: productId,
@@ -109,43 +108,44 @@ const AddReservation = ({
                         end_at: date?date[1].toLocaleString("en-US", {timeZone: "Europe/Paris"}):null,
                     },
                 },
-            })
-            .then((result) => {
-                return result;
-            })
-            .catch((error) => {
-                console.log(error);
             });
 
             let stockAvailable = 0;
             let reservedQuantity = 0;
 
             const p = data?.getDetailsOfOneProductReserved.map((product:any) => {
+                console.log("MAP : "+product.reservationsDetails[0].quantity)
                 return reservedQuantity += product.reservationsDetails[0].quantity;
             });
             
             stockAvailable = stock - reservedQuantity;
-            setAvailableQuantity(stockAvailable);
+            stockAvailable = stockAvailable < 0 ? 0 : stockAvailable;
+            // setAvailableQuantity(stockAvailable);
 
-            console.log(reservedQuantity);
-        }
-        
-        // If there is a quantity and a date range is selected then we update options values with quantity
-        if (availableQuantity > 0 && typeof date !== 'undefined') {
-            const formSelectOptions = [];
-            for (let i = 1; i <= availableQuantity; i++) {
-                formSelectOptions.push(i);
+            // If there is a quantity and a date range is selected then we update options values with quantity
+            if (stockAvailable > 0 && typeof date !== 'undefined') {
+                const formSelectOptions = [];
+                for (let i = 1; i <= stockAvailable; i++) {
+                    formSelectOptions.push(i);
+                }
+                setOptions(formSelectOptions);
+                setDisabledQuantity(false);
+
+                // If selected quantity is > 0 then we enable the confirm button
+                if (selectedQuantity > 0) setDisabledConfirmButton(false);
+            } else {
+                initForm();
             }
-            setOptions(formSelectOptions);
-            setDisabledQuantity(false);
-            // If selected quantity is > 0 then we enable the confirm button
-            if (selectedQuantity > 0) setDisabledConfirmButton(false);
-        } else {
-            initForm();
+
+            // Close the calendar
+            if (openModal === true) setOpenModal(true);
+            else setOpenModal(false);
         }
-        if (openModal === true) setOpenModal(true);
-        else setOpenModal(false);
-    }, [selectedQuantity, date]);
+    }
+
+    useEffect(() => {
+        p(); 
+    }, [date, selectedQuantity]);
 
     const submitForm = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
