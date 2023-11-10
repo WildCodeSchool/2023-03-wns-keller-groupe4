@@ -125,64 +125,6 @@ export const GET_ONE_PRODUCT = gql(`
   }
 `);
 
-// export const GET_CART_BY_USER = gql(`
-//   query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
-//     getCartReservationOfUser(id: $getCartReservationOfUserId) {
-//       id
-//       start_at
-//       end_at
-//       status
-//       created_at
-//       updated_at
-//       user {
-//         id
-//       }
-//       reservationsDetails {
-//         quantity
-//         start_at
-//         end_at
-//         product {
-//           id
-//         }
-//       }
-//     }
-//   }
-// `);
-
-// export const GET_USER_CART = gql(`
-//   query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
-//     getCartReservationOfUser(id: $getCartReservationOfUserId) {
-//       id
-//       start_at
-//       end_at
-//       status
-//       reservationsDetails {
-//         start_at
-//         end_at
-//         quantity
-//         product {
-//           id
-//           name
-//           picture
-//           price
-//           stock
-//           available
-//         }
-//       }
-//       user {
-//         email
-//         user_profile {
-//           firstname
-//           lastname
-//           street
-//           postal_code
-//           country
-//         }
-//       }
-//     }
-//   }
-// `);
-
 export const GET_USER_CART = gql(`
   query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
     getCartReservationOfUser(id: $getCartReservationOfUserId) {
@@ -205,6 +147,23 @@ export const GET_USER_CART = gql(`
       }
       user {
         email
+      }
+    }
+  }
+`);
+
+export const GET_DETAILS_OF_ONE_PRODUCT_RESERVED = gql(`
+  query GetDetailsOfOneProductReserved($getProductReservedInput: GetProductReservedInput) {
+    getDetailsOfOneProductReserved(getProductReservedInput: $getProductReservedInput) {
+      reservationsDetails {
+        quantity
+        start_at
+        end_at
+        product {
+          id
+          name
+          stock
+        }
       }
     }
   }
