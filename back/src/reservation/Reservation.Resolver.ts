@@ -4,6 +4,7 @@ import ReservationService from "./Reservation.Service";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
 import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
+import { SearchReservationInput } from "./inputs/SearchReservationInput";
 
 @Resolver()
 export default class ReservationResolver {
@@ -27,6 +28,15 @@ export default class ReservationResolver {
         return await this.service.getAllReservations();
     }
 
+    @Query(() => Number)
+    async getReservationCountBySearchInput(
+        @Arg("searchReservationInput", { nullable: true })
+        searchReservationInput: SearchReservationInput,
+    ): Promise<Number> {
+        return await this.service.getReservationsCountBySearchFilter(
+            searchReservationInput,
+        );
+    }
     // pour activer l'autorisation par token
     // @Authorized()
     @Query(() => [Reservation])
@@ -38,7 +48,7 @@ export default class ReservationResolver {
 
     @Query(() => [Reservation])
     async getReservationsBySearchFilter(
-        @Arg("searchReservationInput")
+        @Arg("searchReservationInput", { nullable: true })
         searchReservationInput: SearchReservationInput,
     ): Promise<Reservation[]> {
         return await this.service.getReservationsBySearchFilter(

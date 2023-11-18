@@ -1,4 +1,11 @@
-import { ILike, LessThanOrEqual, MoreThanOrEqual, Raw } from "typeorm";
+import {
+    FindOptionsWhere,
+    ILike,
+    LessThanOrEqual,
+    MoreThanOrEqual,
+    Not,
+    Raw,
+} from "typeorm";
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
@@ -60,6 +67,8 @@ export default class ReservationService {
         try {
             return await this.repository.find({
                 relations: this.relations,
+                take: 2,
+                skip: 2,
             });
         } catch (err: any) {
             console.log();
@@ -95,35 +104,100 @@ export default class ReservationService {
     async getReservationsBySearchFilter(
         searchInput: SearchReservationInput,
     ): Promise<Reservation[]> {
-        const where: any = {};
+        const where: FindOptionsWhere<Reservation> = {};
 
-        if (searchInput.status) {
+        console.log(searchInput);
+
+        if (searchInput === undefined) {
+            console.log("searchInput undefined");
+
+            where.status = where.status = Not(EnumStatusReservation.IN_CART);
+        }
+
+        if (searchInput?.status) {
             where.status = searchInput.status;
         }
 
-        if (searchInput.userEmail) {
+        if (searchInput?.userEmail) {
             where.user = {
                 email: ILike(`%${searchInput.userEmail}%`),
             };
         }
 
-        if (searchInput.date?.startDate) {
+        if (searchInput?.date?.startDate) {
             where.start_at = MoreThanOrEqual(searchInput.date?.startDate);
         }
 
-        if (searchInput.date?.endDate) {
+        if (searchInput?.date?.endDate) {
             where.end_at = LessThanOrEqual(searchInput.date?.endDate);
         }
 
-        if (searchInput.id) {
+        if (searchInput?.id) {
             where.id = Raw(
                 (alias) => `CAST(${alias} AS TEXT) ILIKE '%${searchInput.id}%'`,
             );
         }
 
+        const { limit, offset, orderBy, orderDirection } = searchInput ?? {};
+
+        console.log(limit);
+
         try {
             return await this.repository.find({
                 relations: this.relations,
+                where,
+                take: limit,
+                skip: offset,
+                order: {
+                    [orderBy]: orderDirection,
+                },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async getReservationsCountBySearchFilter(
+        searchInput: SearchReservationInput,
+    ): Promise<number> {
+        const where: FindOptionsWhere<Reservation> = {};
+
+        console.log("search input in count", searchInput);
+
+        if (searchInput === undefined) {
+            where.status = where.status = Not(EnumStatusReservation.IN_CART);
+        }
+
+        if (searchInput?.status) {
+            where.status = searchInput.status;
+        }
+
+        if (searchInput?.userEmail) {
+            where.user = {
+                email: ILike(`%${searchInput.userEmail}%`),
+            };
+        }
+
+        if (searchInput?.date?.startDate) {
+            where.start_at = MoreThanOrEqual(searchInput.date?.startDate);
+        }
+
+        if (searchInput?.date?.endDate) {
+            where.end_at = LessThanOrEqual(searchInput.date?.endDate);
+        }
+
+        if (searchInput?.id) {
+            where.id = Raw(
+                (alias) => `CAST(${alias} AS TEXT) ILIKE '%${searchInput.id}%'`,
+            );
+        }
+
+        const { limit, offset, orderBy, orderDirection } = searchInput ?? {};
+
+        console.log(where);
+
+        try {
+            return await this.repository.count({
                 where,
             });
         } catch (err: any) {
