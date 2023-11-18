@@ -10,7 +10,10 @@ import UserService from "../user/User.Service";
 import { Product } from "../product/entity/Product";
 import dataSource from "../utils";
 import ReservationService from "../reservation/Reservation.Service";
-import { EnumStatusReservation } from "../reservation/entity/Reservation";
+import {
+    EnumStatusReservation,
+    Reservation,
+} from "../reservation/entity/Reservation";
 
 export let resetMockCategories = process.env.DATA_FIXTURE_CATEGORIES === "true";
 export let resetMockProducts = process.env.DATA_FIXTURE_PRODUCTS === "true";
@@ -28,6 +31,7 @@ export const dataFixtureWipe = resetMockCategories;
 export const dataFixture = async (): Promise<void> => {
     const categoryRepository = dataSource.getRepository(Category);
     const productRepository = dataSource.getRepository(Product);
+    const reservationRepository = dataSource.getRepository(Reservation);
 
     if (resetMockCategories) {
         console.log("resetMockCategories is true");
@@ -133,6 +137,16 @@ export const dataFixture = async (): Promise<void> => {
 
                 // Use the found user to create a reservation
 
+                const reservationStatusArray = Array.from(
+                    Object.values(EnumStatusReservation),
+                );
+
+                console.log("tableau status", reservationStatusArray);
+
+                // reservationStatusArray.forEach((reservationStatus) => {
+
+                // })
+
                 const userReservation =
                     await reservationService.createOneReservation({
                         user_id,
@@ -140,16 +154,34 @@ export const dataFixture = async (): Promise<void> => {
                         reservationsDetails: [],
                     });
 
-                console.log(userReservation);
+                // console.log(userReservation);
+
+                for (const status of reservationStatusArray) {
+                    if (status !== "in_cart") {
+                        const reservation = new Reservation();
+
+                        reservation.user = foundUser;
+                        reservation.status = status;
+
+                        reservationRepository.save(reservation);
+                    }
+                }
 
                 // find product id's from productRepository.find()
 
                 const foundProductArray = await productRepository.find();
-                console.log(foundProductArray[0].id);
+                // console.log(foundProductArray[0].id);
 
                 // add product detail to reservation detail by providing product id
 
-                for (let i = 0; i < 10; i++) {
+                const updatedFoundUser = await userService.getOneUserById(
+                    foundUser.id,
+                );
+
+                // console.log(updatedFoundUser.reservations);
+                // console.log(updatedFoundUser.id);
+
+                for (let i = 0; i < 5; i++) {
                     // console.log("in for loop");
                     const startDate = new Date();
                     const endDate = new Date();
@@ -162,19 +194,21 @@ export const dataFixture = async (): Promise<void> => {
                     // console.log("startDate", startDate);
                     // console.log("endDate", endDate);
 
-                    await reservationService.updateDetailFromOneReservation(
-                        userReservation.id,
+                    for (const userReservation of updatedFoundUser.reservations) {
+                        await reservationService.updateDetailFromOneReservation(
+                            userReservation.id,
 
-                        {
-                            product_id:
-                                foundProductArray[
-                                    Math.floor(Math.random() * 63)
-                                ].id,
-                            quantity: 1,
-                            start_at: startDate,
-                            end_at: endDate,
-                        },
-                    );
+                            {
+                                product_id:
+                                    foundProductArray[
+                                        Math.floor(Math.random() * 63)
+                                    ].id,
+                                quantity: 1,
+                                start_at: startDate,
+                                end_at: endDate,
+                            },
+                        );
+                    }
                 }
             }
         }
