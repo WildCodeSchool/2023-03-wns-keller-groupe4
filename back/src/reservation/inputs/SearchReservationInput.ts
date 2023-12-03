@@ -32,16 +32,7 @@ export class SearchReservationInput {
     offset?: number;
 
     @Field({ nullable: true, defaultValue: "id" })
-    orderBy:
-        | "id"
-        | "price"
-        | "stock"
-        | "available"
-        | "description"
-        | "picture"
-        | "created_at"
-        | "updated_at"
-        | "updated_by";
+    orderBy: "id" | "email" | "status" | "start_at" | "end_at";
 
     @Field({ nullable: true, defaultValue: "ASC" })
     orderDirection: "ASC" | "DESC";
