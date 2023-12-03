@@ -194,6 +194,11 @@ query GetReservationsByUserId($getReservationByIdId: String!) {
 }
 `);
 
+export const GET_RESERVATION_LIST_COUNT = gql(`
+query getReservationCountBySearchInput($searchReservationInput : SearchReservationInput){
+  getReservationCountBySearchInput(searchReservationInput:$searchReservationInput )
+} `);
+
 export const GET_RESERVATIONS_BY_SEARCH_FILTER = gql(`
 query GetReservationsBySearchFilter($searchReservationInput: SearchReservationInput!) {
   getReservationsBySearchFilter(searchReservationInput: $searchReservationInput) {
