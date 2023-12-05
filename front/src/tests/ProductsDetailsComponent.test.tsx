@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "../utils/testCustomRender";
+import { act, fireEvent, render, screen } from "../utils/testCustomRender";
 import ProductsDetailsComponent from "../components/ProductsDetailsComponent";
 import jwtDecode from 'jwt-decode';
 

@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../utils/jwtHandler";
 import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
@@ -50,38 +50,40 @@ const AddReservation = ({
     setOpenModal
 }: IProduct) => {
 
+    const navigate = useNavigate();
+
     // Reset the form
     const initForm = () => {
         setOpenModal(false);
         setSelectedQuantity(0);
-        setDisabledConfirmButton(true);
         setDisabledQuantity(true);
         setOptions([0]);
         SetDate(undefined);
     }
 
-    const userId = getIDToken().length > 0 ? decodeToken(getIDToken()).userId : "";
+    const userId = getIDToken() ? decodeToken(getIDToken()).userId : "";
     const cancelButtonRef = useRef(null);
 
     const [date, SetDate] = useState<DateValue>();
     const [availableQuantity, setAvailableQuantity] = useState(5);
     const [selectedQuantity, setSelectedQuantity] = useState(0);
     const [disabledQuantity, setDisabledQuantity] = useState(true);
-    const [disabledConfirmButton, setDisabledConfirmButton] = useState(true);
     const [options, setOptions] = useState([0]); 
 
     // Component to display a toast message when non-logged user try to add a product to cart
-    const LoginButton = ({ closeToast, toastProps }:any) => (
-        <div className="items-center text-center font-bold relative z-50">
-            Vous devez être connecté pour ajouter un produit à votre panier de réservation.
-            <Link to="/connect">
-                <button className="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-md mt-4"
+    const LoginButton = () => {
+        return (
+            <div className="items-center text-center font-bold">
+                Vous devez être connecté pour ajouter un produit à votre panier de réservation.
+                <button 
+                    className="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-md mt-4"
+                    onClick={() => navigate("/connect")}
                 >
                     Se connecter / S'inscrire
                 </button>
-            </Link>
-        </div>
-    );
+            </div>
+        );
+    }
 
     useEffect(() => {
         // If there is a quantity and a date range is selected then we update options values with quantity
@@ -92,8 +94,6 @@ const AddReservation = ({
             }
             setOptions(formSelectOptions);
             setDisabledQuantity(false);
-            // If selected quantity is > 0 then we enable the confirm button
-            if (selectedQuantity > 0) setDisabledConfirmButton(false);
         } else {
             initForm();
         }
@@ -113,7 +113,27 @@ const AddReservation = ({
         e.preventDefault();
 
         if(!userId) {
+            setOpenModal(false);
             toast.error(<LoginButton />);
+
+            return;
+        }
+
+        if (!date || !Array.isArray(date) || !date[0] || !date[1]) {
+            toast.error(
+                "Vous devez choisir une date de début et une date de fin pour cette location.", { 
+                icon: <TfiShoppingCartFull size="2rem" />,
+            });
+
+            return;
+        }
+
+        if (!selectedQuantity) {
+            toast.error(
+                "Veuillez sélectionner une quantité avant d'ajouter le produit au panier.", { 
+                icon: <TfiShoppingCartFull size="2rem" />,
+            });
+
             return;
         }
 
@@ -231,7 +251,6 @@ const AddReservation = ({
                                                 <button
                                                     type="submit"
                                                     className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto mx-auto"
-                                                    disabled={disabledConfirmButton}
                                                 >
                                                     Ajouter au panier
                                                 </button>

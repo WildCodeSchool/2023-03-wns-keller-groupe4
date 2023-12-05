@@ -611,7 +611,7 @@ const ProductsDetailsComponent = ({
                                         e.preventDefault();
                                         setOpenModal(true)
                                     }}>
-                                    Reservation
+                                    { stock > 0 ? 'Reservation' : 'Rupture de stock'}
                                 </button>
                             </div>
                         </div>

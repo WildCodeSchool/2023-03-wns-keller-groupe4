@@ -36,20 +36,24 @@ interface IProduct {
 }
 
 const ShoppingCart = () => {
-    const userId = decodeToken(getIDToken()).userId;
+    const userId = getIDToken() ? decodeToken(getIDToken()).userId : ""; 
     const [show, setShow] = useState(false);
     const [profileClass, setProfileClass] = useState("border-gray-200 dark:bg-gray-100 dark:border-gray-200");
+    const [addressSelected, setAddressSelected] = useState(false);
     const [payButtonColor, setPayButtonColor] = useState("bg-gray-500 border-gray-600 ring-gray-500");
     const [payButtonDisabled, setPayButtonDisabled] = useState(true);
     const [errorStartDate, setErrorStartDate] = useState("hidden");
 
     const { loading, data, refetch } = useQuery(GET_USER_CART, {
         variables: { getCartReservationOfUserId: userId },
+        skip: userId === "",
     });
 
     const {data: userData} = useQuery(GET_USER, {
         variables: { getUserByIdId: userId },
+        skip: userId === "",
     });
+
     const [updateCart] = useMutation(UPDATE_RESERVATION_STATUS);
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
@@ -67,8 +71,7 @@ const ShoppingCart = () => {
     let totalTaxes = "0";
     let payingButton = "Panier vide";
 
-    
-    if(data?.getCartReservationOfUser) {
+    if(userId && data?.getCartReservationOfUser) {
         cartSummary = data?.getCartReservationOfUser;
         cartReservations = cartSummary.reservationsDetails;
         const msInDay = 1000 * 60 * 60 * 24;
@@ -112,8 +115,7 @@ const ShoppingCart = () => {
     }
 
     // Submit cart when payment is validated
-    const submitCart = async (e:React.FormEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+    const submitCart = async () => {
         if(errorStartDate == "hidden") {
             const cartId = cartSummary?.id;
 
@@ -151,8 +153,7 @@ const ShoppingCart = () => {
     };
 
     // Remove a specific product from cart
-    const removeProduct = async (e:React.FormEvent<HTMLAnchorElement>, product:string) => {
-        e.preventDefault();
+    const removeProduct = async (product:string) => {
         const cartId = cartSummary?.id;
 
         if(cartId) {
@@ -223,7 +224,7 @@ const ShoppingCart = () => {
                                             
                                             {/* Product image */}
                                             <div className="basis-1/5 lg:basis-1/6 relative mx-auto lg:mx-0 pb-2 md:pb-0 overflow-hidden rounded-md border border-b-0 lg:border-b border-gray-200 shadow-md lg:shadow-none">
-                                                <img src={ product.picture } className="w-24 h-24 object-center object-cover mx-auto" />
+                                                <img src={ product.picture } alt={ product.name } className="w-24 h-24 object-center object-cover mx-auto" />
                                                 
                                                 {/* Product quantity (mobile) */}
                                                 <span className="block lg:hidden absolute top-1 left-1 items-center rounded-md bg-gray-100 p-2 text-sm font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
@@ -231,15 +232,12 @@ const ShoppingCart = () => {
                                                 </span>
 
                                                 {/* Delete button (mobile) */}
-                                                <a 
+                                                <button 
                                                     className="block lg:hidden absolute top-1 right-1"
-                                                    href="#"
-                                                    onClick={(e) => { 
-                                                        removeProduct(e, product.id);
-                                                    }}
+                                                    onClick={() => removeProduct(product.id)}
                                                 >
                                                     <MdDelete size="1.4rem" />
-                                                </a>
+                                                </button>
                                             </div>
 
                                             {/* Product reserved dates and subtotal (mobile) */}
@@ -268,16 +266,13 @@ const ShoppingCart = () => {
                                                             <BsBox2Fill size="0.9rem" className="inline mr-2" />
                                                             { product.reservedQuantity } pièces
                                                         </div>
-                                                        <a 
-                                                            href="#"
-                                                            onClick={(e) => { 
-                                                                removeProduct(e, product.id);
-                                                            }}
+                                                        <button
+                                                            onClick={(e) => removeProduct(product.id)}
                                                             className="mt-2 text-xs text-center underline text-red-500 cursor-pointer"
                                                         >
                                                             <MdDelete size="1rem" className="inline mr-1" />
                                                             Supprimer
-                                                        </a>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div className="pt-10">
@@ -304,15 +299,17 @@ const ShoppingCart = () => {
                                                         className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
                                                         Modifier
                                                     </Link>
-                                                    <a 
-                                                        href="#" 
-                                                        onClick={(e) => { 
-                                                            e.preventDefault(); 
+                                                    <button  
+                                                        onClick={() => { 
                                                             setProfileClass("border-orange-500 ring-4 ring-orange-500 bg-gray-100 dark:border-orange-500");
+                                                            setAddressSelected(true);
                                                             setPayButtonDisabled(false);
                                                             setPayButtonColor("bg-orange-500 border-orange-600 ring-orange-500"); 
                                                         }}
-                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:outline-none dark:bg-orange-600 dark:hover:bg-orange-700">Valider</a>
+                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:outline-none dark:bg-orange-600 dark:hover:bg-orange-700"
+                                                        >
+                                                            Valider
+                                                        </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -350,16 +347,18 @@ const ShoppingCart = () => {
                                         <p className="text-base leading-none text-gray-800">{ totalTaxes = (+tSubtotal * (20/100)).toFixed(2) } €</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-center text-gray-500">Vous devez valider votre adresse de livraison pour pouvoir payer</p>
-                                </div>
+                                { userId && addressSelected === false ? (
+                                    <div>
+                                        <p className="text-center text-red-500 sm:pt-5 pt-0">Vous devez selectionner une adresse de livraison pour pouvoir payer</p>
+                                    </div>
+                                ) : ("")}
                                 <div>
                                     <div className="flex items-center pb-6 justify-between lg:pt-5 pt-20">
                                         <p className="text-lg font-bold leading-normal text-gray-700">TOTAL TTC</p>
                                         <p className="text-lg font-bold leading-normal text-right text-blue-600">{ (+tSubtotal + +totalTaxes).toFixed(2) } €</p>
                                     </div>
                                     <button 
-                                    onClick={(e) => { submitCart(e); setShow(!show)}} 
+                                    onClick={() => { submitCart(); setShow(!show)}} 
                                     className={ "rounded-sm text-base leading-none w-full py-5 text-white ring " + payButtonColor + " ring-offset-2" }
                                     disabled={ payButtonDisabled }
                                     >
