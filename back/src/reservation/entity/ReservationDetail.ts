@@ -28,6 +28,10 @@ export class ReservationDetail {
     @ManyToOne(
         () => Reservation,
         (reservation) => reservation.reservationsDetails,
+        {
+            onDelete: "CASCADE",
+            orphanedRowAction: "delete",
+        },
     )
     reservation: Reservation;
 }

@@ -72,7 +72,6 @@ export default class ReservationService {
                 skip: 2,
             });
         } catch (err: any) {
-            console.log();
             throw new Error(err.message);
         }
     }
@@ -121,11 +120,7 @@ export default class ReservationService {
             [orderBy]: orderDirection,
         };
 
-        console.log("search input", searchInput);
-
         if (searchInput.status === undefined) {
-            console.log("searchInput undefined");
-
             where.status = where.status = Not(EnumStatusReservation.IN_CART);
         }
 
@@ -214,12 +209,6 @@ export default class ReservationService {
         //     }
         // }
 
-        // console.log("order", order);
-        // console.log("where", where);
-        // console.log("limit", limit);
-        // console.log("offset", offset);
-        console.log("where", where);
-
         try {
             return await this.repository.find({
                 relations: this.relations,
@@ -237,8 +226,6 @@ export default class ReservationService {
         searchInput: SearchReservationInput,
     ): Promise<number> {
         const where: FindOptionsWhere<Reservation> = {};
-
-        console.log("search input in count", searchInput);
 
         if (searchInput === undefined) {
             where.status = where.status = Not(EnumStatusReservation.IN_CART);
@@ -269,8 +256,6 @@ export default class ReservationService {
         }
 
         const { limit, offset, orderBy, orderDirection } = searchInput ?? {};
-
-        // console.log(where);
 
         try {
             return await this.repository.count({
@@ -464,7 +449,7 @@ export default class ReservationService {
                 found.end_at = detail.end_at;
             }
             // sinon on le rajoute
-            else
+            else {
                 reservation.reservationsDetails = [
                     ...reservation.reservationsDetails,
                     {
@@ -477,6 +462,7 @@ export default class ReservationService {
                         end_at: detail.end_at,
                     },
                 ];
+            }
 
             //  vérifie si la date de début est bien inférieure à la date de fin
             const { start_at, end_at } = detail;
@@ -487,7 +473,7 @@ export default class ReservationService {
                 );
             }
 
-            this.SettingGlobalReservationDate(start_at, end_at, reservation);
+            this.settingGlobalReservationDate(start_at, end_at, reservation);
 
             return await this.repository.save(reservation);
         } catch (err: any) {
@@ -505,12 +491,20 @@ export default class ReservationService {
         id: string,
         productsIds: string[],
     ): Promise<Reservation> {
+        console.log("should get here in removeManyProductsFromOneReservation ");
+
         try {
             const reservation = await this.getOneReservationById(id);
             reservation.reservationsDetails =
                 reservation.reservationsDetails.filter(
                     (detail) => !productsIds.includes(detail.product.id),
                 );
+            if (reservation.reservationsDetails.length > 0) {
+                this.updateGlobalReservationDate(reservation);
+            } else {
+                this.voidReservationDate(reservation);
+            }
+
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message);
@@ -528,23 +522,56 @@ export default class ReservationService {
         try {
             const reservation = await this.getOneReservationById(id);
             reservation.reservationsDetails = [];
+            this.voidReservationDate(reservation);
+
             return await this.repository.save(reservation);
         } catch (err: any) {
             throw new Error(err.message);
         }
     }
 
-    private SettingGlobalReservationDate(
+    private settingGlobalReservationDate(
         startDate: Date,
         endDate: Date,
         reservation: Reservation,
     ) {
-        if (startDate < reservation.start_at || reservation.start_at === null) {
-            reservation.start_at = startDate;
+        for (const detail of reservation.reservationsDetails) {
+            console.log(detail.start_at, "", startDate);
+            console.log(detail.end_at, "", endDate);
+
+            if (startDate <= detail.start_at || !reservation.start_at) {
+                reservation.start_at = startDate;
+            }
+            if (endDate >= detail.end_at || !reservation.end_at) {
+                reservation.end_at = endDate;
+            }
+        }
+    }
+
+    private updateGlobalReservationDate(reservation: Reservation) {
+        let earliestDate = reservation.reservationsDetails[0]?.start_at;
+        let latestDate = reservation.reservationsDetails[0]?.end_at;
+
+        for (const detail of reservation.reservationsDetails) {
+            if (detail.start_at < earliestDate) {
+                earliestDate = detail.start_at;
+            }
+            if (detail.end_at > latestDate) {
+                latestDate = detail.end_at;
+            }
         }
 
-        if (endDate > reservation.end_at || reservation.end_at === null) {
-            reservation.end_at = endDate;
-        }
+        reservation.start_at = earliestDate;
+        reservation.end_at = latestDate;
+    }
+
+    private async voidReservationDate(reservation: Reservation) {
+        // On doit faire ça ici parce qu'on ne peut pas avoir Date | null dans le type de l'entity (ça fait bugger type graphQl)
+        // et si on met undefined ici lorsqu'on save la réservation ce n'est pas pris en compte.
+
+        //@ts-ignore
+        reservation.start_at = null;
+        //@ts-ignore
+        reservation.end_at = null;
     }
 }
