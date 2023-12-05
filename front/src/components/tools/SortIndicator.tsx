@@ -14,15 +14,6 @@ const SortIndicator = ({
     orderDirection,
 }: SortIndicatorInterface) => {
     if (column === orderBy) {
-        console.log("column === orderBy");
-
-        // if (column === "stock") {
-        //     return orderDirection === "DESC" ? (
-        //         <AiOutlineArrowDown />
-        //     ) : (
-        //         <AiOutlineArrowUp />
-        //     );
-        // }
         return orderDirection === "DESC" ? (
             <AiOutlineArrowUp />
         ) : (
