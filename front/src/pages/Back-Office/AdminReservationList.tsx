@@ -45,14 +45,9 @@ const AdminReservationList = () => {
 
     let reservationStatusEnum = EnumStatusReservation;
 
-    const reservationStatusOptions = Object.values(reservationStatusEnum).map(
-        (status) => {
-            return <option value={status}>{status}</option>;
-        },
-    );
-
     const offset = (searchInputs.currentPage - 1) * LIMIT;
 
+    // this use effect fetchs all reservation (except in_cart status)
     useEffect(() => {
         const reservationInput = {
             limit: LIMIT,
@@ -72,20 +67,17 @@ const AdminReservationList = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // this use effect fetches all reservation (except in car status) if all search inputs are empty (means the user cleared filter)
+    // or get reservations by submit the searchInputs in case the user changed pages or order
     useEffect(() => {
         if (areAllValuesEmpty(searchInputs)) {
-            console.log("all values are empty");
             getAllReservation().then((res) => {
                 setFilteredReservationList(
                     res.data?.getReservationsBySearchFilter,
                 );
             });
         } else {
-            console.log("in second use effect");
-
             handleSubmit();
-
-            console.log("offset in second use effect");
 
             getReservationCount({
                 variables: {
@@ -102,8 +94,7 @@ const AdminReservationList = () => {
         searchInputs.orderDirection,
     ]);
 
-    console.log("filteredList", filteredReservationList);
-
+    // getting page count
     const pageCount =
         reservationCount &&
         // filteredReservationList?.length > 0 &&
@@ -116,6 +107,7 @@ const AdminReservationList = () => {
         }
     }
 
+    // handling sort order and direction modifications
     async function handleSort(column: string) {
         setSearchInputs((prevInputs) => ({
             ...prevInputs,
@@ -125,6 +117,7 @@ const AdminReservationList = () => {
         }));
     }
 
+    // submit with search input values
     async function handleSubmit(e?: any) {
         if (e) {
             e.preventDefault();
@@ -140,7 +133,7 @@ const AdminReservationList = () => {
         });
         setFilteredReservationList(res.data?.getReservationsBySearchFilter);
     }
-
+    // resets all the searchinputs state
     function handleFilterClear() {
         setSearchInputs({
             idSearchInput: "",
@@ -157,7 +150,7 @@ const AdminReservationList = () => {
 
         setFilterClear(!filterClear);
     }
-
+    // used in handleSubbmit function, is used to convert state values to the right format to request the API
     function generateReservationInput(): SearchReservationInput {
         const {
             idSearchInput,
@@ -196,7 +189,7 @@ const AdminReservationList = () => {
 
         return searchReservationInput;
     }
-
+    // Check if all values are empty so the second use effect knows which actions to trigger
     function areAllValuesEmpty(obj: SearchReservationInput | Object): boolean {
         return Object.values(obj).every((objValues) => {
             if (typeof objValues === "object") {
@@ -207,7 +200,23 @@ const AdminReservationList = () => {
             return true;
         });
     }
+    // formating date to FR format to display them in reservation table
+    function formatDateForDisplay(date: string) {
+        if (date) {
+            return new Date(date).toLocaleString("fr-FR", {
+                timeZone: "UTC",
+            });
+        } else {
+            return "Date non définie";
+        }
+    }
 
+    // generating options for the status select input
+    const reservationStatusOptions = Object.values(reservationStatusEnum)
+        .filter((e) => e !== "IN_CART")
+        .map((status) => {
+            return <option value={status}>{status}</option>;
+        });
     return (
         <div className="text-center">
             <h1 className="text-2xl text-center my-6 sm:my-8">Réservations</h1>
@@ -242,8 +251,6 @@ const AdminReservationList = () => {
                                 placeholder="Rechercher une réservation"
                             />
                         </div>
-                        {/* </form> */}
-                        {/* <form className="px-2 my-4" onSubmit={handleSubmit}> */}
                         <div className="px-2 my-4 flex flex-col items-center basis-1/4 sm:basis-0 ">
                             <label htmlFor="idSearchInput">Date de début</label>
                             <input
@@ -288,8 +295,6 @@ const AdminReservationList = () => {
                         </div>
                         <div className="px-2 my-4 flex flex-col items-center basis-1/4 sm:basis-0">
                             <label htmlFor="idSearchInput">Email</label>
-                            {/* </form> */}
-                            {/* <form className="px-2 my-4" onSubmit={handleSubmit}> */}
                             <input
                                 type="search"
                                 name="emailSearchInput"
@@ -307,9 +312,6 @@ const AdminReservationList = () => {
                         </div>
                         <div className="px-2 my-4 flex flex-col items-center basis-1/4 sm:basis-0 ">
                             <label htmlFor="idSearchInput">Status</label>
-
-                            {/* </form> */}
-                            {/* <form className="px-2 my-4" onSubmit={handleSubmit}> */}
                             <select
                                 className="px-2 py-1 w-3/4 rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-main sm:w-auto"
                                 name="statusSearchInput"
@@ -326,7 +328,6 @@ const AdminReservationList = () => {
                                 {reservationStatusOptions}
                             </select>
                         </div>
-
                         <div className="mt-[2.5rem] md:mt-[2.5rem] xl:mt-[2.5rem] mx-2 ">
                             <button
                                 type="submit"
@@ -421,23 +422,23 @@ const AdminReservationList = () => {
                         <tbody>
                             {filteredReservationList?.map(
                                 (reservation: any) => (
-                                    <tr key={reservation.id}>
+                                    <tr
+                                        key={reservation.id}
+                                        className="even:bg-gray-100
+                                    ke"
+                                    >
                                         <td className="border-b p-4">
                                             {reservation.id}
                                         </td>
                                         <td className="border-b p-4">
-                                            {new Date(
+                                            {formatDateForDisplay(
                                                 reservation.start_at,
-                                            ).toLocaleString("fr-FR", {
-                                                timeZone: "UTC",
-                                            })}
+                                            )}
                                         </td>
                                         <td className="border-b p-4">
-                                            {new Date(
-                                                reservation.end_at,
-                                            ).toLocaleString("fr-FR", {
-                                                timeZone: "UTC",
-                                            })}
+                                            {formatDateForDisplay(
+                                                reservation.start_at,
+                                            )}
                                         </td>
                                         <td className="border-b p-4">
                                             {reservation.user.email}
