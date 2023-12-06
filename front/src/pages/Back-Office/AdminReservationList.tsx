@@ -15,9 +15,6 @@ import { HiOutlineMagnifyingGlass } from "react-icons/hi2";
 const LIMIT = 10;
 
 const AdminReservationList = () => {
-    const [filteredReservationList, setFilteredReservationList] =
-        useState<any[]>();
-
     const [searchInputs, setSearchInputs] = useState({
         idSearchInput: "",
         emailSearchInput: "",
@@ -35,9 +32,8 @@ const AdminReservationList = () => {
 
     const [getAllReservation] = useLazyQuery(GET_RESERVATIONS_BY_SEARCH_FILTER);
 
-    const [searchReservationByFilters] = useLazyQuery(
-        GET_RESERVATIONS_BY_SEARCH_FILTER,
-    );
+    const [searchReservationByFilters, { data: filteredReservations }] =
+        useLazyQuery(GET_RESERVATIONS_BY_SEARCH_FILTER);
 
     const [getReservationCount, { data: reservationCount }] = useLazyQuery(
         GET_RESERVATION_LIST_COUNT,
@@ -58,8 +54,6 @@ const AdminReservationList = () => {
             variables: {
                 searchReservationInput: reservationInput,
             },
-        }).then((res) => {
-            setFilteredReservationList(res.data?.getReservationsBySearchFilter);
         });
 
         getReservationCount();
@@ -71,11 +65,7 @@ const AdminReservationList = () => {
     // or get reservations by submit the searchInputs in case the user changed pages or order
     useEffect(() => {
         if (areAllValuesEmpty(searchInputs)) {
-            getAllReservation().then((res) => {
-                setFilteredReservationList(
-                    res.data?.getReservationsBySearchFilter,
-                );
-            });
+            getAllReservation();
         } else {
             handleSubmit();
 
@@ -126,12 +116,11 @@ const AdminReservationList = () => {
 
         const searchReservationInput = generateReservationInput();
 
-        const res = await searchReservationByFilters({
+        await searchReservationByFilters({
             variables: {
                 searchReservationInput,
             },
         });
-        setFilteredReservationList(res.data?.getReservationsBySearchFilter);
     }
     // resets all the searchinputs state
     function handleFilterClear() {
@@ -420,7 +409,7 @@ const AdminReservationList = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredReservationList?.map(
+                            {filteredReservations?.getReservationsBySearchFilter.map(
                                 (reservation: any) => (
                                     <tr
                                         key={reservation.id}
