@@ -437,8 +437,6 @@ export default class ReservationService {
         id: string,
         productsIds: string[],
     ): Promise<Reservation> {
-        console.log("should get here in removeManyProductsFromOneReservation ");
-
         try {
             const reservation = await this.getOneReservationById(id);
             reservation.reservationsDetails =
@@ -482,9 +480,6 @@ export default class ReservationService {
         reservation: Reservation,
     ) {
         for (const detail of reservation.reservationsDetails) {
-            console.log(detail.start_at, "", startDate);
-            console.log(detail.end_at, "", endDate);
-
             if (startDate <= detail.start_at || !reservation.start_at) {
                 reservation.start_at = startDate;
             }

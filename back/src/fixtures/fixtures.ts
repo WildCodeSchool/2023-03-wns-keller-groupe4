@@ -122,6 +122,9 @@ export const dataFixture = async (): Promise<void> => {
             ? console.log("resetMockUsers is true")
             : console.log("resetMockProducts is true");
 
+        // delete any preivous reservations so we can create new ones with new products
+        await reservationRepository.delete({});
+
         for (const user of mockUsers) {
             const userService = new UserService();
             const reservationService = new ReservationService();
@@ -138,9 +141,6 @@ export const dataFixture = async (): Promise<void> => {
             const foundUser = await userService.getOneUserByEmail(user.email);
 
             let user_id = foundUser.id;
-
-            // delete any preivous reservations so we can create new ones with new products
-            await reservationRepository.delete({});
 
             // Use the found user to create a reservation
 
@@ -162,7 +162,7 @@ export const dataFixture = async (): Promise<void> => {
                     reservation.user = foundUser;
                     reservation.status = status;
 
-                    reservationRepository.save(reservation);
+                    await reservationRepository.save(reservation);
                 }
             }
 
@@ -193,10 +193,7 @@ export const dataFixture = async (): Promise<void> => {
                         {
                             product_id:
                                 foundProductArray[
-                                    Math.floor(
-                                        Math.random() *
-                                            foundProductArray.length,
-                                    )
+                                    Math.floor(Math.random() * 63)
                                 ].id,
                             quantity: Math.floor(Math.random() * 5 + 1),
                             start_at: startDate,
