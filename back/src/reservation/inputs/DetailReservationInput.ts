@@ -12,7 +12,6 @@ export default class DetailReservationInput {
     @Field()
     start_at: Date;
 
-    @Field()
     status?: EnumProductReservationStatus =
         EnumProductReservationStatus.IN_PREPARATION;
 

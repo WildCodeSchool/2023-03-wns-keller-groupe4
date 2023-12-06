@@ -61,7 +61,10 @@ export class Reservation {
     // relations :
 
     @Field(() => User)
-    @ManyToOne((type) => User, (user) => user.reservations)
+    @ManyToOne((type) => User, (user) => user.reservations, {
+        onDelete: "CASCADE",
+        orphanedRowAction: "delete",
+    })
     @JoinColumn()
     user: User;
 

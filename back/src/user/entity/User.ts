@@ -50,6 +50,7 @@ export class User {
     @Field(() => [Reservation], { nullable: true })
     @OneToMany((type) => Reservation, (reservation) => reservation.user, {
         nullable: true,
+        cascade: true,
     })
     @JoinColumn()
     reservations: Reservation[];

@@ -35,7 +35,10 @@ export class ReservationDetail {
     end_at: Date;
 
     @Field(() => Product)
-    @ManyToOne(() => Product, (product) => product.productsDetails)
+    @ManyToOne(() => Product, (product) => product.productsDetails, {
+        onDelete: "CASCADE",
+        orphanedRowAction: "delete",
+    })
     product: Product;
 
     @Field()

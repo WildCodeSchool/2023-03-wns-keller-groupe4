@@ -14,6 +14,7 @@ import {
     EnumStatusReservation,
     Reservation,
 } from "../reservation/entity/Reservation";
+import { User } from "../user/entity/User";
 
 export let resetMockCategories = process.env.DATA_FIXTURE_CATEGORIES === "true";
 export let resetMockProducts = process.env.DATA_FIXTURE_PRODUCTS === "true";
@@ -32,6 +33,98 @@ export const dataFixture = async (): Promise<void> => {
     const categoryRepository = dataSource.getRepository(Category);
     const productRepository = dataSource.getRepository(Product);
     const reservationRepository = dataSource.getRepository(Reservation);
+    const userRepository = dataSource.getRepository(User);
+
+    if (resetMockUsers || resetMockProducts) {
+        resetMockUsers
+            ? console.log("resetMockUsers is true")
+            : console.log("resetMockProducts is true");
+
+        for (const user of mockUsers) {
+            const userService = new UserService();
+            const reservationService = new ReservationService();
+            try {
+                await userService.getOneUserByEmail(user.email);
+            } catch (error: any) {
+                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+                if (!error.message.includes("not find")) {
+                    console.error(error.message);
+                }
+                await userService.createOneUser(user);
+            }
+
+            const foundUser = await userService.getOneUserByEmail(user.email);
+
+            let user_id = foundUser.id;
+
+            // delete any preivous reservations so we can create new ones with new products
+            await reservationRepository.delete({});
+
+            // Use the found user to create a reservation
+
+            await reservationService.createOneReservation({
+                user_id,
+                status: EnumStatusReservation.IN_CART,
+                reservationsDetails: [],
+            });
+
+            // For each status we create one reservation for the user
+            const reservationStatusArray = Array.from(
+                Object.values(EnumStatusReservation),
+            );
+
+            for (const status of reservationStatusArray) {
+                if (status !== "in_cart") {
+                    const reservation = new Reservation();
+
+                    reservation.user = foundUser;
+                    reservation.status = status;
+
+                    reservationRepository.save(reservation);
+                }
+            }
+
+            // find product id's from productRepository.find()
+
+            const foundProductArray = await productRepository.find();
+
+            // add product detail to reservation detail by providing product id
+
+            const updatedFoundUser = await userService.getOneUserById(
+                foundUser.id,
+            );
+            // Loop to add details to the reservations created before
+            for (let i = 0; i < 5; i++) {
+                const startDate = new Date();
+                const endDate = new Date();
+                startDate.setDate(
+                    i < 2
+                        ? startDate.getDate() + i - 1
+                        : startDate.getDate() + i - (i - 2),
+                );
+                endDate.setDate(endDate.getDate() + i + 5);
+
+                for (const userReservation of updatedFoundUser.reservations) {
+                    await reservationService.updateDetailFromOneReservation(
+                        userReservation.id,
+
+                        {
+                            product_id:
+                                foundProductArray[
+                                    Math.floor(
+                                        Math.random() *
+                                            foundProductArray.length,
+                                    )
+                                ].id,
+                            quantity: Math.floor(Math.random() * 5 + 1),
+                            start_at: startDate,
+                            end_at: endDate,
+                        },
+                    );
+                }
+            }
+        }
+    }
 
     if (resetMockCategories) {
         console.log("resetMockCategories is true");
@@ -109,94 +202,6 @@ export const dataFixture = async (): Promise<void> => {
                     picture,
                     category: categories,
                 });
-            }
-        }
-    }
-
-    if (resetMockUsers) {
-        console.log("resetMockUsers is true");
-
-        for (const user of mockUsers) {
-            const userService = new UserService();
-            const reservationService = new ReservationService();
-            try {
-                await userService.getOneUserByEmail(user.email);
-
-                // For each user of the usermock array create a reservation with a random number of products for random dates
-            } catch (error: any) {
-                // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-                if (!error.message.includes("not find")) {
-                    console.error(error.message);
-                }
-                await userService.createOneUser(user);
-                const foundUser = await userService.getOneUserByEmail(
-                    user.email,
-                );
-
-                let user_id = foundUser.id;
-
-                // Use the found user to create a reservation
-                await reservationService.createOneReservation({
-                    user_id,
-                    status: EnumStatusReservation.IN_CART,
-                    reservationsDetails: [],
-                });
-
-                // For each status we create one reservation for the user
-                const reservationStatusArray = Array.from(
-                    Object.values(EnumStatusReservation),
-                );
-
-                for (const status of reservationStatusArray) {
-                    if (status !== "in_cart") {
-                        const reservation = new Reservation();
-
-                        reservation.user = foundUser;
-                        reservation.status = status;
-
-                        reservationRepository.save(reservation);
-                    }
-                }
-
-                // find product id's from productRepository.find()
-
-                const foundProductArray = await productRepository.find();
-
-                // add product detail to reservation detail by providing product id
-
-                const updatedFoundUser = await userService.getOneUserById(
-                    foundUser.id,
-                );
-                // Loop to add details to the reservations created before
-                for (let i = 0; i < 5; i++) {
-                    const startDate = new Date();
-                    const endDate = new Date();
-                    startDate.setDate(
-                        i < 2
-                            ? startDate.getDate() + i - 1
-                            : startDate.getDate() + i - (i - 2),
-                    );
-                    endDate.setDate(endDate.getDate() + i + 5);
-
-                    for (const userReservation of updatedFoundUser.reservations) {
-                        await reservationService.updateDetailFromOneReservation(
-                            userReservation.id,
-
-                            {
-                                product_id:
-                                    foundProductArray[
-                                        Math.floor(
-                                            Math.random() *
-                                                foundProductArray.length,
-                                        )
-                                    ].id,
-                                quantity: Math.floor(Math.random() * 5),
-                                start_at: startDate,
-                                end_at: endDate,
-                            },
-                        );
-                    }
-                }
             }
         }
     }
