@@ -136,25 +136,16 @@ export const dataFixture = async (): Promise<void> => {
                 let user_id = foundUser.id;
 
                 // Use the found user to create a reservation
+                await reservationService.createOneReservation({
+                    user_id,
+                    status: EnumStatusReservation.IN_CART,
+                    reservationsDetails: [],
+                });
 
+                // For each status we create one reservation for the user
                 const reservationStatusArray = Array.from(
                     Object.values(EnumStatusReservation),
                 );
-
-                console.log("tableau status", reservationStatusArray);
-
-                // reservationStatusArray.forEach((reservationStatus) => {
-
-                // })
-
-                const userReservation =
-                    await reservationService.createOneReservation({
-                        user_id,
-                        status: EnumStatusReservation.IN_CART,
-                        reservationsDetails: [],
-                    });
-
-                // console.log(userReservation);
 
                 for (const status of reservationStatusArray) {
                     if (status !== "in_cart") {
@@ -170,19 +161,14 @@ export const dataFixture = async (): Promise<void> => {
                 // find product id's from productRepository.find()
 
                 const foundProductArray = await productRepository.find();
-                // console.log(foundProductArray[0].id);
 
                 // add product detail to reservation detail by providing product id
 
                 const updatedFoundUser = await userService.getOneUserById(
                     foundUser.id,
                 );
-
-                // console.log(updatedFoundUser.reservations);
-                // console.log(updatedFoundUser.id);
-
+                // Loop to add details to the reservations created before
                 for (let i = 0; i < 5; i++) {
-                    // console.log("in for loop");
                     const startDate = new Date();
                     const endDate = new Date();
                     startDate.setDate(
@@ -191,8 +177,6 @@ export const dataFixture = async (): Promise<void> => {
                             : startDate.getDate() + i - (i - 2),
                     );
                     endDate.setDate(endDate.getDate() + i + 5);
-                    // console.log("startDate", startDate);
-                    // console.log("endDate", endDate);
 
                     for (const userReservation of updatedFoundUser.reservations) {
                         await reservationService.updateDetailFromOneReservation(
@@ -201,9 +185,12 @@ export const dataFixture = async (): Promise<void> => {
                             {
                                 product_id:
                                     foundProductArray[
-                                        Math.floor(Math.random() * 63)
+                                        Math.floor(
+                                            Math.random() *
+                                                foundProductArray.length,
+                                        )
                                     ].id,
-                                quantity: 1,
+                                quantity: Math.floor(Math.random() * 5),
                                 start_at: startDate,
                                 end_at: endDate,
                             },

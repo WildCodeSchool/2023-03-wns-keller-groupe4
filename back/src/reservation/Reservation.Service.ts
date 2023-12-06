@@ -105,9 +105,7 @@ export default class ReservationService {
         searchInput: SearchReservationInput,
     ): Promise<Reservation[]> {
         // cette fonction permet de récupérer les propriétés de searchInput et de construire l'objet where
-        // et order by de typeOrm en fonction de celle-ci, deux versions sont proposées :
-        // une simple à lire et une refacto plus complexe mais plus générique.
-
+        // et order by de typeOrm en fonction de celle-ci
         let { limit, offset, orderBy, orderDirection } = searchInput ?? {
             limit: 10,
             offset: 0,
@@ -123,8 +121,6 @@ export default class ReservationService {
         if (searchInput.status === undefined) {
             where.status = where.status = Not(EnumStatusReservation.IN_CART);
         }
-
-        // ***************************************Version Avant Refacto **************************************************************/
 
         if (searchInput?.status) {
             where.status = searchInput.status;
@@ -149,8 +145,8 @@ export default class ReservationService {
                 (alias) => `CAST(${alias} AS TEXT) ILIKE '%${searchInput.id}%'`,
             );
         }
-        // We do this because email is not a column of the reservation table
-        // it is a column of the user table so we need to use this syntaxe
+        // L'on doit utiliser cette syntaxe parce qu'email ne fait pas partie de l'entité réservation
+        // mais de l'entité user qui est référencé dans réservation.
         if (searchInput.orderBy === "email") {
             order = {
                 user: {
@@ -158,56 +154,6 @@ export default class ReservationService {
                 },
             };
         }
-
-        //***************************************Version Refacto **************************************************************/
-
-        // const filterMapping = {
-        //     status: (value: EnumStatusReservation) => (where.status = value),
-        //     userEmail: (value: string) =>
-        //         (where.user = { email: ILike(`%${value}%`) }),
-        //     date: {
-        //         startDate: (value: Date) =>
-        //             (where.start_at = MoreThanOrEqual(value)),
-        //         endDate: (value: Date) =>
-        //             (where.end_at = LessThanOrEqual(value)),
-        //     },
-        //     id: (value: string) =>
-        //         // Le type de l'id etant UUID on doit caster la colonne en text pour pouvoir faire un ILIKE dessus
-        //         (where.id = Raw(
-        //             (alias) => `CAST(${alias} AS TEXT) ILIKE '%${value}%'`,
-        //         )),
-        // };
-
-        // // Application des filtres en fonction des propriétés de searchInput
-        // for (const [property, value] of Object.entries(searchInput || {})) {
-        //     // Ici on vérifie le cas particulier où l'order by est sur l'email car la syntaxe est particulière
-        //     if (property === "orderBy" && value === "email") {
-        //         order = {
-        //             user: { ["email"]: orderDirection },
-        //         };
-        //         // Ici on vérifie si la propriété est une propriété de searchInput / filterMapping
-        //     } else if (filterMapping[property as keyof typeof filterMapping]) {
-        //         // Si le type de la propriété est une fonction(définis dans filter mapping plus haut)
-        //         // alors on utilise cette fonction avec comme argument la valeur de la propriété
-        //         if (
-        //             typeof filterMapping[
-        //                 property as keyof typeof filterMapping
-        //             ] === "function"
-        //         ) {
-        //             // @ts-ignore
-        //             filterMapping[property](value);
-        //         } else {
-        //             // Sinon on parcours les sous propriétés de la propriété cela est utile pour la date car l'objet
-        //             // date a deux propriétés startDate et endDate
-        //             for (const [subProperty, subValue] of Object.entries(
-        //                 value,
-        //             )) {
-        //                 // @ts-ignore
-        //                 filterMapping[property][subProperty](subValue);
-        //             }
-        //         }
-        //     }
-        // }
 
         try {
             return await this.repository.find({
@@ -254,8 +200,6 @@ export default class ReservationService {
                 (alias) => `CAST(${alias} AS TEXT) ILIKE '%${searchInput.id}%'`,
             );
         }
-
-        const { limit, offset, orderBy, orderDirection } = searchInput ?? {};
 
         try {
             return await this.repository.count({
