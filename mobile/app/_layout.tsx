@@ -51,7 +51,7 @@ function RootLayoutNav() {
       <ThemeProvider value={DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal", title: 'Trouver mon matériel' }} />
         </Stack>
       </ThemeProvider>
     </ApolloProvider>
