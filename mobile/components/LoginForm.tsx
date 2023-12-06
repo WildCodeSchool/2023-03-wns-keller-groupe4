@@ -30,28 +30,38 @@ const LoginForm = () => {
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        console.log("soumission formulaire login")
         if (validateForm()) {
+
+            // await login({
+            //     variables: {
+            //         email: email,
+            //         password: password,
+            //     },
+            // });
+            // login();
+
             setEmail('');
             setPassword('');
             setErrors({});
         }
     }
 
-    // const [login] = useLazyQuery(LOGIN_GUERY, {
-    //     onCompleted: async ({ login }) => {
-    //         setIDToken(login.IDToken);
-    //         navigate("/");
-    //     },
-    //     onError: (err) => {
-    //         if (err.message.includes("Could not find any entity of type")) {
-    //             toast.error("Email ou mot de passe incorrect");
-    //         } else {
-    //             console.error(err.message);
-    //             toast.error("Une erreur est survenue");
-    //         }
-    //     },
-    // });
+    const [login] = useLazyQuery(LOGIN_GUERY, {
+        onCompleted: async ({ login }) => {
+            console.log("loginnn =>" + login)
+            setIDToken(login.IDToken);
+        },
+        onError: (err) => {
+            if (err.message.includes("Could not find any entity of type")) {
+                console.error("inc => Email ou mot de passe incorrect");
+            } else {
+                console.error("caca");
+                console.error("else => Une erreur est survenue");
+            }
+        },
+    });
 
 
     return (
@@ -80,7 +90,6 @@ const LoginForm = () => {
                 {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
                 <Button title="Se connecter" onPress={() => {
                     handleSubmit()
-                    console.log("caca !!!!")
                 }}
                 />
             </View>
@@ -90,9 +99,10 @@ const LoginForm = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexDirection: "column",
         justifyContent: 'center',
         paddingHorizontal: 20,
+        height: "auto",
     },
     title: {
         fontSize: 24,
@@ -108,7 +118,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 5
+        elevation: 5,
+        height: "auto"
     },
     label: {
         fontSize: 16,

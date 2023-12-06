@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 // import { redirect, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { LOGIN_GUERY } from "../utils/queries";
 import { setIDToken } from "../utils/jwtHandler";
 import Colors from "../constants/Colors";
+import { SIGNUP_MUTATION } from '../utils/mutations';
 
 interface IErrorsValidation {
     email?: string;
@@ -18,7 +18,6 @@ const SignupForm = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState<IErrorsValidation>({});
-    // const navigate = useNavigate();
 
     const validateForm = () => {
         const errors: IErrorsValidation = {};
@@ -34,6 +33,7 @@ const SignupForm = () => {
 
 
     const handleSubmit = () => {
+        console.log("soumission formulaire")
         if (validateForm()) {
             setEmail('');
             setPassword('');
@@ -109,7 +109,6 @@ const SignupForm = () => {
                 {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
                 <Button title="S'inscrire" onPress={() => {
                     handleSubmit()
-                    console.log("caca !!!!")
                 }}
                 />
             </View>
@@ -119,9 +118,10 @@ const SignupForm = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        lexDirection: "column",
         justifyContent: 'center',
         paddingHorizontal: 20,
+        height: "auto",
     },
     title: {
         fontSize: 24,
@@ -137,7 +137,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 5
+        elevation: 5,
+        height: "auto"
     },
     label: {
         fontSize: 16,

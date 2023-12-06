@@ -1,6 +1,7 @@
-import { gql } from "../__generated__";
+import { gql } from "@apollo/client";
 
-export const LOGIN_GUERY = gql(`
+
+export const LOGIN_GUERY = gql`
   query LoginQuery(
     $email: String!
     $password: String!
@@ -9,27 +10,27 @@ export const LOGIN_GUERY = gql(`
       IDToken
   }
   }
-`);
+`;
 
-export const GET_CATEGORIES = gql(`
+export const GET_CATEGORIES = gql`
   query GetCategories {
     getCategories {
       id
       name
     }
   }
-`);
+`;
 
-export const GET_CATEGORY_BY_NAME = gql(`
+export const GET_CATEGORY_BY_NAME = gql`
   query GetCategoryByName($name: String!) {
     getCategoryByName(name: $name) {
       id
       name
     }
   }
-`);
+`;
 
-export const GET_PRODUCTS_BY_CATEGORY = gql(`
+export const GET_PRODUCTS_BY_CATEGORY = gql`
   query GetProductsByCategory($idCategory: String!) {
     getProductsByCategory(id_category: $idCategory) {
       id
@@ -41,9 +42,9 @@ export const GET_PRODUCTS_BY_CATEGORY = gql(`
       picture
     }
   }
-`);
+`;
 
-export const GET_ALL_PRODUCTS = gql(`
+export const GET_ALL_PRODUCTS = gql`
   query ExampleQuery {
     getProducts {
       id
@@ -59,9 +60,9 @@ export const GET_ALL_PRODUCTS = gql(`
       }
     }
   }
-`);
+`;
 
-export const GET_PRODUCTS = gql(`
+export const GET_PRODUCTS = gql`
   query GetProducts($getProductsInput: GetProductsInput) {
     getProducts(getProductsInput: $getProductsInput) {
       id
@@ -70,15 +71,15 @@ export const GET_PRODUCTS = gql(`
       available
     }
   }
-`);
+`;
 
-export const GET_PRODUCT_COUNT = gql(`
+export const GET_PRODUCT_COUNT = gql`
   query Query($name: String) {
     getProductsCount(name: $name)
   }
-`);
+`;
 
-export const GET_ONE_PRODUCT = gql(`
+export const GET_ONE_PRODUCT = gql`
   query getProduct($getProductId: String!) {
     getProduct(id: $getProductId) {
       id
@@ -90,4 +91,4 @@ export const GET_ONE_PRODUCT = gql(`
       picture
     }
   }
-`);
+`;
