@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 // import { redirect, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { LOGIN_GUERY } from "../utils/queries";
+import { LOGIN_GUERY, TEST } from "../utils/queries";
 import { setIDToken } from "../utils/jwtHandler";
 import Colors from "../constants/Colors";
 
@@ -16,7 +16,19 @@ const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<IErrorsValidation>({});
-    // const navigate = useNavigate();
+
+    const { loading, error, data } = useQuery(TEST);
+
+    if (loading || error) {
+        const message = loading ? 'Loading...' : 'Error :(';
+        return (
+            <View style={styles.container}>
+                <Text>{message}</Text>
+            </View>
+        );
+    }
+
+    const categories = data.getUsers;
 
     const validateForm = () => {
         const errors: IErrorsValidation = {};
@@ -32,14 +44,15 @@ const LoginForm = () => {
 
     const handleSubmit = async () => {
         console.log("soumission formulaire login")
+        console.log(categories);
         if (validateForm()) {
 
-            // await login({
-            //     variables: {
-            //         email: email,
-            //         password: password,
-            //     },
-            // });
+            await login({
+                variables: {
+                    email: email,
+                    password: password,
+                },
+            });
             // login();
 
             setEmail('');
@@ -50,15 +63,15 @@ const LoginForm = () => {
 
     const [login] = useLazyQuery(LOGIN_GUERY, {
         onCompleted: async ({ login }) => {
-            console.log("loginnn =>" + login)
+            console.log("loginnn =>", login)
             setIDToken(login.IDToken);
         },
         onError: (err) => {
             if (err.message.includes("Could not find any entity of type")) {
-                console.error("inc => Email ou mot de passe incorrect");
+                console.error("Email ou mot de passe incorrect");
             } else {
-                console.error("caca");
-                console.error("else => Une erreur est survenue");
+                console.error("Une erreur est survenue");
+                console.error(err.message);
             }
         },
     });
@@ -90,6 +103,7 @@ const LoginForm = () => {
                 {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
                 <Button title="Se connecter" onPress={() => {
                     handleSubmit()
+                    console.log("saluts")
                 }}
                 />
             </View>

@@ -13,6 +13,7 @@ export default function TabProfileScreen() {
     if (isRegister) {
       form = <SignupForm />;
     } else form = <LoginForm />;
+
     return (
       <View>
         {form}
@@ -23,9 +24,20 @@ export default function TabProfileScreen() {
     );
   }
 
+
+  const showlogout = () => {
+    return (
+      <View>
+        <Text>
+          Une fois loggé, tu peux pas te déloggé, tu vas être séquestrer a vie :)
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {!getIDToken() ? showForm() : null}
+      {!getIDToken() ? showForm() : showlogout()}
     </View>
   );
 }

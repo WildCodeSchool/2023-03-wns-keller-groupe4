@@ -28,6 +28,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cart"
         options={{
+          title: 'Panier',
+          tabBarIcon: ({ color }) => <AntDesign name="shoppingcart" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
           title: "Accueil",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
