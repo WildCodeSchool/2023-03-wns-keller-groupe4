@@ -1,14 +1,23 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Colors from "../../constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Wildrent</Text>
+        <Text style={styles.text}>
+          Louez votre matériel de chantier sans difficulté
+        </Text>
+      </View>
+      <Link href="/modal" asChild>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Trouvez votre matériel</Text>
+          <FontAwesome name="search" size={25} color="#000" />
+        </Pressable>
+      </Link>
     </View>
   );
 }
@@ -16,16 +25,37 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors["light"].background,
+  },
+  titleContainer: {
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: Colors["light"].orange,
+    padding: 20,
+    alignItems: "center",
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontFamily: "RubikBold",
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  text: {
+    fontSize: 16,
+    fontFamily: "Rubik",
+  },
+  button: {
+    backgroundColor: Colors["light"].orange,
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 16,
+    fontFamily: "Rubik",
   },
 });
