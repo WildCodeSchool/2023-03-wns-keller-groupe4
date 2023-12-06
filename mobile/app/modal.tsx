@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
 import { useQuery } from '@apollo/client';
 
 import { Text, View } from '../components/Themed';
@@ -24,9 +25,11 @@ export default function ModalScreen() {
     <View style={styles.container}>
       <ScrollView style={styles.categoriesContainer}>
         {categories.map((category: any) => (
-          <Pressable key={category.id} style={styles.categoriesButton}>
-            <Text style={styles.categoryText}>{category.name}</Text>
-          </Pressable>
+          <Link key={category.id} href={`/categories/${category.name}`} asChild>
+            <Pressable key={category.id} style={styles.categoriesButton}>
+              <Text style={styles.categoryText}>{category.name}</Text>
+            </Pressable>
+          </Link>
         ))}
       </ScrollView>
     </View>
