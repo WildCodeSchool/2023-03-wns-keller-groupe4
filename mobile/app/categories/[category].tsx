@@ -1,12 +1,17 @@
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 
-import React from 'react'
 
 type Props = {}
 
 const ProductListByCategory = ({}: Props) => {
   const { category } = useLocalSearchParams();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({ title: category });
+  }, [navigation]);
   return (
     <View>
       <Text>{category}</Text>
