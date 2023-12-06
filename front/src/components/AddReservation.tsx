@@ -1,17 +1,14 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../utils/jwtHandler";
 import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
 import { GET_DETAILS_OF_ONE_PRODUCT_RESERVED, GET_USER_CART } from "../utils/queries";
 import { Dialog, Transition } from '@headlessui/react';
 import Calendar from 'react-calendar';
-import { isWithinInterval } from "date-fns";
 import 'react-calendar/dist/Calendar.css';
 import { toast } from "react-toastify";
 import { TfiShoppingCartFull } from "react-icons/tfi";
-import { set } from "react-hook-form";
 
 interface IProduct {
     productId: string;
@@ -21,30 +18,7 @@ interface IProduct {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// Calendar reservation
-// List of unavailables dates of the product
-// TODO: Fetch unavailable dates from API
-const disabledRanges = [
-    [new Date(2023,9,6), new Date(2023,9,11)],
-];
-
 type ValuePiece = Date | null;
-type DateValue = ValuePiece | [ValuePiece, ValuePiece];
-
-// Calendar : Disabled dates
-// const tileDisabled = ({ date, view }:any) => {
-//     // Add class to tiles in month view only
-//     if (view === 'month') {
-//       // Check if a date React-Calendar wants to check is within any of the ranges
-//       return isWithinRanges(date, disabledRanges);
-//     }
-// }
-// const isWithinRange = (date:Date, range:Date[]) => {
-//     return isWithinInterval(date, { start: range[0], end: range[1] });
-// }
-// const isWithinRanges = (date:Date, ranges:any) => {
-//     return ranges.some((range: Date[]) => isWithinRange(date, range));
-// }
 
 const AddReservation = ({ 
     productId, 
@@ -62,30 +36,31 @@ const AddReservation = ({
         setSelectedQuantity(0);
         setDisabledQuantity(true);
         setOptions([0]);
-        SetDate(undefined);
+        setDate(undefined);
     }
 
-    const userId = getIDToken().length > 0 ? decodeToken(getIDToken()).userId : "";
+    const userId = getIDToken() ? decodeToken(getIDToken()).userId : "";
     const cancelButtonRef = useRef(null);
 
-    const [date, onDateChange] = useState<DateValue|any>();
-    const [availableQuantity, setAvailableQuantity] = useState(0);
+    const [date, setDate] = useState<any>();
     const [selectedQuantity, setSelectedQuantity] = useState(0);
     const [disabledQuantity, setDisabledQuantity] = useState(true);
     const [options, setOptions] = useState([0]); 
 
     // Component to display a toast message when non-logged user try to add a product to cart
-    const LoginButton = ({ closeToast, toastProps }:any) => (
-        <div className="items-center text-center font-bold relative z-50">
-            Vous devez être connecté pour ajouter un produit à votre panier de réservation.
-            <Link to="/connect">
-                <button className="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-md mt-4"
+    const LoginButton = () => {
+        return (
+            <div className="items-center text-center font-bold">
+                Vous devez être connecté pour ajouter un produit à votre panier de réservation.
+                <button 
+                    className="bg-orange-600 hover:bg-orange-700 text-white p-2 rounded-md mt-4"
+                    onClick={() => navigate("/connect")}
                 >
                     Se connecter / S'inscrire
                 </button>
-            </Link>
-        </div>
-    );
+            </div>
+        );
+    }
 
     // Details of a product already rented
     const [productReserved] = useLazyQuery(GET_DETAILS_OF_ONE_PRODUCT_RESERVED);
@@ -121,7 +96,6 @@ const AddReservation = ({
             
             stockAvailable = stock - reservedQuantity;
             stockAvailable = stockAvailable < 0 ? 0 : stockAvailable;
-            // setAvailableQuantity(stockAvailable);
 
             // If there is a quantity and a date range is selected then we update options values with quantity
             if (stockAvailable > 0 && typeof date !== 'undefined') {
@@ -131,9 +105,6 @@ const AddReservation = ({
                 }
                 setOptions(formSelectOptions);
                 setDisabledQuantity(false);
-
-                // If selected quantity is > 0 then we enable the confirm button
-                if (selectedQuantity > 0) setDisabledConfirmButton(false);
             } else {
                 initForm();
             }
@@ -275,7 +246,7 @@ const AddReservation = ({
                                                     </div>
                                                     <div className="mt-2">
                                                         <Calendar 
-                                                            onChange={SetDate} 
+                                                            onChange={setDate} 
                                                             minDate={new Date()}
                                                             value={date} 
                                                             // tileDisabled={tileDisabled} 
