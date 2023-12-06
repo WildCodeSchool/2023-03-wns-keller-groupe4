@@ -37,7 +37,6 @@ interface IProduct {
 
 const ShoppingCart = () => {
     const userId = getIDToken() ? decodeToken(getIDToken()).userId : ""; 
-    const [show, setShow] = useState(false);
     const [profileClass, setProfileClass] = useState("border-gray-200 dark:bg-gray-100 dark:border-gray-200");
     const [addressSelected, setAddressSelected] = useState(false);
     const [payButtonColor, setPayButtonColor] = useState("bg-gray-500 border-gray-600 ring-gray-500");
@@ -347,7 +346,7 @@ const ShoppingCart = () => {
                                         <p className="text-base leading-none text-gray-800">{ totalTaxes = (+tSubtotal * (20/100)).toFixed(2) } €</p>
                                     </div>
                                 </div>
-                                { userId && addressSelected === false ? (
+                                { userId && products && addressSelected === false ? (
                                     <div>
                                         <p className="text-center text-red-500 sm:pt-5 pt-0">Vous devez selectionner une adresse de livraison pour pouvoir payer</p>
                                     </div>
@@ -358,7 +357,7 @@ const ShoppingCart = () => {
                                         <p className="text-lg font-bold leading-normal text-right text-blue-600">{ (+tSubtotal + +totalTaxes).toFixed(2) } €</p>
                                     </div>
                                     <button 
-                                    onClick={() => { submitCart(); setShow(!show)}} 
+                                    onClick={() => { submitCart(); }} 
                                     className={ "rounded-sm text-base leading-none w-full py-5 text-white ring " + payButtonColor + " ring-offset-2" }
                                     disabled={ payButtonDisabled }
                                     >
