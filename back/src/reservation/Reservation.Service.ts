@@ -16,6 +16,7 @@ import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
 import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
 import { SearchReservationInput } from "./inputs/SearchReservationInput";
+import { EnumProductReservationStatus } from "./entity/ReservationDetail";
 
 export default class ReservationService {
     repository = dataSource.getRepository(Reservation);
@@ -402,6 +403,7 @@ export default class ReservationService {
                         product: await this.productService.getOneProduct(
                             detail.product_id,
                         ),
+                        status: EnumProductReservationStatus.IN_PREPARATION,
                         start_at: detail.start_at,
                         end_at: detail.end_at,
                     },
