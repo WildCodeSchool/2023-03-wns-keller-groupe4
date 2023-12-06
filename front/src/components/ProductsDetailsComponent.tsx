@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PrevButton } from "./tools/PrevButton";
 import convertBase64 from "../utils/convertBase64";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { UPDATE_PRODUCT } from "../utils/mutations";
 import { GET_ONE_PRODUCT } from "../utils/queries";
 import AddReservation from "./AddReservation";
@@ -623,6 +623,7 @@ const ProductsDetailsComponent = ({
             <AddReservation
                 productId = {id}
                 name = {name}
+                stock = {stock}
                 openModal = {openModal}
                 setOpenModal = {setOpenModal}
             />

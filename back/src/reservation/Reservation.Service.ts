@@ -1,9 +1,11 @@
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
+import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
+import GetProductReservedInput from "./inputs/GetProductReservedInput";
 
 
 export default class ReservationService {
@@ -98,7 +100,7 @@ export default class ReservationService {
     }
 
     /**
-     * Renvois une résservation via son id
+     * Renvois une réservation via son id
      * @param id - uuid de la reservation a modifier
      * @returns Reservation
     */
@@ -107,6 +109,30 @@ export default class ReservationService {
             return await this.repository.findOneOrFail({
                 relations: this.relations,
                 where: { id },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Renvois les détails des réservations pour un produit
+     * @param getProductReservedInput
+     * @returns un tableau des réservations
+     */
+    async getOneProductReserved(getProductReservedInput: GetProductReservedInput): Promise<Reservation[]> {
+        try {
+            return await this.repository.find({
+                relations: this.relations,
+                where: {
+                    reservationsDetails: {
+                        product: {
+                            id: getProductReservedInput.product_id
+                        }
+                    },
+                    start_at: MoreThanOrEqual(getProductReservedInput.start_at),
+                    end_at: LessThanOrEqual(getProductReservedInput.end_at),
+                },
             });
         } catch (err: any) {
             throw new Error(err.message);
