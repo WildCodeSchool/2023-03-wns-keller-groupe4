@@ -267,7 +267,7 @@ const ShoppingCart = () => {
                                                             { product.reservedQuantity } pièces
                                                         </div>
                                                         <button
-                                                            onClick={(e) => removeProduct(product.id)}
+                                                            onClick={() => removeProduct(product.id)}
                                                             className="mt-2 text-xs text-center underline text-red-500 cursor-pointer"
                                                         >
                                                             <MdDelete size="1rem" className="inline mr-1" />
