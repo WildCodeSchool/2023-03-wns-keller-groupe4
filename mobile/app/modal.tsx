@@ -1,18 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useQuery } from '@apollo/client';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
+import Colors from '../constants/Colors';
+import { GET_CATEGORIES } from '../constants/queries';
 
 export default function ModalScreen() {
+  const { loading, error, data } = useQuery(GET_CATEGORIES);
+
+  if (loading || error) {
+    const message = loading ? 'Loading...' : 'Error :(';
+    return (
+      <View style={styles.container}>
+        <Text>{message}</Text>
+      </View>
+    );
+  }
+
+  const categories = data.getCategories;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="#fff" />
-      <EditScreenInfo path="app/modal.tsx" />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <ScrollView style={styles.categoriesContainer}>
+        {categories.map((category: any) => (
+          <Pressable key={category.id} style={styles.categoriesButton}>
+            <Text style={styles.categoryText}>{category.name}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -21,15 +37,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: Colors.light.background,
   },
-  title: {
+  categoriesContainer: {
+    width: '95%',
+    margin: 20,
+    backgroundColor: Colors.light.background,
+  },
+  categoriesButton: {
+    backgroundColor: Colors.light.orange,
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  categoryText: {
     fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    fontFamily: 'Rubik',
+    textAlign: 'center',
   },
 });
