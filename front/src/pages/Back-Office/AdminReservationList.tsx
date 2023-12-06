@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import {
     GET_RESERVATIONS_BY_SEARCH_FILTER,
@@ -68,12 +68,6 @@ const AdminReservationList = () => {
             getAllReservation();
         } else {
             handleSubmit();
-
-            getReservationCount({
-                variables: {
-                    searchReservationInput: generateReservationInput(),
-                },
-            });
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,6 +113,12 @@ const AdminReservationList = () => {
         await searchReservationByFilters({
             variables: {
                 searchReservationInput,
+            },
+        });
+
+        await getReservationCount({
+            variables: {
+                searchReservationInput: generateReservationInput(),
             },
         });
     }
@@ -219,6 +219,7 @@ const AdminReservationList = () => {
                         <button
                             className="shadow-md text-white bg-yellow-400 focus:outline-none hover:bg-main active:bg-yellow-400 rounded-lg px-2 sm:mt-8 md:h-[25%]  xl:h-3/6  h-1/6 mt-10"
                             onClick={handleFilterClear}
+                            type="button"
                         >
                             Effacer les filtres
                         </button>
@@ -260,8 +261,6 @@ const AdminReservationList = () => {
                                 placeholder="Rechercher une réservation"
                             />
                         </div>
-                        {/* </form> */}
-                        {/* <form className="px-2 my-4" onSubmit={handleSubmit}> */}
                         <div className="px-2 my-4 flex flex-col items-center basis-1/4 sm:basis-0 ">
                             <label htmlFor="idSearchInput">Date de fin</label>
                             <input
