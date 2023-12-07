@@ -13,6 +13,7 @@ import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
+import InvoiceResolver from "./invoice/Invoice.Resolver";
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
@@ -115,6 +116,7 @@ const start = async (): Promise<void> => {
             ProductResolver,
             LangResolver,
             ReservationResolver,
+            InvoiceResolver,
         ],
         authChecker: ({ context }, roles) => {
             const { email, role } = context.payload;

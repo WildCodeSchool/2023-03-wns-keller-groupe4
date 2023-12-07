@@ -9,6 +9,7 @@ import {
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { UserProfile } from "./UserProfile";
 import { Reservation } from "../../reservation/entity/Reservation";
+import { Invoice } from "../../invoice/entity/Invoice";
 
 export enum EnumRoles {
     SUPERADMIN = "superAdmin",
@@ -53,6 +54,13 @@ export class User {
     })
     @JoinColumn()
     reservations: Reservation[];
+
+    @Field(() => [Invoice], { nullable: true })
+    @OneToMany((type) => Invoice, (invoice) => invoice.user, {
+        nullable: true,
+    })
+    @JoinColumn()
+    invoices: Invoice[];
 
     @Field()
     @Column({ default: () => "CURRENT_TIMESTAMP" })
