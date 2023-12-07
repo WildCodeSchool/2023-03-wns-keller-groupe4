@@ -45,22 +45,29 @@ export class Product {
     picture: string;
 
     @Field({ nullable: true })
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column({
+        default: () => "CURRENT_TIMESTAMP",
+        nullable: true,
+    })
     created_at: Date;
 
     @Field()
-    @Column({ type: "timestamptz", nullable: true })
-    updated_at: Date;
+    @Column({ nullable: true })
+    updated_at?: Date;
 
     @Field()
     @Column({ nullable: true })
-    updated_by: string;
+    updated_by?: string;
 
     @Field(() => [Category])
-    @ManyToMany(() => Category, (category) => category.products)
+    @ManyToMany(() => Category, (category) => category.products, {
+        cascade: true,
+    })
     @JoinTable()
     categories: Category[];
 
-    @OneToMany(() => ReservationDetail, detail => detail.product, { cascade: true })
+    @OneToMany(() => ReservationDetail, (detail) => detail.product, {
+        cascade: true,
+    })
     productsDetails: ReservationDetail[];
 }

@@ -1,10 +1,17 @@
+import { Repository } from "typeorm";
 import dataSource from "../utils";
 import { Category } from "./entity/Category";
 import { CreateCategoryInput } from "./inputs/CreateCategoryInput";
 import { UpdateCategoryInput } from "./inputs/UpdateCategoryInput";
 
 export class CategoryService {
-    categoryRepository = dataSource.getRepository(Category);
+    categoryRepository;
+    constructor(categoryRepository?: Repository<Category>) {
+        this.categoryRepository =
+            categoryRepository !== undefined
+                ? categoryRepository
+                : dataSource.getRepository(Category);
+    }
 
     async getAllCategories(): Promise<Category[]> {
         try {

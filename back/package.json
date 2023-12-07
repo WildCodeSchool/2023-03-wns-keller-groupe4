@@ -4,14 +4,16 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest --config jest.config.js --setupFiles ./setupTests.ts",
         "start": "ts-node-dev --poll --respawn --transpile-only ./src/index.ts",
+        "clear_jest": "jest --clearCache",
         "build": "tsc",
         "prod": "node build/index.js"
     },
     "author": "",
     "license": "ISC",
-    "dependencies": {
+    "dependencies": {        
+        "better-sqlite3": "^8.7.0",
         "@types/cors": "^2.8.14",
     "apollo-server": "^3.12.0",
         "apollo-server-express": "^3.12.1",
@@ -29,18 +31,22 @@
         "typeorm": "^0.3.12"
     },
     "devDependencies": {
+        "@types/better-sqlite3": "^7.6.5",
+        "@types/jest": "^29.5.5",
+        "@types/jsonwebtoken": "^9.0.2",
+        "@typescript-eslint/eslint-plugin": "^5.36.1",
         "@types/cookie-parser": "^1.4.4",
     "@types/express": "^4.17.17",
     "@types/graphql": "^14.5.0",
-    "@types/jsonwebtoken": "^9.0.2",
         "@types/node": "^20.6.2",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
         "eslint": "^8.23.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-config-standard-with-typescript": "^22.0.0",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-n": "^15.2.5",
         "eslint-plugin-promise": "^6.0.1",
+        "jest-mock-extended": "^3.0.5",
+        "ts-jest": "^29.1.1",
         "ts-node-dev": "^2.0.0",
         "typescript": "^4.8.2"
     }
