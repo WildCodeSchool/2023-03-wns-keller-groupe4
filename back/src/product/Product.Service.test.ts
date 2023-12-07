@@ -32,7 +32,7 @@ describe("ProductService", () => {
 
         await testDataSource.initialize();
 
-        if (!dataSource.isInitialized) {
+        if (!testDataSource.isInitialized) {
             throw new Error("test database could not be initialised");
         }
         categoryRepository = testDataSource.getRepository(Category);
