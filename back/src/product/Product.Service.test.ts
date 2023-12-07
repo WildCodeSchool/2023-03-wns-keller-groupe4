@@ -1,18 +1,18 @@
 import "reflect-metadata";
 import { ProductService } from "./Product.Service";
-// import { createProductInputMock } from "./mocks/productInputMock";
 import {
     createNewProductInputMock,
     createTestCategoryInput,
     createTestProductInput,
 } from "./mocks/productMock";
-import { testDbSetupt, testDbTeardown } from "../testUtils/testhelper";
+import { testDbSetup, testDbTeardown } from "../testUtils/testhelper";
 import { Product } from "./entity/Product";
 import { DataSource, Repository } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import { Category } from "../category/entity/Category";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
 import { CreateProductInput } from "./inputs/CreateProductInput";
+import dataSource from "../utils";
 
 jest.mock("../category/Category.Service");
 
@@ -28,30 +28,31 @@ describe("ProductService", () => {
 
     beforeAll(async () => {
         // Initialise the test database and the test repositories
-        testDataSource = testDbSetupt();
+        testDataSource = testDbSetup();
 
         await testDataSource.initialize();
 
-        if (testDataSource.isInitialized) {
-            categoryRepository = testDataSource.getRepository(Category);
-            productRepository = testDataSource.getRepository(Product);
-
-            // Here we create a category to be used in all tests
-            testCategory = await categoryRepository.save({
-                ...createTestCategoryInput,
-                products: [],
-            });
-
-            mockCategoryService =
-                new CategoryService() as jest.Mocked<CategoryService>;
-
-            // We provide the test product repository created for testing environment and our mocked categoryService
-
-            productService = new ProductService(
-                productRepository,
-                mockCategoryService,
-            );
+        if (!dataSource.isInitialized) {
+            throw new Error("test database could not be initialised");
         }
+        categoryRepository = testDataSource.getRepository(Category);
+        productRepository = testDataSource.getRepository(Product);
+
+        // Here we create a category to be used in all tests
+        testCategory = await categoryRepository.save({
+            ...createTestCategoryInput,
+            products: [],
+        });
+
+        mockCategoryService =
+            new CategoryService() as jest.Mocked<CategoryService>;
+
+        // We provide the test product repository created for testing environment and our mocked categoryService
+
+        productService = new ProductService(
+            productRepository,
+            mockCategoryService,
+        );
     });
     beforeEach(async () => {
         testProduct = await productRepository.save({
