@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useQuery } from "@apollo/client";
 import { AntDesign } from "@expo/vector-icons";
@@ -47,24 +54,26 @@ const ProductListByCategory = ({}: Props) => {
 
   return (
     <View style={styles.container}>
-      {products.map((product) => (
-        <View key={product.id} style={styles.product}>
-          <View style={styles.productLeft}>
-            <Image
-              source={{ uri: product.picture }}
-              style={styles.productImage}
-            />
+      <ScrollView style={{ width: "90%" }}>
+        {products.map((product) => (
+          <View key={product.id} style={styles.product}>
+            <View style={styles.productLeft}>
+              <Image
+                source={{ uri: product.picture }}
+                style={styles.productImage}
+              />
+            </View>
+            <View style={styles.productRight}>
+              <Text style={styles.productName}>{product.name}</Text>
+              <Text style={styles.productPrice}>{product.price}€/jour</Text>
+              <Pressable style={styles.productDetailsButton}>
+                <Text style={styles.productDetailsButtonText}>Details</Text>
+                <AntDesign name="pluscircleo" size={18} color="white" />
+              </Pressable>
+            </View>
           </View>
-          <View style={styles.productRight}>
-            <Text style={styles.productName}>{product.name}</Text>
-            <Text style={styles.productPrice}>{product.price}€/jour</Text>
-            <Pressable style={styles.productDetailsButton}>
-              <Text style={styles.productDetailsButtonText}>Details</Text>
-              <AntDesign name="pluscircleo" size={18} color="white" />
-            </Pressable>
-          </View>
-        </View>
-      ))}
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -75,13 +84,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
     backgroundColor: Colors.light.background,
   },
   product: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "90%",
+    // width: "90%",
     borderWidth: 1,
     borderColor: Colors.light.orange,
     marginVertical: 10,
