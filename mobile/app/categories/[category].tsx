@@ -52,6 +52,28 @@ const ProductListByCategory = ({}: Props) => {
     );
   }
 
+  if (!products.length) {
+    return (
+      <View style={styles.container}>
+        <View
+          style={{
+            width: "90%",
+            backgroundColor: "#ffedd5",
+            borderColor: "#f97316",
+            borderLeftWidth: 4,
+            alignItems: "center",
+            padding: 10,
+          }}
+        >
+          <Text style={{ fontFamily: "Rubik", fontSize: 18 }}>
+            Aucun produit pour la catégorie{" "}
+            <Text style={{ fontFamily: "RubikBold" }}>{category}</Text>
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView style={{ width: "90%" }}>
