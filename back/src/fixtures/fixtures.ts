@@ -104,7 +104,7 @@ export const dataFixture = async (): Promise<void> => {
             if (productAlreadyExists === undefined) {
                 const productRepository = dataSource.getRepository(Product);
 
-                const newProduct = await productService.createNewProduct({
+                await productService.createNewProduct({
                     stock,
                     price,
                     name,
@@ -113,8 +113,6 @@ export const dataFixture = async (): Promise<void> => {
                     picture,
                     category: categories,
                 });
-
-                await productRepository.save(newProduct);
             }
         }
     }
