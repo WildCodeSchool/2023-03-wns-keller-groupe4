@@ -12,7 +12,7 @@ export default function TabOneScreen() {
           Louez votre matériel de chantier sans difficulté
         </Text>
       </View>
-      <Link href="/modal" asChild>
+      <Link href="/ListCategories" asChild>
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>Trouvez votre matériel</Text>
           <FontAwesome name="search" size={25} color="#000" />
