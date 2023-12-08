@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import {
     GET_RESERVATIONS_BY_SEARCH_FILTER,

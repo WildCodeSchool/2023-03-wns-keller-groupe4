@@ -157,13 +157,15 @@ export default class ReservationService {
         }
 
         try {
-            return await this.repository.find({
+            const foundReservations = await this.repository.find({
                 relations: this.relations,
                 where,
                 take: limit,
                 skip: offset,
                 order,
             });
+
+            return foundReservations;
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -174,7 +176,7 @@ export default class ReservationService {
     ): Promise<number> {
         const where: FindOptionsWhere<Reservation> = {};
 
-        if (searchInput === undefined) {
+        if (searchInput.status === undefined) {
             where.status = where.status = Not(EnumStatusReservation.IN_CART);
         }
 
@@ -203,9 +205,11 @@ export default class ReservationService {
         }
 
         try {
-            return await this.repository.count({
+            const reservationCount = await this.repository.count({
                 where,
             });
+
+            return reservationCount;
         } catch (err: any) {
             throw new Error(err.message);
         }
