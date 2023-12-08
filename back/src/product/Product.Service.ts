@@ -1,4 +1,4 @@
-import { ILike, In } from "typeorm";
+import { ILike, Repository, In } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import dataSource from "../utils";
 import { Product } from "./entity/Product";
@@ -7,10 +7,20 @@ import { GetProductsInput } from "./inputs/GetProductsInput";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
 
 export class ProductService {
-    productRepository = dataSource.getRepository(Product);
+    productRepository;
     categoryService;
-    constructor() {
-        this.categoryService = new CategoryService();
+    constructor(
+        productRepository?: Repository<Product>,
+        categoryService?: CategoryService,
+    ) {
+        this.categoryService =
+            categoryService !== undefined
+                ? categoryService
+                : new CategoryService();
+        this.productRepository =
+            productRepository !== undefined
+                ? productRepository
+                : dataSource.getRepository(Product);
     }
 
     async getAllProducts(

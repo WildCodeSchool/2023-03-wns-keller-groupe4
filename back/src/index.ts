@@ -19,13 +19,14 @@ import { verify } from "jsonwebtoken";
 import { User } from "./user/entity/User";
 import cors from "cors";
 import whitelistCORS from "./whitelistCORS";
+
+import ReservationResolver from "./reservation/Reservation.Resolver";
 import {
     dataFixture,
     resetMockCategories,
     resetMockProducts,
     resetMockUsers,
-} from "./fixtures";
-import ReservationResolver from "./reservation/Reservation.Resolver";
+} from "./fixtures/fixtures";
 
 dotenv.config();
 

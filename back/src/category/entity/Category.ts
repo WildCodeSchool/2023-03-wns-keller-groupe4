@@ -1,9 +1,8 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Field, InputType, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 import { Product } from "../../product/entity/Product";
 
 @ObjectType()
-@InputType()
 @Entity()
 export class Category {
     @Field()

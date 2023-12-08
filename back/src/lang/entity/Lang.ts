@@ -13,6 +13,6 @@ export class Lang {
     @Column()
     name: string;
 
-    @OneToMany((type) => UserProfile, (userProfile) => userProfile.lang)
+    @OneToMany(() => UserProfile, (userProfile) => userProfile.lang)
     user_profiles: UserProfile[];
 }

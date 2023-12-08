@@ -1,9 +1,4 @@
-import {
-    Column,
-    Entity,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType } from "type-graphql";
 import { Product } from "../../product/entity/Product";
 import { Reservation } from "./Reservation";
@@ -12,25 +7,27 @@ import { Reservation } from "./Reservation";
 @Entity()
 export class ReservationDetail {
     @PrimaryGeneratedColumn("uuid")
-    id?: string
+    id?: string;
 
     @Field()
     @Column()
     quantity: number;
 
     @Field()
-    @Column({ type: "timestamptz" })
+    @Column()
     start_at: Date;
 
     @Field()
-    @Column({ type: "timestamptz" })
+    @Column()
     end_at: Date;
 
     @Field(() => Product)
     @ManyToOne(() => Product, (product) => product.productsDetails)
-    product: Product
+    product: Product;
 
-    @ManyToOne(() => Reservation, (reservation) => reservation.reservationsDetails)
-    reservation: Reservation
-
+    @ManyToOne(
+        () => Reservation,
+        (reservation) => reservation.reservationsDetails,
+    )
+    reservation: Reservation;
 }
