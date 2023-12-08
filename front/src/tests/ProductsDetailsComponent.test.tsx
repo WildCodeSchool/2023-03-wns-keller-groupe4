@@ -36,7 +36,7 @@ describe("Products details", () => {
 
         it("should display the description as unavailable", () => {
             render(<ProductsDetailsComponent id={"1"} name={"brouette"} description={""} price={10} stock={5} picture={"image.jpg"} available={false} isAdmin={false} />);
-            expect(screen.getByText(/No description available/i)).toBeInTheDocument();
+            expect(screen.getByText(/Aucune description/i)).toBeInTheDocument();
         });
 
         it("should disable the reservation button", () => {
