@@ -48,20 +48,18 @@ export class User {
     user_profile: UserProfile;
 
     @Field(() => [Reservation], { nullable: true })
-    @OneToMany(
-        (type) => Reservation,
-        (reservation) => reservation.user,
-        { nullable: true }
-    )
+    @OneToMany((type) => Reservation, (reservation) => reservation.user, {
+        nullable: true,
+    })
     @JoinColumn()
     reservations: Reservation[];
 
     @Field()
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column({ default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 
     @Field()
-    @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+    @Column({ default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
     @Column({ default: 0 })
