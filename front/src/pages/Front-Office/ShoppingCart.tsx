@@ -133,6 +133,8 @@ const ShoppingCart = () => {
                         updateStatusOfReservationId: cartId,
                     } 
                 });
+
+                // Cart is validated, create a new empty cart
                 const createReservationInput = {
                     user_id: userId,
                 };
