@@ -1,18 +1,21 @@
+import { useMutation } from '@apollo/client';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import LoginForm from '../../components/LoginForm';
 import SignupForm from '../../components/SignupForm';
-import Colors from "../../constants/Colors";
-import { getIDToken } from '../../utils/jwtHandler';
+import { getIDToken, setIDToken } from '../../utils/jwtHandler';
+import { LOGOUT } from '../../utils/mutations';
 
 export default function TabProfileScreen() {
   const [isRegister, setIsRegister] = useState(false);
+  const [isLogged, setIsLogged] = useState<Boolean>(getIDToken() != "");
 
   const showForm = () => {
     let form: React.JSX.Element = <></>;
     if (isRegister) {
-      form = <SignupForm />;
-    } else form = <LoginForm />;
+      form = <SignupForm setIsRegister={setIsRegister} />;
+
+    } else form = <LoginForm setIsLogged={setIsLogged} />;
 
     return (
       <View>
@@ -24,6 +27,17 @@ export default function TabProfileScreen() {
     );
   }
 
+  const [logout] = useMutation(LOGOUT, {
+    onCompleted: () => {
+      console.log("Déconnexion...")
+      setIDToken("");
+      setIsLogged(false)
+    },
+  });
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   const showlogout = () => {
     return (
@@ -31,13 +45,19 @@ export default function TabProfileScreen() {
         <Text>
           Une fois loggé, tu peux pas te déloggé, tu vas être séquestrer a vie :)
         </Text>
+        <Button
+          onPress={() => handleLogout()}
+          title="Se déconnecter"
+          color="red"
+          accessibilityLabel='Se déconnecter'
+        />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {!getIDToken() ? showForm() : showlogout()}
+      {!isLogged ? showForm() : showlogout()}
     </View>
   );
 }

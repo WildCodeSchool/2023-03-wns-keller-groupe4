@@ -1,9 +1,7 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
-import { useLazyQuery, useQuery } from "@apollo/client";
-// import { redirect, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { LOGIN_GUERY, TEST } from "../utils/queries";
+import { useLazyQuery } from "@apollo/client";
+import { LOGIN_GUERY } from "../utils/queries";
 import { setIDToken } from "../utils/jwtHandler";
 import Colors from "../constants/Colors";
 
@@ -12,23 +10,14 @@ interface IErrorsValidation {
     password?: string;
 }
 
-const LoginForm = () => {
+interface ILoginForm {
+    setIsLogged: (logged: boolean) => void;
+}
+
+const LoginForm = ({ setIsLogged }: ILoginForm) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<IErrorsValidation>({});
-
-    const { loading, error, data } = useQuery(TEST);
-
-    if (loading || error) {
-        const message = loading ? 'Loading...' : 'Error :(';
-        return (
-            <View style={styles.container}>
-                <Text>{message}</Text>
-            </View>
-        );
-    }
-
-    const categories = data.getUsers;
 
     const validateForm = () => {
         const errors: IErrorsValidation = {};
@@ -43,8 +32,7 @@ const LoginForm = () => {
 
 
     const handleSubmit = async () => {
-        console.log("soumission formulaire login")
-        console.log(categories);
+        console.log("soumission formulaire connexion")
         if (validateForm()) {
 
             await login({
@@ -53,9 +41,7 @@ const LoginForm = () => {
                     password: password,
                 },
             });
-            // login();
 
-            setEmail('');
             setPassword('');
             setErrors({});
         }
@@ -65,12 +51,12 @@ const LoginForm = () => {
         onCompleted: async ({ login }) => {
             console.log("loginnn =>", login)
             setIDToken(login.IDToken);
+            setIsLogged(true);
         },
         onError: (err) => {
             if (err.message.includes("Could not find any entity of type")) {
-                console.error("Email ou mot de passe incorrect");
+                console.warn("Email ou mot de passe incorrect");
             } else {
-                console.error("Une erreur est survenue");
                 console.error(err.message);
             }
         },

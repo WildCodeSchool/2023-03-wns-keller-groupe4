@@ -92,19 +92,3 @@ export const GET_ONE_PRODUCT = gql`
     }
   }
 `;
-
-
-export const TEST = gql`
-query GetUsers {
-  getUsers {
-    id
-    reservations {
-      reservationsDetails {
-        product {
-          name
-        }
-      }
-    }
-  }
-}
-`;

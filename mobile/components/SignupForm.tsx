@@ -1,9 +1,6 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
-import { useLazyQuery, useMutation } from "@apollo/client";
-// import { redirect, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { setIDToken } from "../utils/jwtHandler";
+import { useMutation } from "@apollo/client";
 import Colors from "../constants/Colors";
 import { SIGNUP_MUTATION } from '../utils/mutations';
 
@@ -13,7 +10,11 @@ interface IErrorsValidation {
     confirmPassword?: string;
 }
 
-const SignupForm = () => {
+interface ISignupForm {
+    setIsRegister: (isRegister: boolean) => void;
+}
+
+const SignupForm = ({ setIsRegister }: ISignupForm) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,46 +33,47 @@ const SignupForm = () => {
     }
 
 
-    const handleSubmit = () => {
-        console.log("soumission formulaire")
+
+
+    const [signup] = useMutation(SIGNUP_MUTATION, {
+        onCompleted: async () => {
+            console.warn("Incription réussi");
+            setIsRegister(false);
+        },
+        onError: (err) => {
+            if (err.message.includes("duplicate key value violates unique constraint")) {
+                console.warn("Cet email est déjà utilisé");
+            } else {
+                console.error(err.message);
+                console.warn("Une erreur est survenue");
+            }
+        },
+    });
+
+    const handleSubmit = async () => {
+        console.log("soumission formulaire inscription")
         if (validateForm()) {
+            try {
+                await signup({
+                    variables: {
+                        signupUserInput: {
+                            email: email,
+                            password: password,
+                            passwordConfirm: confirmPassword,
+                        },
+                    },
+                });
+
+            } catch (error) {
+                console.error(error)
+            }
+
             setEmail('');
             setPassword('');
             setConfirmPassword('');
             setErrors({});
         }
     }
-
-    // const [signup] = useMutation(SIGNUP_MUTATION, {
-    //     onCompleted: async () => {
-    //         window.location.reload();
-    //     },
-    //     onError: (err) => {
-    //         if (
-    //             err.message.includes(
-    //                 "duplicate key value violates unique constraint",
-    //             )
-    //         ) {
-    //             toast.error("Cet email est déjà utilisé");
-    //         } else {
-    //             console.error(err.message);
-    //             toast.error("Une erreur est survenue");
-    //         }
-    //     },
-    // });
-
-    // const submitForm = async (data: IFormSignup) => {
-    //     await signup({
-    //         variables: {
-    //             signupUserInput: {
-    //                 email: data.email,
-    //                 password: data.password,
-    //                 passwordConfirm: data.passwordConfirm,
-    //             },
-    //         },
-    //     });
-    // };
-
 
     return (
         <View style={styles.container}>
