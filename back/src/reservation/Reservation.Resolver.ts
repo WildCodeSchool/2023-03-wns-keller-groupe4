@@ -3,7 +3,7 @@ import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import ReservationService from "./Reservation.Service";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
-import GetProductReservedInput from "./inputs/GetProductReservedInput";
+import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
 
 @Resolver()
 export default class ReservationResolver {
@@ -50,12 +50,12 @@ export default class ReservationResolver {
 
     // pour activer l'autorisation par token
     // @Authorized()
-    @Query(() => [Reservation])
-    async getDetailsOfOneProductReserved(
-        @Arg("getProductReservedInput", { nullable: true })
-        getProductReservedInput: GetProductReservedInput,
-    ): Promise<Reservation[]> {
-        return await this.service.getOneProductReserved(getProductReservedInput);
+    @Query(() => Number)
+    async getProductReservationQuantityByDates(
+        @Arg("getProductReservationQuantityByDatesInput", { nullable: true })
+        getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
+    ): Promise<number> {
+        return await this.service.getOneProductReservationQuantityByDates(getProductReservationQuantityByDatesInput);
     }
 
     @Mutation(() => Boolean)

@@ -1,7 +1,7 @@
 import { Field, InputType } from "type-graphql";
 
 @InputType()
-export default class GetProductReservedInput {
+export default class GetProductReservationQuantityByDatesInput {
     @Field()
     product_id: string;
 

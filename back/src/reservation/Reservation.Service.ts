@@ -5,7 +5,7 @@ import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
-import GetProductReservedInput from "./inputs/GetProductReservedInput";
+import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
 
 
 export default class ReservationService {
@@ -116,24 +116,33 @@ export default class ReservationService {
     }
 
     /**
-     * Renvois les détails des réservations pour un produit
-     * @param getProductReservedInput
-     * @returns un tableau des réservations
+     * Renvois les détails des réservations pour un produit suivant une date de début et une date de fin
+     * @param getProductReservationQuantityByDatesInput
+     * @returns La quantité réservée
      */
-    async getOneProductReserved(getProductReservedInput: GetProductReservedInput): Promise<Reservation[]> {
+    async getOneProductReservationQuantityByDates(
+        getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput
+    ): Promise<number> {
         try {
-            return await this.repository.find({
+            const productDetails = await this.repository.find({
                 relations: this.relations,
                 where: {
                     reservationsDetails: {
                         product: {
-                            id: getProductReservedInput.product_id
-                        }
+                            id: getProductReservationQuantityByDatesInput.product_id,
+                        },
                     },
-                    start_at: MoreThanOrEqual(getProductReservedInput.start_at),
-                    end_at: LessThanOrEqual(getProductReservedInput.end_at),
+                    start_at: MoreThanOrEqual(getProductReservationQuantityByDatesInput.start_at),
+                    end_at: LessThanOrEqual(getProductReservationQuantityByDatesInput.end_at),
                 },
             });
+            let reservedQuantity = 0;
+            productDetails.forEach((reservation) => {
+                reservation.reservationsDetails.forEach((detail) => {
+                    reservedQuantity += detail.quantity;
+                });
+            });
+            return reservedQuantity;
         } catch (err: any) {
             throw new Error(err.message);
         }

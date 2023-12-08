@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PrevButton } from "./tools/PrevButton";
 import convertBase64 from "../utils/convertBase64";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { UPDATE_PRODUCT } from "../utils/mutations";
 import { GET_ONE_PRODUCT } from "../utils/queries";
 import AddReservation from "./AddReservation";
@@ -93,14 +93,11 @@ const ProductsDetailsComponent = ({
     };
 
     // Description
-    description = description !== "" ? description : "No description available";
+    description = description !== "" ? description : "Aucune description";
 
     // Availability
-    const availability = available ? " disponible" : " non disponible";
+    const availability = available ? " Disponible" : " Non disponible";
     const buttonState = available ? false : true;
-
-    // Image
-    const [image, setImage] = useState(picture);
     const [openModal, setOpenModal] = useState(false);
 
     // ******************************This is the componnent when used in the back office, for front office use scroll down**************************
@@ -449,7 +446,7 @@ const ProductsDetailsComponent = ({
                 <div className="container px-5 py-12 mx-auto">
                     <div className="flex flex-wrap lg:w-5/6 mx-auto justify-center">
                         <img
-                            src={image}
+                            src={picture}
                             alt=""
                             className="w-full sm:w-1/2 lg:w-1/3 object-cover object-center rounded border border-gray-200"
                         />
@@ -587,18 +584,15 @@ const ProductsDetailsComponent = ({
                                 {/* Stocks and availability */}
                                 <div className="title-font text-gray-900">
                                     <span className="font-medium">
-                                        Availability:
+                                        Disponibilité :
                                     </span>{" "}
                                     {availability}
                                 </div>
                                 <div className="flex ml-auto title-font text-gray-900">
-                                    <span className="font-medium block md:inline">
-                                        Quantity:{" "}
+                                    <span className="font-medium pr-1">
+                                        Quantité :
                                     </span>
-                                    <span className="block md:inline">
-                                        {" "}
-                                        {stock} pieces
-                                    </span>
+                                    {stock} pieces
                                 </div>
                             </div>
                             <div className="flex mt-2 items-center pb-5 border-b-2 border-gray-200 mb-5"></div>

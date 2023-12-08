@@ -152,19 +152,8 @@ export const GET_USER_CART = gql(`
   }
 `);
 
-export const GET_DETAILS_OF_ONE_PRODUCT_RESERVED = gql(`
-  query GetDetailsOfOneProductReserved($getProductReservedInput: GetProductReservedInput) {
-    getDetailsOfOneProductReserved(getProductReservedInput: $getProductReservedInput) {
-      reservationsDetails {
-        quantity
-        start_at
-        end_at
-        product {
-          id
-          name
-          stock
-        }
-      }
-    }
+export const GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT = gql(`
+  query GetProductReservationQuantityByDates($getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput) {
+    getProductReservationQuantityByDates(getProductReservationQuantityByDatesInput: $getProductReservationQuantityByDatesInput)
   }
 `);

@@ -115,12 +115,11 @@ const ShoppingCart = () => {
 
     // Submit cart when payment is validated
     const submitCart = async () => {
-        if(errorStartDate == "hidden") {
+        if(errorStartDate === "hidden") {
             const cartId = cartSummary?.id;
 
             if(cartId) {
-
-                const paidReservation = await updateReservationDates({
+                await updateReservationDates({
                     variables: {
                         startAt: new Date(reservation_start_at).toISOString(),
                         endAt: new Date(reservation_end_at).toISOString(),
@@ -164,7 +163,7 @@ const ShoppingCart = () => {
             });
 
             if(removedProduct) {
-                if(errorStartDate == "visible") {
+                if(errorStartDate === "visible") {
                     setErrorStartDate("hidden");
                 }
                 refetch();
@@ -206,7 +205,7 @@ const ShoppingCart = () => {
                                     // Products list
                                     products.map((product:any) => (
                                         // Set start and end date of the global reservation
-                                        reservation_start_at == 0 ? ( 
+                                        reservation_start_at === 0 ? ( 
                                             reservation_start_at = product.start_at.getTime()
                                         ) : (
                                             reservation_start_at !== product.start_at.getTime() && errorStartDate == "hidden" ? (

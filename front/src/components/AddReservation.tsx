@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../utils/jwtHandler";
 import { CREATE_CART, UPDATE_CART } from "../utils/mutations";
-import { GET_DETAILS_OF_ONE_PRODUCT_RESERVED, GET_USER_CART } from "../utils/queries";
+import { GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT, GET_USER_CART } from "../utils/queries";
 import { Dialog, Transition } from '@headlessui/react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -18,7 +18,7 @@ interface IProduct {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-type ValuePiece = Date | null;
+// type ValuePiece = Date | null;
 
 const AddReservation = ({ 
     productId, 
@@ -62,8 +62,8 @@ const AddReservation = ({
         );
     }
 
-    // Details of a product already rented
-    const [productReserved] = useLazyQuery(GET_DETAILS_OF_ONE_PRODUCT_RESERVED);
+    // Quantity of product in reservation
+    const [productQuantityReservedByDates] = useLazyQuery(GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT);
 
     // User cart
     const GetUserCart = useQuery(GET_USER_CART, {
@@ -74,11 +74,11 @@ const AddReservation = ({
     const [createCart] = useMutation(CREATE_CART);
     const [updateCart] = useMutation(UPDATE_CART);
 
-    const p = async() => {
+    const quantityInReservation = async() => {
         if(date && Array.isArray(date) && date[0] && date[1]) {
-            let { data } = await productReserved({
+            let { data } = await productQuantityReservedByDates({
                 variables: { 
-                    getProductReservedInput: {
+                    getProductReservationQuantityByDatesInput: {
                         product_id: productId,
                         start_at: date?date[0].toLocaleString("en-US", {timeZone: "Europe/Paris"}):null,
                         end_at: date?date[1].toLocaleString("en-US", {timeZone: "Europe/Paris"}):null,
@@ -89,20 +89,22 @@ const AddReservation = ({
             let stockAvailable = 0;
             let reservedQuantity = 0;
 
-            const p = data?.getDetailsOfOneProductReserved.map((product:any) => {
-                console.log("MAP : "+product.reservationsDetails[0].quantity)
-                return reservedQuantity += product.reservationsDetails[0].quantity;
-            });
+            if(typeof data?.getProductReservationQuantityByDates !== 'undefined') {
+                reservedQuantity = Number(data? data.getProductReservationQuantityByDates : 0);
+            }
             
             stockAvailable = stock - reservedQuantity;
             stockAvailable = stockAvailable < 0 ? 0 : stockAvailable;
 
-            // If there is a quantity and a date range is selected then we update options values with quantity
-            if (stockAvailable > 0 && typeof date !== 'undefined') {
+            // If a date range is selected then we update options values with quantity for the select field
+            if (typeof date !== 'undefined') {
                 const formSelectOptions = [];
-                for (let i = 1; i <= stockAvailable; i++) {
-                    formSelectOptions.push(i);
-                }
+
+                for (let i = 1; i <= stockAvailable; i++) formSelectOptions.push(i);
+
+                // If no quantity available, we set the select field to 0
+                if (formSelectOptions.length === 0) formSelectOptions.push(0);
+
                 setOptions(formSelectOptions);
                 setDisabledQuantity(false);
             } else {
@@ -116,8 +118,8 @@ const AddReservation = ({
     }
 
     useEffect(() => {
-        p(); 
-    }, [date, selectedQuantity]);
+        quantityInReservation(); 
+    }, [date]);
 
     const submitForm = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -179,7 +181,7 @@ const AddReservation = ({
                     product_id: productId,
                 }
             }
-            const newUpdateCart = await updateCart({ 
+            await updateCart({ 
                 variables: { ...updateDetailFromReservation }
             });
             initForm();
