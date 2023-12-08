@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
 import { GET_USER, GET_USER_CART } from "../../utils/queries";
-import { REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES } from "../../utils/mutations";
+import { REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES, CREATE_CART } from "../../utils/mutations";
 import { EnumStatusReservation } from "../../__generated__/graphql";
 import { toast } from "react-toastify";
 import { BsBox2Fill, BsCartCheckFill } from "react-icons/bs";
 import { GrValidate } from "react-icons/gr";
+import { FaFileInvoiceDollar } from "react-icons/fa";
 import { FaShippingFast } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { PrevButton } from "../../components/tools/PrevButton";
@@ -41,7 +42,6 @@ const ShoppingCart = () => {
     const [addressSelected, setAddressSelected] = useState(false);
     const [payButtonColor, setPayButtonColor] = useState("bg-gray-500 border-gray-600 ring-gray-500");
     const [payButtonDisabled, setPayButtonDisabled] = useState(true);
-    const [errorStartDate, setErrorStartDate] = useState("hidden");
 
     const { loading, data, refetch } = useQuery(GET_USER_CART, {
         variables: { getCartReservationOfUserId: userId },
@@ -53,6 +53,7 @@ const ShoppingCart = () => {
         skip: userId === "",
     });
 
+    const [createCart] = useMutation(CREATE_CART);
     const [updateCart] = useMutation(UPDATE_RESERVATION_STATUS);
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
@@ -115,38 +116,38 @@ const ShoppingCart = () => {
 
     // Submit cart when payment is validated
     const submitCart = async () => {
-        if(errorStartDate === "hidden") {
-            const cartId = cartSummary?.id;
+        const cartId = cartSummary?.id;
 
-            if(cartId) {
-                await updateReservationDates({
+        if(cartId) {
+            await updateReservationDates({
+                variables: {
+                    startAt: new Date(reservation_start_at).toISOString(),
+                    endAt: new Date(reservation_end_at).toISOString(),
+                    updateDateOfReservationId: cartId,
+                }
+            })
+            .then((res:any) => {
+                updateCart({ 
                     variables: {
-                        startAt: new Date(reservation_start_at).toISOString(),
-                        endAt: new Date(reservation_end_at).toISOString(),
-                        updateDateOfReservationId: cartId,
-                    }
-                })
-                .then((res:any) => {
-                    console.log(res);
-                    updateCart({ 
-                        variables: {
-                            status: EnumStatusReservation.Paying,
-                            updateStatusOfReservationId: cartId,
-                        } 
-                    });
-                    refetch();
-                    toast.success(
-                        "Votre réservation est validée.", { 
-                        icon: <GrValidate size="2rem" />,
-                    });
-                })
-                .catch((err:any) => {
-                    console.log(err);
-                    toast.error("Erreur : La réservation n'a pas pu être confirmée.");
+                        status: EnumStatusReservation.Paying,
+                        updateStatusOfReservationId: cartId,
+                    } 
                 });
-            }
-        } else {
-            toast.error("Erreur : La date de début de réservation de tous les produits du panier n'est pas identique.");
+                const createReservationInput = {
+                    user_id: userId,
+                };
+                const newCart = createCart({ 
+                    variables: { createReservationInput } 
+                });
+                refetch();
+                toast.success(
+                    "Votre réservation est validée.", { 
+                    icon: <GrValidate size="2rem" />,
+                });
+            })
+            .catch((err:any) => {
+                toast.error("Erreur : La réservation n'a pas pu être confirmée.");
+            });
         }
     };
 
@@ -163,9 +164,6 @@ const ShoppingCart = () => {
             });
 
             if(removedProduct) {
-                if(errorStartDate === "visible") {
-                    setErrorStartDate("hidden");
-                }
                 refetch();
                 toast.success(
                     "Le produit a été supprimé du panier.", { 
@@ -196,24 +194,10 @@ const ShoppingCart = () => {
                                         <BsCartCheckFill size="2rem" className="inline mr-3" />
                                         Votre panier de réservation
                                     </p>,
-
-                                    <div className={ errorStartDate + " bg-red-100 border border-red-400 text-red-700 text-center px-4 py-3 rounded relative"} role="alert">
-                                        <strong className="font-bold">Attention ! </strong>
-                                        <span className="block sm:inline">La date de début de réservation de chaque produit doit être identique. Veuillez corriger ce problème.</span>
-                                    </div>,
                                     
                                     // Products list
                                     products.map((product:any) => (
-                                        // Set start and end date of the global reservation
-                                        reservation_start_at === 0 ? ( 
-                                            reservation_start_at = product.start_at.getTime()
-                                        ) : (
-                                            reservation_start_at !== product.start_at.getTime() && errorStartDate == "hidden" ? (
-                                                // Set error message if start date is not the same for all products
-                                                setErrorStartDate("visible")
-                                            ) : ("") 
-                                        ),
-                                        
+                                        reservation_start_at = reservation_start_at > product.start_at.getTime() ? product.start_at.getTime() : reservation_start_at,
                                         reservation_end_at = reservation_end_at < product.end_at.getTime() ? product.end_at.getTime() : reservation_end_at,
                                         
                                         <div className="lg:flex items-center py-4 border-t border-gray-200">
@@ -280,34 +264,68 @@ const ShoppingCart = () => {
                                         </div>    
                                     )),
                                     
-                                    // Shipping address
-                                    <div className="mt-5 mb-20">
-                                        <div className="text-3xl text-center lg:text-left font-black leading-10 text-orange-600 py-4 mt-5">
-                                            <FaShippingFast className="inline mr-3" size="2rem" />
-                                            Votre adresse de livraison
+                                    <div className="sm:flex-iniital md:flex justify-between mt-5 mb-20">
+                                        {/* Shipping address */}
+                                        <div className="sm:w-full md:w-1/2">
+                                            <div className="text-3xl text-center lg:text-left font-black leading-10 text-orange-600 py-4 mt-5">
+                                                {/* <FaShippingFast className="inline mr-3" size="2rem" /> */}
+                                                <FaFileInvoiceDollar className="inline mr-3" size="2rem" />
+                                                Adresse de facturation
+                                            </div>
+                                            <div className={ "w-full max-w-sm items-center mt-3 border rounded-lg shadow" + profileClass}>
+                                                <div className="flex flex-col items-center p-5 text-sm text-gray-600">
+                                                    { userFirstName && userLastName && userStreet && userPostalCode && userCity && userCountry ? (
+                                                        <>
+                                                            <h5 className="mb-1 text-xl font-medium text-gray-800">{ userFirstName + ' ' + userLastName }</h5>
+                                                            <span>{ userStreet }</span>
+                                                            <span>{ userPostalCode + ' ' + userCity }</span>
+                                                            <span>{ userCountry }</span>
+                                                            <div className="flex mt-4 space-x-3 md:mt-6">
+                                                                <Link to={getIDToken() ? "/profile" : "/connect"} 
+                                                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                                                                    Modifier
+                                                                </Link>
+                                                                <button  
+                                                                    onClick={() => { 
+                                                                        setProfileClass("border-orange-500 ring-4 ring-orange-500 bg-gray-100 dark:border-orange-500");
+                                                                        setAddressSelected(true);
+                                                                        setPayButtonDisabled(false);
+                                                                        setPayButtonColor("bg-orange-500 border-orange-600 ring-orange-500"); 
+                                                                    }}
+                                                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:outline-none dark:bg-orange-600 dark:hover:bg-orange-700"
+                                                                    >
+                                                                        Valider
+                                                                    </button>
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="sm:pb-3 md:pb-12 text-center">
+                                                            <span className="pt-3">Votre adresse de facturation n'est pas complète. Veuillez la corriger.</span>
+                                                            <div className="flex mt-4 space-x-3 md:mt-6">
+                                                                <Link to={getIDToken() ? "/profile" : "/connect"} 
+                                                                    className="inline-flex mx-auto px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                                                                    Renseigner mon adresse
+                                                                </Link>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className={ "w-full max-w-sm items-center mx-auto mt-5 border rounded-lg shadow" + profileClass}>
-                                            <div className="flex flex-col items-center p-5 text-sm text-gray-600">
-                                                <h5 className="mb-1 text-xl font-medium text-gray-800">{ userFirstName + ' ' + userLastName }</h5>
-                                                <span>{ userStreet }</span>
-                                                <span>{ userPostalCode + ' ' + userCity }</span>
-                                                <span>{ userCountry }</span>
-                                                <div className="flex mt-4 space-x-3 md:mt-6">
-                                                    <Link to={getIDToken() ? "/profile" : "/connect"} 
-                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
-                                                        Modifier
-                                                    </Link>
-                                                    <button  
-                                                        onClick={() => { 
-                                                            setProfileClass("border-orange-500 ring-4 ring-orange-500 bg-gray-100 dark:border-orange-500");
-                                                            setAddressSelected(true);
-                                                            setPayButtonDisabled(false);
-                                                            setPayButtonColor("bg-orange-500 border-orange-600 ring-orange-500"); 
-                                                        }}
-                                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-orange-700 rounded-lg hover:bg-orange-800 focus:outline-none dark:bg-orange-600 dark:hover:bg-orange-700"
-                                                        >
-                                                            Valider
-                                                        </button>
+
+                                        {/* Pickup address */}
+                                        <div className="sm:w-full md:w-1/2">
+                                            <div className="text-3xl text-center lg:text-left font-black leading-10 text-orange-600 py-4 mt-5">
+                                                <FaShippingFast className="inline mr-3" size="2rem" />
+                                                Notre adresse de retrait
+                                            </div>
+                                            <div className={ "w-full max-w-sm items-center mr-0 mt-3 border rounded-lg shadow" + profileClass}>
+                                                <div className="flex flex-col items-center text-center p-5 text-sm text-gray-600">
+                                                    <h5 className="mb-1 text-xl font-medium text-gray-800">Wildrent Pickup Location</h5>
+                                                    <span>44 Rue Alphonse Penaud</span>
+                                                    <span>75 020 Paris</span>
+                                                    <span className="pb-5">France</span>
+                                                    <span>Nous sommes ouvert du lundi au samedi<br />de 9h00 à 18h00</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -347,7 +365,7 @@ const ShoppingCart = () => {
                                 </div>
                                 { userId && products && addressSelected === false ? (
                                     <div>
-                                        <p className="text-center text-red-500 sm:pt-5 pt-0">Vous devez selectionner une adresse de livraison pour pouvoir payer</p>
+                                        <p className="text-center text-red-500 sm:pt-5 pt-0">Vous devez selectionner une adresse de facturation pour pouvoir payer</p>
                                     </div>
                                 ) : ("")}
                                 <div>
