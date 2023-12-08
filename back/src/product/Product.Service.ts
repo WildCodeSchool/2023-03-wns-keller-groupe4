@@ -1,4 +1,4 @@
-import { ILike, Repository } from "typeorm";
+import { ILike, In, Repository } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import dataSource from "../utils";
 import { Product } from "./entity/Product";
@@ -26,8 +26,6 @@ export class ProductService {
     async getAllProducts(
         getProductsInput?: GetProductsInput,
     ): Promise<Product[]> {
-        console.log("productRepository", this.productRepository);
-
         if (getProductsInput === undefined) {
             try {
                 const products = await this.productRepository.find({
@@ -77,6 +75,17 @@ export class ProductService {
             const products = await this.productRepository.find({
                 relations: { categories: true },
                 where: { categories: { id: idCategory } },
+            });
+
+            return products;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+    async getProductsById(ProductsIds: string[]): Promise<Product[]> {
+        try {
+            const products = await this.productRepository.findBy({
+                id: In(ProductsIds),
             });
 
             return products;

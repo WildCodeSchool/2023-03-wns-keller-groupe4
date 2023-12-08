@@ -100,7 +100,7 @@ export const dataFixture = async (): Promise<void> => {
             });
 
             if (productAlreadyExists === undefined) {
-                const newProduct = await productService.createNewProduct({
+                await productService.createNewProduct({
                     stock,
                     price,
                     name,
@@ -109,8 +109,6 @@ export const dataFixture = async (): Promise<void> => {
                     picture,
                     category: categories,
                 });
-
-                await productRepository.save(newProduct);
             }
         }
     }
@@ -118,10 +116,8 @@ export const dataFixture = async (): Promise<void> => {
     // this is moved here in the file because we need the product to be created so we can
     // create user reservations
     if (resetMockUsers || resetMockProducts) {
-        resetMockUsers
-            ? console.log("resetMockUsers is true")
-            : console.log("resetMockProducts is true");
-
+        resetMockUsers && console.log("resetMockUsers is true");
+        resetMockProducts && console.log("resetMockProduct is true");
         // delete any preivous reservations so we can create new ones with new products
         await reservationRepository.delete({});
 

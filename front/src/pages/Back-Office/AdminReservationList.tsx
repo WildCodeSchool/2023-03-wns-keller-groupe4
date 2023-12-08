@@ -81,7 +81,6 @@ const AdminReservationList = () => {
     // getting page count
     const pageCount =
         reservationCount &&
-        // filteredReservationList?.length > 0 &&
         Math.ceil(reservationCount.getReservationCountBySearchInput / LIMIT);
     const pageNumbers = [];
 
@@ -106,7 +105,6 @@ const AdminReservationList = () => {
         if (e) {
             e.preventDefault();
         }
-        console.log("in submit function");
 
         const searchReservationInput = generateReservationInput();
 

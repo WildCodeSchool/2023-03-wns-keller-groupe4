@@ -25,7 +25,7 @@ exemple :
 
 Run the following Docker Compose command
 
-`DATA_FIXTURE_CATEGORIES=true docker compose up --built`
+`DATA_FIXTURE_CATEGORIES=true docker compose up --build`
 
 Monitor Logs:
 
@@ -52,12 +52,10 @@ Products:
 
 To reset all mock data, including categories, products, users and user category set ALL_DATA_FIXTURES=true in your docker compose cmd
 
-`ALL_DATA_FIXTURES=true docker-compose up --build backend`
+`ALL_DATA_FIXTURES=true docker-compose up`
 
 For a clean slate (removing volumes), run:
 
-bash
-Copy code
 `docker-compose down -v`
 
 ### Customization
