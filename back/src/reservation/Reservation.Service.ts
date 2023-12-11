@@ -1,7 +1,7 @@
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
-import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import { Between } from "typeorm";
 import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
@@ -121,27 +121,48 @@ export default class ReservationService {
      * @returns La quantité réservée
      */
     async getOneProductReservationQuantityByDates(
-        getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput
+                getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
     ): Promise<number> {
+    
         try {
+            console.log("DEBUT : ",getProductReservationQuantityByDatesInput.start_at, 
+                "FIN : ", getProductReservationQuantityByDatesInput.end_at
+            );
             const productDetails = await this.repository.find({
                 relations: this.relations,
-                where: {
-                    reservationsDetails: {
-                        product: {
-                            id: getProductReservationQuantityByDatesInput.product_id,
+                where: [
+                    {
+                        reservationsDetails: {
+                            product: {
+                                id: getProductReservationQuantityByDatesInput.product_id,
+                            },
+                            start_at: Between(
+                                getProductReservationQuantityByDatesInput.start_at,
+                                getProductReservationQuantityByDatesInput.end_at,
+                            ),
                         },
                     },
-                    start_at: MoreThanOrEqual(getProductReservationQuantityByDatesInput.start_at),
-                    end_at: LessThanOrEqual(getProductReservationQuantityByDatesInput.end_at),
-                },
+                    {
+                        reservationsDetails: {
+                            product: {
+                                id: getProductReservationQuantityByDatesInput.product_id,
+                            },
+                            end_at: Between(
+                                getProductReservationQuantityByDatesInput.start_at,
+                                getProductReservationQuantityByDatesInput.end_at,
+                            ),
+                        },
+                    },
+                ],
             });
             let reservedQuantity = 0;
             productDetails.forEach((reservation) => {
+                console.log("PRODUCT DETAILS: ",reservation.reservationsDetails);
                 reservation.reservationsDetails.forEach((detail) => {
                     reservedQuantity += detail.quantity;
                 });
             });
+            console.log(reservedQuantity);
             return reservedQuantity;
         } catch (err: any) {
             throw new Error(err.message);
