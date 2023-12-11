@@ -18,8 +18,6 @@ interface IProduct {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// type ValuePiece = Date | null;
-
 const AddReservation = ({ 
     productId, 
     name,
@@ -119,6 +117,7 @@ const AddReservation = ({
 
     useEffect(() => {
         quantityInReservation(); 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [date]);
 
     const submitForm = async (e:React.FormEvent<HTMLFormElement>) => {
