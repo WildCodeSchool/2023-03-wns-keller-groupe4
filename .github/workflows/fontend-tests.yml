@@ -25,7 +25,7 @@ jobs:
 
       - name: Start Docker Compose
         run: |
-          DATA_FIXTURE_CATEGORIES=true DATA_FIXTURE_PRODUCTS=true DATA_FIXTURE_USERS=true docker compose up --build
+          DATA_FIXTURE_CATEGORIES=true DATA_FIXTURE_PRODUCTS=true DATA_FIXTURE_USERS=true docker compose up --build -d
 
       - name: Wait for frontend container to be healthy
         run: |
