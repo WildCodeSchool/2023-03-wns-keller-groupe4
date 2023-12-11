@@ -18,7 +18,7 @@ export enum EnumRoles {
 
 registerEnumType(EnumRoles, {
     name: "EnumRoles",
-    description: "Liste des roles possible pour un utilisateurrrr",
+    description: "Liste des roles possible pour un utilisateur",
 });
 
 @ObjectType()

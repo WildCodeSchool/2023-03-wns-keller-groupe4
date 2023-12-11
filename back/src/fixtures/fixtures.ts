@@ -191,7 +191,7 @@ export const dataFixture = async (): Promise<void> => {
                                 foundProductArray[
                                     Math.floor(Math.random() * 63)
                                 ].id,
-                            quantity: Math.floor(Math.random() * 5 + 1),
+                            quantity: Math.floor(Math.random() * 3 + 1),
                             start_at: startDate,
                             end_at: endDate,
                         },
