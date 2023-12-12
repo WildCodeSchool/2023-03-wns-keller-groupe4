@@ -198,4 +198,9 @@ describe("ProductService", () => {
             expect(repoSpy).toHaveBeenCalled();
         });
     });
+    describe("test fail", () => {
+        it("should fail", async () => {
+            expect(true).toBe(false);
+        });
+    });
 });
