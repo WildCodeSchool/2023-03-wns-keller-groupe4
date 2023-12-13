@@ -6,3 +6,4 @@
 - `DATA_FIXTURE_PRODUCTS=true docker compose up`: Run the containers and load the products fixtures
 - `DATA_FIXTURE_USERS=true docker compose up`: Run the containers and load the users fixtures
 - `DATA_FIXTURE_CATEGORIES=true DATA_FIXTURE_PRODUCTS=true DATA_FIXTURE_USERS=true docker compose up`: Run the containers, delete DB and load all the fixtures
+- `docker-compose -f docker-compose.e2e.yml up --build --exit-code-from e2e`: Run the e2e tests
