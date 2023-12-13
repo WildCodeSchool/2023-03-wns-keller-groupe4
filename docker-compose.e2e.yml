@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    env_file:
+      - vars.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./back
+    env_file:
+      - vars.env
+    environment:
+      - DATA_FIXTURE_CATEGORIES=$DATA_FIXTURE_CATEGORIES
+      - DATA_FIXTURE_PRODUCTS=$DATA_FIXTURE_PRODUCTS
+      - DATA_FIXTURE_USERS=$DATA_FIXTURE_USERS
+    ports:
+      - 4000:4000
+    healthcheck:
+      test: "curl --fail --request GET --header 'content-type: application/json' --url 'http://localhost:4000' || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 100
+      start_period: 10s
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./front
+    env_file:
+      - vars.env
+    ports:
+      - 3000:3000
+    environment:
+      - REACT_APP_API_URL=http://localhost:4000
+    healthcheck:
+      test: "curl --fail --request GET --header 'content-type: application/json' --url 'http://localhost:3000' || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  e2e:
+    build: ./e2e
+    volumes:
+      - ./e2e/playwright-report:/app/playwright-report
+      - ./e2e/test-results:/app/test-results
+    depends_on:
+      frontend:
+        condition: service_healthy
