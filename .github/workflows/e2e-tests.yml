@@ -1,0 +1,28 @@
+name: 🧪- tests frontend
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  tests-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up environment variables
+        env:
+          JWT_SECRET_KEY: testtesttest
+          POSTGRES_PASSWORD: testtesttest
+          REFRESH_JWT_SECRET_KEY: testtesttest
+        run: |
+          echo "JWT_SECRET_KEY=${JWT_SECRET_KEY}" >> vars.env
+          echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> vars.env
+          echo "REFRESH_JWT_SECRET_KEY=${REFRESH_JWT_SECRET_KEY}" >> vars.env
+
+      - name: Start Docker Compose
+        run: |
+          docker compose -f docker-compose.e2e.yml up --build -d
