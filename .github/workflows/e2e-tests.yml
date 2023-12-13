@@ -34,4 +34,4 @@ jobs:
           path: ./e2e/test-results
 
       - name: Check exit code and fail if tests failed
-        run: exit $(docker-compose -f path/to/your/docker-compose.yml ps -q e2e | xargs docker inspect --format '{{ .State.ExitCode }}')
+        run: exit $(docker-compose -f docker-compose.e2e.yml ps -q e2e | xargs docker inspect --format '{{ .State.ExitCode }}')
