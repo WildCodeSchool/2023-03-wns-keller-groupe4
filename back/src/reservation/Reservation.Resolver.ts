@@ -83,10 +83,6 @@ export default class ReservationResolver {
             getProductReservationQuantityByDatesInput,
         );
     }
-    @Query(() => [Reservation])
-    async searchReservationById(@Arg("id") id: string): Promise<any> {
-        return await this.service.searchOneReservationById(id);
-    }
 
     @Mutation(() => Boolean)
     async deleteReservationById(@Arg("id") id: string): Promise<Boolean> {
