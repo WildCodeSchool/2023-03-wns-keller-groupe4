@@ -14,6 +14,7 @@ import CreateProduct from "./pages/Back-Office/CreateProduct";
 import Profile from "./pages/Front-Office/Profile";
 import AdminProductsDetails from "./pages/Back-Office/AdminProductsDetails";
 import Stock from "./pages/Back-Office/Stock";
+import AdminReservationList from "./pages/Back-Office/AdminReservationList";
 
 function App() {
     const [isLoading, setIsLoading] = useState(true);
@@ -53,8 +54,8 @@ function App() {
                     <Route path="/admin/create" element={<CreateProduct />} />
                     <Route path="/admin/product/:id/:name" element={<AdminProductsDetails />} />
                     <Route path="/admin/stock" element={<Stock />} />
+                    <Route path="/admin/reservations" element={<AdminReservationList/>} />
                     <Route path="/admin/product/:id/:name" element={<h1>Stock Product</h1>} />
-                    <Route path="/admin/reservations" element={<h1>Reservations</h1>} />
                     <Route path="/admin/profile" element={<h1>Admin Profile</h1>} />
                 </Route>
             </Route>

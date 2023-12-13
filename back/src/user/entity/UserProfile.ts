@@ -24,6 +24,8 @@ export class UserProfile {
     lastname: string;
 
     @Field({ nullable: true })
+    // commented out because of non supported type by test sqlite db
+    // @Column({ nullable: true, type: "timestamptz" })
     @Column({ nullable: true })
     birthday: Date;
 
@@ -40,7 +42,7 @@ export class UserProfile {
     country: string;
 
     @Field({ nullable: true })
-    @ManyToOne((type) => Lang, (lang) => lang.user_profiles, { nullable: true })
+    @ManyToOne(() => Lang, (lang) => lang.user_profiles, { nullable: true })
     @JoinColumn()
     lang: Lang;
 }

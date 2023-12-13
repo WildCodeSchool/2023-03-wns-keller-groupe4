@@ -1,16 +1,16 @@
 # Comment utiliser :
 
-Installer expo globalement : 
+Installer expo globalement :
 `npm i -g expo`
 
-Se déplacer dans le dossier mobile : 
+Se déplacer dans le dossier mobile :
 `cd mobile`
 
-Récupérer toutes les dépendances expo : 
-`expo install`
+Récupérer toutes les dépendances expo :
+`npx expo install`
 
 Ajoute une dépendance :
-`expo install [nom de la dépendance]`
+`npx expo install [nom de la dépendance]`
 
-Lancer l'application : 
+Lancer l'application :
 `npm run web`

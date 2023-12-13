@@ -18,7 +18,7 @@ export enum EnumRoles {
 
 registerEnumType(EnumRoles, {
     name: "EnumRoles",
-    description: "Liste des roles possible pour un utilisateurrrr",
+    description: "Liste des roles possible pour un utilisateur",
 });
 
 @ObjectType()
@@ -50,15 +50,20 @@ export class User {
     @Field(() => [Reservation], { nullable: true })
     @OneToMany((type) => Reservation, (reservation) => reservation.user, {
         nullable: true,
+        cascade: true,
     })
     @JoinColumn()
     reservations: Reservation[];
 
     @Field()
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     @Column({ default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 
     @Field()
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     @Column({ default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 
