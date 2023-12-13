@@ -261,12 +261,6 @@ export default class ReservationService {
         getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
     ): Promise<number> {
         try {
-            console.log(
-                "DEBUT : ",
-                getProductReservationQuantityByDatesInput.start_at,
-                "FIN : ",
-                getProductReservationQuantityByDatesInput.end_at,
-            );
             const productDetails = await this.repository.find({
                 relations: this.relations,
                 where: [
@@ -296,15 +290,10 @@ export default class ReservationService {
             });
             let reservedQuantity = 0;
             productDetails.forEach((reservation) => {
-                console.log(
-                    "PRODUCT DETAILS: ",
-                    reservation.reservationsDetails,
-                );
                 reservation.reservationsDetails.forEach((detail) => {
                     reservedQuantity += detail.quantity;
                 });
             });
-            console.log(reservedQuantity);
             return reservedQuantity;
         } catch (err: any) {
             throw new Error(err.message);

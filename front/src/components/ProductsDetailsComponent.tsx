@@ -1,9 +1,5 @@
 import { useState } from "react";
 import { PrevButton } from "./tools/PrevButton";
-import convertBase64 from "../utils/convertBase64";
-import { useMutation } from "@apollo/client";
-import { UPDATE_PRODUCT } from "../utils/mutations";
-import { GET_ONE_PRODUCT } from "../utils/queries";
 import AddReservation from "./AddReservation";
 import AdminProductDetailComponent from "./AdminProductDetailComponent";
 // import {gql} from "../__generated__";
@@ -17,17 +13,6 @@ export interface IProductProps {
     picture: string;
     available: boolean;
     isAdmin: boolean;
-}
-
-// INTERFACES
-interface IFormUpdateProduct {
-    name?: string;
-    description?: string;
-    price?: number;
-    category?: string;
-    image?: FileList;
-    stock?: number;
-    available?: boolean;
 }
 
 // This component is Used both for front and back office. For a non admin user it will just display product detail, for an admin it will give the user the possibility to update the product.
