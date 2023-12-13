@@ -6,6 +6,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
 } from "typeorm";
+
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { User } from "../../user/entity/User";
 import { ReservationDetail } from "./ReservationDetail";
@@ -60,7 +61,10 @@ export class Reservation {
     // relations :
 
     @Field(() => User)
-    @ManyToOne((type) => User, (user) => user.reservations)
+    @ManyToOne((type) => User, (user) => user.reservations, {
+        onDelete: "CASCADE",
+        orphanedRowAction: "delete",
+    })
     @JoinColumn()
     user: User;
 

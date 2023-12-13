@@ -1,4 +1,4 @@
-import { ILike, Repository, In } from "typeorm";
+import { ILike, In, Repository } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import dataSource from "../utils";
 import { Product } from "./entity/Product";
@@ -82,7 +82,6 @@ export class ProductService {
             throw new Error(err.message);
         }
     }
-
     async getProductsById(ProductsIds: string[]): Promise<Product[]> {
         try {
             const products = await this.productRepository.findBy({
