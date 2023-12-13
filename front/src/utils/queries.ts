@@ -11,6 +11,39 @@ export const LOGIN_GUERY = gql(`
   }
 `);
 
+export const GET_USER = gql(`
+  query getUserById($getUserByIdId: String!) {
+    getUserById(id: $getUserByIdId) {
+      id
+      email
+      role
+      user_profile {
+        id
+        firstname
+        lastname
+        birthday
+        street
+        postal_code
+        country
+        lang {
+          id
+          name
+        }
+      }
+      reservations {
+        id
+        start_at
+        end_at
+        status
+        created_at
+        updated_at
+      }
+      created_at
+      updated_at
+    }
+  }
+`);
+
 export const GET_CATEGORIES = gql(`
   query GetCategories {
     getCategories {
@@ -89,5 +122,38 @@ export const GET_ONE_PRODUCT = gql(`
       description
       picture
     }
+  }
+`);
+
+export const GET_USER_CART = gql(`
+  query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
+    getCartReservationOfUser(id: $getCartReservationOfUserId) {
+      id
+      start_at
+      end_at
+      status
+      reservationsDetails {
+        start_at
+        end_at
+        quantity
+        product {
+          id
+          name
+          picture
+          price
+          stock
+          available
+        }
+      }
+      user {
+        email
+      }
+    }
+  }
+`);
+
+export const GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT = gql(`
+  query GetProductReservationQuantityByDates($getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput) {
+    getProductReservationQuantityByDates(getProductReservationQuantityByDatesInput: $getProductReservationQuantityByDatesInput)
   }
 `);

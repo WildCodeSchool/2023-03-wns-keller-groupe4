@@ -15,3 +15,12 @@
 .component:hover .comp-border {
     border-color: gray;
 }
+
+.react-calendar__tile:disabled {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__tile--active {
+  background: #006edc !important;
+  color: white !important;
+}

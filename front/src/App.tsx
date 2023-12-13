@@ -9,6 +9,7 @@ import ProductDetails from "./pages/Front-Office/ProductsDetailsPage";
 import HomePage from "./pages/Front-Office/HomePage";
 import ProductsListPage from "./pages/Front-Office/ProductsListPage";
 import ConnectFront from "./pages/Front-Office/ConnectFront";
+import ShoppingCart from "./pages/Front-Office/ShoppingCart";
 import CreateProduct from "./pages/Back-Office/CreateProduct";
 import Profile from "./pages/Front-Office/Profile";
 import AdminProductsDetails from "./pages/Back-Office/AdminProductsDetails";
@@ -42,7 +43,7 @@ function App() {
                 <Route index element={<HomePage />} />
                 <Route path="/connect" element={<ConnectFront />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/cart" element={<h1>Cart</h1>} />
+                <Route path="/cart" element={<ShoppingCart />} />
                 <Route path="*" element={<h1>404</h1>} />
                 <Route path="/products/list/:categorySlug" element={<ProductsListPage />} />
                 <Route path="/product/:id/:name" element={<ProductDetails />} />

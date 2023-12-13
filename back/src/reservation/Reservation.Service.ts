@@ -1,9 +1,11 @@
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import dataSource from "../utils";
+import { Between } from "typeorm";
 import { EnumStatusReservation, Reservation } from "./entity/Reservation";
 import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
+import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
 
 
 export default class ReservationService {
@@ -98,7 +100,7 @@ export default class ReservationService {
     }
 
     /**
-     * Renvois une résservation via son id
+     * Renvois une réservation via son id
      * @param id - uuid de la reservation a modifier
      * @returns Reservation
     */
@@ -108,6 +110,60 @@ export default class ReservationService {
                 relations: this.relations,
                 where: { id },
             });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Renvois les détails des réservations pour un produit suivant une date de début et une date de fin
+     * @param getProductReservationQuantityByDatesInput
+     * @returns La quantité réservée
+     */
+    async getOneProductReservationQuantityByDates(
+                getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput,
+    ): Promise<number> {
+    
+        try {
+            console.log("DEBUT : ",getProductReservationQuantityByDatesInput.start_at, 
+                "FIN : ", getProductReservationQuantityByDatesInput.end_at
+            );
+            const productDetails = await this.repository.find({
+                relations: this.relations,
+                where: [
+                    {
+                        reservationsDetails: {
+                            product: {
+                                id: getProductReservationQuantityByDatesInput.product_id,
+                            },
+                            start_at: Between(
+                                getProductReservationQuantityByDatesInput.start_at,
+                                getProductReservationQuantityByDatesInput.end_at,
+                            ),
+                        },
+                    },
+                    {
+                        reservationsDetails: {
+                            product: {
+                                id: getProductReservationQuantityByDatesInput.product_id,
+                            },
+                            end_at: Between(
+                                getProductReservationQuantityByDatesInput.start_at,
+                                getProductReservationQuantityByDatesInput.end_at,
+                            ),
+                        },
+                    },
+                ],
+            });
+            let reservedQuantity = 0;
+            productDetails.forEach((reservation) => {
+                console.log("PRODUCT DETAILS: ",reservation.reservationsDetails);
+                reservation.reservationsDetails.forEach((detail) => {
+                    reservedQuantity += detail.quantity;
+                });
+            });
+            console.log(reservedQuantity);
+            return reservedQuantity;
         } catch (err: any) {
             throw new Error(err.message);
         }
