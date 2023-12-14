@@ -1,16 +1,17 @@
-import React from 'react';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useQuery } from '@apollo/client';
+import React from "react";
+import { Pressable, ScrollView, StyleSheet } from "react-native";
+import { Link } from "expo-router";
+import { useQuery } from "@apollo/client";
 
-import { Text, View } from '../components/Themed';
-import Colors from '../constants/Colors';
-import { GET_CATEGORIES } from '../constants/queries';
+import { Text, View } from "../components/Themed";
+import Colors from "../constants/Colors";
+import { GET_CATEGORIES } from "../constants/queries";
 
-export default function ModalScreen() {
+export default function ListCategories() {
   const { loading, error, data } = useQuery(GET_CATEGORIES);
 
   if (loading || error) {
-    const message = loading ? 'Loading...' : 'Error :(';
+    const message = loading ? "Loading..." : "Error :(";
     return (
       <View style={styles.container}>
         <Text>{message}</Text>
@@ -24,9 +25,11 @@ export default function ModalScreen() {
     <View style={styles.container}>
       <ScrollView style={styles.categoriesContainer}>
         {categories.map((category: any) => (
-          <Pressable key={category.id} style={styles.categoriesButton}>
-            <Text style={styles.categoryText}>{category.name}</Text>
-          </Pressable>
+          <Link key={category.id} href={`/categories/${category.name}`} asChild>
+            <Pressable key={category.id} style={styles.categoriesButton}>
+              <Text style={styles.categoryText}>{category.name}</Text>
+            </Pressable>
+          </Link>
         ))}
       </ScrollView>
     </View>
@@ -36,11 +39,11 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: Colors.light.background,
   },
   categoriesContainer: {
-    width: '95%',
+    width: "95%",
     margin: 20,
     backgroundColor: Colors.light.background,
   },
@@ -53,7 +56,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 20,
-    fontFamily: 'Rubik',
-    textAlign: 'center',
+    fontFamily: "Rubik",
+    textAlign: "center",
   },
 });
