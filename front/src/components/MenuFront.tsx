@@ -22,17 +22,6 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
 
     return (
         <div>
-            <label htmlFor="searchMenu" className="sr-only">
-                Tous nos matériels
-            </label>
-            <input
-                type="text"
-                name="searchMenu"
-                id="searchMenu"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-main focus:border-transparent"
-                placeholder="Chercher un matériel"
-            />
-
             <nav className="overflow-x-hidden">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-y-3 gap-x-2 sm:gap-2 pt-3 pb-2 text-center">
                     <Link
