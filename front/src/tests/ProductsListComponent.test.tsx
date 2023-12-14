@@ -3,11 +3,11 @@ import ProductsListComponent from "../components/ProductsListComponent";
 
 describe("Products list", () => {
     it("renders product list component", () => {
-        render(<ProductsListComponent id={1} name={"brouette"} price={10} picture={"test"} />);
+        render(<ProductsListComponent id={1} name={"brouette"} price={10} picture={"test"} available={true} />);
     });
 
     it("renders elements of the component", async () => {
-        render(<ProductsListComponent id={1} name={"brouette"} price={10} picture={"test"} />);
+        render(<ProductsListComponent id={1} name={"brouette"} price={10} picture={"test"} available={true} />);
 
         // Expect image alt to be present
         const imageElement = screen.getByRole("img", { 
