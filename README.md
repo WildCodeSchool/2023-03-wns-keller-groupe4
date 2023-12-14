@@ -67,3 +67,9 @@ Adjust the mockdataArray in the mockDataArray.ts file and the mockdataFixture fu
 ### Additional Notes
 
 This guide explains how to launch fixtures, customize data, and provides details on the data creation and deletion processes.
+
+## Test End-to-End
+
+### Launch Commands :
+
+- `docker-compose -f docker-compose.e2e.yml up --build --exit-code-from e2e`: Run the e2e tests
