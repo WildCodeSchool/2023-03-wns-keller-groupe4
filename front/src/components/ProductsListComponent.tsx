@@ -7,9 +7,10 @@ export interface IProductProps {
     name: string;
     price: number;
     picture: string;
+    available: boolean;
 }
 
-const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
+const ProductsListComponent = ({ id, name, price, picture, available }: IProductProps) => {
     verifyBase64(picture)
         .then((res) => {
             if (res === false) {
@@ -23,6 +24,10 @@ const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
 
     const [image, setImage] = useState(picture);
     const [backgroundColorImage, setBackgroundColorImage] = useState("");
+
+    // Availability
+    const availability = available ? "Details" : "Indisponible";
+    const buttonState = available ? " comp-background" : " opacity-50";
 
     return (
         <div
@@ -47,22 +52,25 @@ const ProductsListComponent = ({ id, name, price, picture }: IProductProps) => {
                 </div>
                 <div className="flex justify-center m-2 md:m-0 text-sm font-bold text-white">
                     <Link to={`/product/${id}/${name}`}>
-                        <button className="flex justify-evenly bg-gray-600 py-1 px-2 rounded items-center comp-background">
-                            <span className="me-1">Details</span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-6 h-6"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
+                        <button className={"flex justify-evenly bg-gray-600 py-1 px-2 rounded items-center" + buttonState}>
+                            <span className="me-1">{ availability }</span>
+                            { available ? (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-6 h-6"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                                ) : ("")
+                            }
                         </button>
                     </Link>
                 </div>
