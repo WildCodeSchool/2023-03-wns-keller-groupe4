@@ -72,4 +72,4 @@ This guide explains how to launch fixtures, customize data, and provides details
 
 ### Launch Commands :
 
-- `docker-compose -f docker-compose.e2e.yml up --build --exit-code-from e2e`: Run the e2e tests
+- `ALL_DATA_FIXTURES=true docker-compose -f docker-compose.e2e.yml up --build --exit-code-from e2e`: Run the e2e tests

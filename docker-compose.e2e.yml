@@ -15,6 +15,7 @@ services:
     env_file:
       - vars.env
     environment:
+      - ALL_DATA_FIXTURES=$ALL_DATA_FIXTURES
       - DATA_FIXTURE_CATEGORIES=$DATA_FIXTURE_CATEGORIES
       - DATA_FIXTURE_PRODUCTS=$DATA_FIXTURE_PRODUCTS
       - DATA_FIXTURE_USERS=$DATA_FIXTURE_USERS
@@ -37,7 +38,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - REACT_APP_API_URL=http://localhost:4000
+      - REACT_APP_API_URL=http://backend:4000
     healthcheck:
       test: "curl --fail --request GET --header 'content-type: application/json' --url 'http://localhost:3000' || exit 1"
       interval: 5s
