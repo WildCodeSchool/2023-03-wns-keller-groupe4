@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import { SIGNUP_MUTATION } from "../utils/mutations";
+import { reloadPage } from "../utils/navigation";
 
 interface IFormSignup {
     email: string;
@@ -20,7 +21,7 @@ function SignupForm() {
 
     const [signup] = useMutation(SIGNUP_MUTATION, {
         onCompleted: async () => {
-            window.location.reload();
+            reloadPage();
         },
         onError: (err) => {
             if (
