@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 import dataSource from "../utils";
 import { Category } from "./entity/Category";
 import { CreateCategoryInput } from "./inputs/CreateCategoryInput";
@@ -28,6 +28,19 @@ export class CategoryService {
                 where: { id },
             });
             return category;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async getCategoriesBySearch(
+        searchCategoryInput: string,
+    ): Promise<Category[]> {
+        try {
+            const foundCategories = await this.categoryRepository.find({
+                where: { name: ILike(`%${searchCategoryInput}%`) },
+            });
+            return foundCategories;
         } catch (err: any) {
             throw new Error(err.message);
         }
