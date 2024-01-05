@@ -76,6 +76,14 @@ export const GET_PRODUCTS_BY_CATEGORY = gql(`
   }
 `);
 
+export const GET_CATEGORY_BY_SEARCH =
+    gql(`query GetCategoriesBySearch($searchCategoryInput: String!) {
+  getCategoriesBySearch(searchCategoryInput: $searchCategoryInput) {
+    name
+    id
+  }
+}`);
+
 export const GET_ALL_PRODUCTS = gql(`
   query ExampleQuery {
     getProducts {
