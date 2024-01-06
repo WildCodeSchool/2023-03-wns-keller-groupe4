@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { GET_CATEGORIES, GET_CATEGORY_BY_SEARCH } from "../utils/queries";
 import { useEffect, useState } from "react";
-import { useDebounce } from "../utils/utils";
+import { useDebounce } from "../utils/hooks/useDebounce.hook";
+import { Category } from "../__generated__/graphql";
 
 interface INavbarFrontProps {
     openNav: boolean;
@@ -12,22 +13,48 @@ interface INavbarFrontProps {
 function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
     // Categories from API
     const { loading, error, data } = useQuery(GET_CATEGORIES);
-    const [categorySearchInput, setCategorySearchInput] = useState("");
-    const debouncedSearchInput = useDebounce(categorySearchInput, 1000);
-    console.log(debouncedSearchInput);
-
     const [searchCategory, { data: filteredCategories }] = useLazyQuery(
         GET_CATEGORY_BY_SEARCH,
     );
+    const [categories, setCategories] = useState<Partial<Category>[]>();
+    const [categorySearchInput, setCategorySearchInput] = useState("");
+    const debouncedSearchInput = useDebounce(categorySearchInput, 500);
+    // Nous permets d'afficher la bonne liste de catégorie
+    const [searchSuccess, setSearchSuccess] = useState(false);
+
+    const areSearchResultFound = () => {
+        return (
+            filteredCategories?.getCategoriesBySearch &&
+            filteredCategories?.getCategoriesBySearch.length > 0
+        );
+    };
+
+    console.log(categories);
+
     useEffect(() => {
-        if (debouncedSearchInput.length > 5) {
-            console.log("debouncedSearchInput sup à 2 ");
-
-            submitSearch();
+        // On vérifie que l'input de recherche retardé est bien supérieur à 1 caractère puis que le résultat de la recherche n'est pas vide
+        // On set searchSuccess a true
+        if (debouncedSearchInput.length > 1) {
+            submitSearch().then(() =>
+                areSearchResultFound() ? setSearchSuccess(true) : "",
+            );
+        } else if (debouncedSearchInput.length <= 1) {
+            setSearchSuccess(false);
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [categorySearchInput]);
+    }, [debouncedSearchInput]);
+
+    // ici on vérifie si une recherche de catégorie à été faites, si elles comportent des résultats
+    // la liste des catégories correspond à ceux-ci sinon on affiche toute les catégories.
+    useEffect(() => {
+        setCategories(
+            searchSuccess
+                ? filteredCategories?.getCategoriesBySearch
+                : data?.getCategories,
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchSuccess]);
+
     if (loading) return <p>Loading...</p>;
 
     if (error)
@@ -37,15 +64,6 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
                 pas être affichée pour le moment.
             </p>
         );
-
-    const isSearching =
-        categorySearchInput.length > 2 &&
-        filteredCategories?.getCategoriesBySearch &&
-        filteredCategories?.getCategoriesBySearch.length > 0;
-
-    const categories = isSearching
-        ? filteredCategories.getCategoriesBySearch
-        : data?.getCategories;
 
     async function submitSearch() {
         await searchCategory({
@@ -71,27 +89,25 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
             />
 
             <nav className="overflow-x-hidden">
-                <div className="text-center flex flex-col gap-2">
+                <div className="text-center grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-y-3 gap-x-2 sm:gap-2 pt-3 pb-2">
                     <Link
                         to={"products/list/all"}
                         key="0"
-                        // className="bg-orange-600 hover:bg-orange-700 text-white basis-7 block rounded-md px-3 py-2 mx-2 text-base font-medium"
-                        className="bg-orange-600 hover:bg-orange-700 text-white basis-7 block rounded-md text-base font-medium"
+                        className="bg-orange-600 hover:bg-orange-700 text-white  block rounded-md text-base font-medium"
                         onClick={() => setOpenNav(false)}
                     >
-                        <div className="flex items-center h-full px-2 basis-7">
+                        <div className="flex items-center h-full px-2 ">
                             <div className="w-full">Tous</div>
                         </div>
                     </Link>
                     {categories?.map((category) => (
                         <Link
-                            to={"products/list/" + category.name.toLowerCase()}
+                            to={"products/list/" + category.name?.toLowerCase()}
                             key={category.id}
-                            // className="bg-orange-600 hover:bg-orange-700  text-white basis-7 block rounded-md px-3 py-2 mx-2 text-base font-medium"
-                            className="bg-orange-600 hover:bg-orange-700  text-white basis-7 block rounded-md  text-base font-medium"
+                            className="bg-orange-600 hover:bg-orange-700  text-white  block rounded-md  text-base font-medium"
                             onClick={() => setOpenNav(false)}
                         >
-                            <div className="flex items-center h-full px-2 basis-7">
+                            <div className="flex items-center h-full px-2 ">
                                 <div className="w-full">{category.name}</div>
                             </div>
                         </Link>
