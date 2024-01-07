@@ -14,13 +14,11 @@ export default class CategoryResolver {
 
     @Query(() => [Category])
     async getCategories(): Promise<Category[]> {
-        // TODO Write validation classes for the queries input
         return await this.service.getAllCategories();
     }
 
     @Query(() => Category)
     async getCategory(@Arg("id") id: string): Promise<Category> {
-        // TODO Write validation classes for the queries input
         return await this.service.getOneCategory(id);
     }
 

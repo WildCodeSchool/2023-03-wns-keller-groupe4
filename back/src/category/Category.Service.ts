@@ -38,7 +38,7 @@ export class CategoryService {
     ): Promise<Category[]> {
         try {
             const foundCategories = await this.categoryRepository.find({
-                where: { name: ILike(`%${searchCategoryInput}%`) },
+                where: { name: ILike(`${searchCategoryInput}%`) },
             });
             return foundCategories;
         } catch (err: any) {
