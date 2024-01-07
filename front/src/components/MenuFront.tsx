@@ -3,57 +3,56 @@ import { useLazyQuery, useQuery } from "@apollo/client";
 import { GET_CATEGORIES, GET_CATEGORY_BY_SEARCH } from "../utils/queries";
 import { useEffect, useState } from "react";
 import { useDebounce } from "../utils/hooks/useDebounce.hook";
-import { Category } from "../__generated__/graphql";
 
 interface INavbarFrontProps {
     openNav: boolean;
     setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+enum CategoryRequestState {
+    IN_PROGRESS = "IN_PROGRESS",
+    SUCCESS = "SUCCESS",
+    NO_CONTENT = "NO_CONTENT",
+    NOT_SEARCHING = "NOT_SEARCHING",
+}
+
 function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
-    // Categories from API
+    // Toutes les catégories de l'API
     const { loading, error, data } = useQuery(GET_CATEGORIES);
+
     const [searchCategory, { data: filteredCategories }] = useLazyQuery(
         GET_CATEGORY_BY_SEARCH,
     );
-    const [categories, setCategories] = useState<Partial<Category>[]>();
     const [categorySearchInput, setCategorySearchInput] = useState("");
+    // custom hook qui permets de soumettre la saisie utilisateur avec un délai
+    // pour éviter les requêtes à chaque nouveau caractère
     const debouncedSearchInput = useDebounce(categorySearchInput, 500);
-    // Nous permets d'afficher la bonne liste de catégorie
-    const [searchSuccess, setSearchSuccess] = useState(false);
-
-    const areSearchResultFound = () => {
-        return (
-            filteredCategories?.getCategoriesBySearch &&
-            filteredCategories?.getCategoriesBySearch.length > 0
-        );
-    };
-
-    console.log(categories);
+    // state qui gère le statue de la requête de recherche de catégorie
+    const [searchState, setSearchState] = useState<CategoryRequestState>(
+        CategoryRequestState.NOT_SEARCHING,
+    );
 
     useEffect(() => {
-        // On vérifie que l'input de recherche retardé est bien supérieur à 1 caractère puis que le résultat de la recherche n'est pas vide
-        // On set searchSuccess a true
+        // On vérifie que l'input de recherche retardé est bien supérieur à 1 caractère puis que le résultat de la recherche n'est pas vide. On set setSearchState selon le résultat
         if (debouncedSearchInput.length > 1) {
-            submitSearch().then(() =>
-                areSearchResultFound() ? setSearchSuccess(true) : "",
+            setSearchState(CategoryRequestState.IN_PROGRESS);
+            submitSearch().then(
+                (result) => {
+                    setSearchState(
+                        result.data &&
+                            result.data.getCategoriesBySearch.length > 0
+                            ? CategoryRequestState.SUCCESS
+                            : CategoryRequestState.NO_CONTENT,
+                    );
+                },
+
+                //
             );
         } else if (debouncedSearchInput.length <= 1) {
-            setSearchSuccess(false);
+            setSearchState(CategoryRequestState.NOT_SEARCHING);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearchInput]);
-
-    // ici on vérifie si une recherche de catégorie à été faites, si elles comportent des résultats
-    // la liste des catégories correspond à ceux-ci sinon on affiche toute les catégories.
-    useEffect(() => {
-        setCategories(
-            searchSuccess
-                ? filteredCategories?.getCategoriesBySearch
-                : data?.getCategories,
-        );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchSuccess]);
 
     if (loading) return <p>Loading...</p>;
 
@@ -65,8 +64,28 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
             </p>
         );
 
+    function computeCategories() {
+        switch (searchState) {
+            case CategoryRequestState.NOT_SEARCHING:
+                return data?.getCategories;
+
+            case CategoryRequestState.IN_PROGRESS:
+            case CategoryRequestState.SUCCESS:
+                return filteredCategories?.getCategoriesBySearch;
+
+            case CategoryRequestState.NO_CONTENT:
+                return [];
+
+            default:
+                return data?.getCategories;
+        }
+    }
+
+    // la variable catégorie est dynamique et déterminé par la valeur de searchState
+    const categories = computeCategories();
+
     async function submitSearch() {
-        await searchCategory({
+        return await searchCategory({
             variables: {
                 searchCategoryInput: categorySearchInput,
             },
@@ -76,7 +95,7 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
     return (
         <div className="menuFront">
             <label htmlFor="searchMenu" className="sr-only">
-                Tous nos matériels
+                Toute nos catégories
             </label>
             <input
                 type="text"
@@ -102,7 +121,7 @@ function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
                     </Link>
                     {categories?.map((category) => (
                         <Link
-                            to={"products/list/" + category.name?.toLowerCase()}
+                            to={`products/list/${category.name?.toLowerCase()}`}
                             key={category.id}
                             className="bg-orange-600 hover:bg-orange-700  text-white  block rounded-md  text-base font-medium"
                             onClick={() => setOpenNav(false)}
