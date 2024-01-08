@@ -22,7 +22,7 @@ function Layout({ isFrontOffice }: ILayoutFrontProps) {
                 <NavbarBack openNav={openNav} setOpenNav={setOpenNav} />
             )}
 
-            <main className="min-h-screen ">
+            <main className="min-h-screen mx-4 ">
                 <Transition
                     show={openNav}
                     as="div"
