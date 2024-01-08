@@ -7,11 +7,14 @@ import {
   Text,
   View,
 } from "react-native";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import { useQuery } from "@apollo/client";
 import { AntDesign } from "@expo/vector-icons";
 
-import { GET_PRODUCTS_BY_CATEGORY_NAME } from "../../constants/queries";
+import {
+  GET_CATEGORY_NAME,
+  GET_PRODUCTS_BY_CATEGORY,
+} from "../../constants/queries";
 import Colors from "../../constants/Colors";
 
 interface IProductFromAPI {
@@ -25,23 +28,31 @@ interface IProductFromAPI {
 type Props = {};
 
 const ProductListByCategory = ({}: Props) => {
-  const { category } = useLocalSearchParams();
+  const { category: categoryID } = useLocalSearchParams();
   const navigation = useNavigation();
   const [products, setProducts] = useState<IProductFromAPI[]>([]);
 
-  const { error, loading, data } = useQuery(GET_PRODUCTS_BY_CATEGORY_NAME, {
-    variables: { name: category },
+  const { data: dataCategory } = useQuery(GET_CATEGORY_NAME, {
+    variables: { getCategoryId: categoryID },
+  });
+
+  const {
+    data: dataProducts,
+    loading,
+    error,
+  } = useQuery(GET_PRODUCTS_BY_CATEGORY, {
+    variables: { idCategory: categoryID },
   });
 
   useEffect(() => {
-    navigation.setOptions({ title: category });
-  }, [navigation]);
+    if (dataProducts) {
+      setProducts(dataProducts.getProductsByCategory);
+    }
+  }, [dataProducts]);
 
   useEffect(() => {
-    if (data) {
-      setProducts(data.getCategoryByName.products);
-    }
-  }, [data]);
+    navigation.setOptions({ title: dataCategory?.getCategory.name });
+  }, [navigation, dataCategory]);
 
   if (loading || error) {
     const message = loading ? "Loading..." : "Error :(";
@@ -67,7 +78,9 @@ const ProductListByCategory = ({}: Props) => {
         >
           <Text style={{ fontFamily: "Rubik", fontSize: 18 }}>
             Aucun produit pour la catégorie{" "}
-            <Text style={{ fontFamily: "RubikBold" }}>{category}</Text>
+            <Text style={{ fontFamily: "RubikBold" }}>
+              {dataCategory?.getCategory.name}
+            </Text>
           </Text>
         </View>
       </View>
@@ -88,10 +101,12 @@ const ProductListByCategory = ({}: Props) => {
             <View style={styles.productRight}>
               <Text style={styles.productName}>{product.name}</Text>
               <Text style={styles.productPrice}>{product.price}€/jour</Text>
-              <Pressable style={styles.productDetailsButton}>
-                <Text style={styles.productDetailsButtonText}>Details</Text>
-                <AntDesign name="pluscircleo" size={18} color="white" />
-              </Pressable>
+              <Link href={`/products/${product.id}`} asChild>
+                <Pressable style={styles.productDetailsButton}>
+                  <Text style={styles.productDetailsButtonText}>Details</Text>
+                  <AntDesign name="pluscircleo" size={18} color="white" />
+                </Pressable>
+              </Link>
             </View>
           </View>
         ))}
