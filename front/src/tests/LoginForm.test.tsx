@@ -48,6 +48,10 @@ const mocks = [
     },
 ];
 
+jest.mock("../utils/jwtHandler", () => ({
+    setIDToken: jest.fn(),
+}));
+
 describe("LoginForm", () => {
     it("should render the login form", () => {
         render(
@@ -95,19 +99,32 @@ describe("LoginForm", () => {
         );
 
         // Wait for the login query to be completed
-        await waitFor(() => {
-            expect(
-                screen.getByRole("button", {
-                    name: /se connecter/i,
-                }),
-            ).toBeDisabled();
-        });
-
-        // Assert that the redirect occurred
         // eslint-disable-next-line testing-library/no-unnecessary-act
         await act(async () => {
             await waitFor(() => {
-                expect(window.location.pathname).toBe("/");
+                expect(
+                    require("../utils/jwtHandler").setIDToken,
+                ).toHaveBeenCalledWith("mockedToken");
+            });
+
+            await waitFor(() => {
+                expect(
+                    screen.getByRole("button", {
+                        name: /se connecter/i,
+                    }),
+                ).toBeDisabled();
+            });
+
+            await waitFor(() => {
+                expect(
+                    screen.queryByText(/email ou mot de passe incorrect/i),
+                ).toBeNull();
+            });
+
+            await waitFor(() => {
+                expect(
+                    screen.queryByText(/une erreur est survenue/i),
+                ).toBeNull();
             });
         });
     });
