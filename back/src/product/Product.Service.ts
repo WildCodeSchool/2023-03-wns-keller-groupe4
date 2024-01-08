@@ -1,10 +1,11 @@
-import { ILike, In, Repository } from "typeorm";
+import { FindOptionsWhere, ILike, In, Repository } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import dataSource from "../utils";
 import { Product } from "./entity/Product";
 import { CreateProductInput } from "./inputs/CreateProductInput";
 import { GetProductsInput } from "./inputs/GetProductsInput";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
+import { SearchProductInput } from "./inputs/SearchProductInput";
 
 export class ProductService {
     productRepository;
@@ -102,6 +103,24 @@ export class ProductService {
             });
 
             return product;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async getProductBySearchFilter(
+        searchInput: SearchProductInput,
+    ): Promise<Product[]> {
+        const where: FindOptionsWhere<Product> = {};
+
+        const { name } = searchInput;
+
+        where.name = ILike(`%${name}`);
+
+        try {
+            const products = await this.productRepository.find({ where });
+
+            return products;
         } catch (err: any) {
             throw new Error(err.message);
         }
