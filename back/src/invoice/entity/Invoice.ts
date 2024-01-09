@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Field, ObjectType } from "type-graphql";
 import { Reservation } from "../../reservation/entity/Reservation";
 import { User } from "../../user/entity/User";
-import { UserBilling } from "../UserBilling";
+import { UserBilling } from "../../userBilling/entity/UserBilling";
 
 @ObjectType()
 @Entity()

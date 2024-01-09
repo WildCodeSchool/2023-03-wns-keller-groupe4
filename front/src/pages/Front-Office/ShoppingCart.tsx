@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
-import { GET_USER, GET_USER_CART } from "../../utils/queries";
+import { GET_INVOICE_BY_RESERVATION_ID, GET_USER, GET_USER_CART } from "../../utils/queries";
 import { REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES, CREATE_CART } from "../../utils/mutations";
 import { EnumStatusReservation } from "../../__generated__/graphql";
+import AddBillingAddress from "../../components/AddBillingAddress";
 import { toast } from "react-toastify";
 import { BsBox2Fill, BsCartCheckFill } from "react-icons/bs";
 import { GrValidate } from "react-icons/gr";
@@ -36,12 +37,23 @@ interface IProduct {
     available: boolean,
 }
 
+export interface IuserBilling {
+    id: string|null,
+    firstname?: string|null,
+    lastname?: string|null,
+    street?: string|null,
+    postal_code?: string|null,
+    // city: string|null,
+    country?: string|null,
+}
+
 const ShoppingCart = () => {
     const userId = getIDToken() ? decodeToken(getIDToken()).userId : ""; 
     const [profileClass, setProfileClass] = useState("border-gray-200 dark:bg-gray-100 dark:border-gray-200");
     const [addressSelected, setAddressSelected] = useState(false);
     const [payButtonColor, setPayButtonColor] = useState("bg-gray-500 border-gray-600 ring-gray-500");
     const [payButtonDisabled, setPayButtonDisabled] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
 
     const { loading, data, refetch } = useQuery(GET_USER_CART, {
         variables: { getCartReservationOfUserId: userId },
@@ -53,6 +65,8 @@ const ShoppingCart = () => {
         skip: userId === "",
     });
 
+    const [getTemporaryInvoice, {data: temporaryInvoiceData, called: temporaryInvoiceCalled}] = useLazyQuery(GET_INVOICE_BY_RESERVATION_ID);
+
     const [createCart] = useMutation(CREATE_CART);
     const [updateCart] = useMutation(UPDATE_RESERVATION_STATUS);
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
@@ -60,8 +74,10 @@ const ShoppingCart = () => {
 
     if (loading) return <p className="text-center p-10">Chargement du panier en cours...</p>;
 
+    // Cart initialization
     let cartSummary:ICartSummary|null = null;
     let cartReservations:IReservation[]|null = null;
+    let cartId:string = "";
     let products:any = null;
     let productDuration:number = 0;
     let totalSubtotal = 0;
@@ -71,9 +87,23 @@ const ShoppingCart = () => {
     let totalTaxes = "0";
     let payingButton = "Panier vide";
 
+    // User billing address initialization
+    const userBillingObj:IuserBilling = {
+        id: null,
+        firstname: null,
+        lastname: null,
+        street: null,
+        postal_code: null,
+        // city: null,
+        country: null,
+    };
+    let userBilling:IuserBilling|null = null;
+
+    // User billing address and cart reservation details
     if(userId && data?.getCartReservationOfUser) {
         cartSummary = data?.getCartReservationOfUser;
         cartReservations = cartSummary.reservationsDetails;
+        cartId = cartSummary?.id;
         const msInDay = 1000 * 60 * 60 * 24;
         products = cartReservations.map((reservation) => {
             productDuration = Math.round((new Date(reservation.end_at).getTime() - new Date(reservation.start_at).getTime()) / msInDay);
@@ -93,31 +123,41 @@ const ShoppingCart = () => {
             }
         });
 
+        // Get temporary invoice: This is not the definitive invoice.
+        // Only used to retrieve the custom user billing address not saved in its profile,
+        // But previously associated to the current cart
+        const temporaryInvoice = async () => {
+            await getTemporaryInvoice({
+                variables: { idReservation: cartId },
+            });
+        }
+
+        if(!temporaryInvoiceCalled) {
+            temporaryInvoice();
+        }
+
+        if(temporaryInvoiceData?.getInvoiceByIdReservation?.UserBilling) {
+            userBilling = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling;
+        }
+
         if(products) {
             payingButton = "Valider et Payer";
         }
     }
 
-    // Get user data
-    let userFirstName = null;
-    let userLastName = null;
-    let userStreet = null;
-    let userPostalCode = null;
-    let userCity = "Paris";
-    let userCountry = null;
-
     if(userData) {
-        userFirstName = userData.getUserById.user_profile.firstname;
-        userLastName = userData.getUserById.user_profile?.lastname;
-        userPostalCode = userData.getUserById.user_profile.postal_code;
-        userStreet = userData.getUserById.user_profile.street;
-        userCountry = userData.getUserById.user_profile.country;
+        const userProfile = userData.getUserById.user_profile;
+        userBillingObj.id = userBilling?.id || null;
+        userBillingObj.firstname = userBilling?.firstname || userProfile.firstname;
+        userBillingObj.lastname = userBilling?.lastname || userProfile.lastname;
+        userBillingObj.postal_code = userBilling?.postal_code || userProfile.postal_code;
+        userBillingObj.street = userBilling?.street || userProfile.street;
+        // userBillingObj.city = 'Paris'; //userBilling?.city || userProfile.city;
+        userBillingObj.country = userBilling?.country || userProfile.country;
     }
 
     // Submit cart when payment is validated
     const submitCart = async () => {
-        const cartId = cartSummary?.id;
-
         if(cartId) {
             await updateReservationDates({
                 variables: {
@@ -133,14 +173,6 @@ const ShoppingCart = () => {
                         updateStatusOfReservationId: cartId,
                     } 
                 });
-
-                // Cart is validated, create a new empty cart
-                const createReservationInput = {
-                    user_id: userId,
-                };
-                const newCart = createCart({ 
-                    variables: { createReservationInput } 
-                });
                 refetch();
                 toast.success(
                     "Votre réservation est validée.", { 
@@ -155,8 +187,6 @@ const ShoppingCart = () => {
 
     // Remove a specific product from cart
     const removeProduct = async (product:string) => {
-        const cartId = cartSummary?.id;
-
         if(cartId) {
             const removedProduct = await removeProductFromCart({ 
                 variables: {
@@ -276,17 +306,22 @@ const ShoppingCart = () => {
                                             </div>
                                             <div className={ "w-full max-w-sm items-center mt-3 border rounded-lg shadow" + profileClass}>
                                                 <div className="flex flex-col items-center p-5 text-sm text-gray-600">
-                                                    { userFirstName && userLastName && userStreet && userPostalCode && userCity && userCountry ? (
+                                                    { userBillingObj.firstname && userBillingObj.lastname && userBillingObj.street && userBillingObj.postal_code && userBillingObj.country ? (
                                                         <>
-                                                            <h5 className="mb-1 text-xl font-medium text-gray-800">{ userFirstName + ' ' + userLastName }</h5>
-                                                            <span>{ userStreet }</span>
-                                                            <span>{ userPostalCode + ' ' + userCity }</span>
-                                                            <span>{ userCountry }</span>
+                                                            <h5 className="mb-1 text-xl font-medium text-gray-800">{ userBillingObj.firstname + ' ' + userBillingObj.lastname }</h5>
+                                                            <span>{ userBillingObj.street }</span>
+                                                            <span>{ userBillingObj.postal_code + ' // TODO' }</span>
+                                                            <span>{ userBillingObj.country }</span>
                                                             <div className="flex mt-4 space-x-3 md:mt-6">
-                                                                <Link to={getIDToken() ? "/profile" : "/connect"} 
-                                                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                                                                <button 
+                                                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        setOpenModal(true);
+                                                                    }}
+                                                                >
                                                                     Modifier
-                                                                </Link>
+                                                                </button>
                                                                 <button  
                                                                     onClick={() => { 
                                                                         setProfileClass("border-orange-500 ring-4 ring-orange-500 bg-gray-100 dark:border-orange-500");
@@ -304,10 +339,15 @@ const ShoppingCart = () => {
                                                         <div className="sm:pb-3 md:pb-12 text-center">
                                                             <span className="pt-3">Votre adresse de facturation n'est pas complète. Veuillez la corriger.</span>
                                                             <div className="flex mt-4 space-x-3 md:mt-6">
-                                                                <Link to={getIDToken() ? "/profile" : "/connect"} 
-                                                                    className="inline-flex mx-auto px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">
+                                                                <button
+                                                                    className="inline-flex mx-auto px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        setOpenModal(true);
+                                                                    }}
+                                                                >
                                                                     Renseigner mon adresse
-                                                                </Link>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     )}
@@ -388,6 +428,15 @@ const ShoppingCart = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Billing address form */}
+            <AddBillingAddress
+                userId = {userId}
+                cartId = {cartId}
+                userBillingObj = {userBillingObj}
+                openModal = {openModal}
+                setOpenModal = {setOpenModal}
+            />                        
         </>
     );
 }
