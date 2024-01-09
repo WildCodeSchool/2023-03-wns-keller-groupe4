@@ -25,7 +25,7 @@ export default function ListCategories() {
     <View style={styles.container}>
       <ScrollView style={styles.categoriesContainer}>
         {categories.map((category: any) => (
-          <Link key={category.id} href={`/categories/${category.name}`} asChild>
+          <Link key={category.id} href={`/categories/${category.id}`} asChild>
             <Pressable key={category.id} style={styles.categoriesButton}>
               <Text style={styles.categoryText}>{category.name}</Text>
             </Pressable>
