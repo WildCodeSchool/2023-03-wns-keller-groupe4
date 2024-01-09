@@ -113,6 +113,18 @@ export const GET_PRODUCTS = gql(`
   }
 `);
 
+export const GET_PRODUCTS_BY_SEARCH_FILTER = gql(`
+query GetProductBySearchFilter($searchProductInput: SearchProductInput!) {
+  getProductBySearchFilter(searchProductInput: $searchProductInput) {
+    name
+    id
+    picture
+    price
+    available
+  }
+}
+`);
+
 export const GET_PRODUCT_COUNT = gql(`
   query Query($name: String) {
     getProductsCount(name: $name)

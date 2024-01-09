@@ -52,7 +52,7 @@ Products:
 
 To reset all mock data, including categories, products, users and user category set ALL_DATA_FIXTURES=true in your docker compose cmd
 
-`ALL_DATA_FIXTURES=true docker-compose up`
+`ALL_DATA_FIXTURES=true docker compose up`
 
 For a clean slate (removing volumes), run:
 

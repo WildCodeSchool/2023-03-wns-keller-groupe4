@@ -1,6 +1,6 @@
 export const mostWantedProductDataArray = [
     {
-        id: 1,
+        id: "1",
         available: true,
         name: "Bétonnière électrique 350L",
         picture:
@@ -8,7 +8,7 @@ export const mostWantedProductDataArray = [
         price: 30,
     },
     {
-        id: 2,
+        id: "2",
         available: true,
         name: "Bétonnière électrique 200L",
         picture:
@@ -16,7 +16,7 @@ export const mostWantedProductDataArray = [
         price: 20,
     },
     {
-        id: 3,
+        id: "3",
         available: true,
         name: "Bétonnière électrique 100L",
         picture:
@@ -24,7 +24,7 @@ export const mostWantedProductDataArray = [
         price: 10,
     },
     {
-        id: 4,
+        id: "4",
         available: true,
         name: "Brouette 100L",
         picture:
@@ -32,7 +32,7 @@ export const mostWantedProductDataArray = [
         price: 10,
     },
     {
-        id: 5,
+        id: "5",
         available: true,
         name: "Brouette 200L",
         picture:
@@ -40,7 +40,7 @@ export const mostWantedProductDataArray = [
         price: 20,
     },
     {
-        id: 6,
+        id: "6",
         available: true,
         name: "Dameuse 200kg",
         picture:
@@ -48,7 +48,7 @@ export const mostWantedProductDataArray = [
         price: 50,
     },
     {
-        id: 7,
+        id: "7",
         available: true,
         name: "Dameuse 300kg",
         picture:
@@ -56,7 +56,7 @@ export const mostWantedProductDataArray = [
         price: 60,
     },
     {
-        id: 8,
+        id: "8",
         available: true,
         name: "Compresseur 100L",
         picture:
@@ -64,7 +64,7 @@ export const mostWantedProductDataArray = [
         price: 22,
     },
     {
-        id: 9,
+        id: "9",
         available: true,
         name: "Compresseur 200L",
         picture:
@@ -72,7 +72,7 @@ export const mostWantedProductDataArray = [
         price: 25,
     },
     {
-        id: 10,
+        id: "10",
         available: true,
         name: "Compresseur 300L",
         picture:
@@ -80,7 +80,7 @@ export const mostWantedProductDataArray = [
         price: 30,
     },
     {
-        id: 11,
+        id: "11",
         available: true,
         name: "Décapeur thermique 1000W",
         picture:
@@ -88,7 +88,7 @@ export const mostWantedProductDataArray = [
         price: 10,
     },
     {
-        id: 12,
+        id: "12",
         available: true,
         name: "Décapeur thermique 2000W",
         picture:
@@ -96,7 +96,7 @@ export const mostWantedProductDataArray = [
         price: 15,
     },
     {
-        id: 13,
+        id: "13",
         available: true,
         name: "Décolleuse papier peint 2000W",
         picture:

@@ -51,7 +51,7 @@ export default class ProductResolver {
     }
 
     @Query(() => [Product])
-    async getProductBySearcgFilter(
+    async getProductBySearchFilter(
         @Arg("searchProductInput") searchProductInput: SearchProductInput,
     ): Promise<Product[]> {
         return await this.service.getProductBySearchFilter(searchProductInput);

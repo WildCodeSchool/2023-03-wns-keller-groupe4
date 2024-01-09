@@ -1,15 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Others styles */
 .component:hover .comp-background {
-  background-color: orangered;
+    background-color: orangered;
 }
 
 .component:hover .comp-color {
-  color: orangered;
+    color: orangered;
 }
 
 .component:hover .comp-border {
@@ -17,10 +17,28 @@
 }
 
 .react-calendar__tile:disabled {
-  background-color: #f0f0f0;
+    background-color: #f0f0f0;
 }
 
 .react-calendar__tile--active {
-  background: #006edc !important;
-  color: white !important;
+    background: #006edc !important;
+    color: white !important;
+}
+
+.fade-enter {
+    opacity: 0.01;
+    transition: opacity 400ms ease-in;
+}
+
+.fade-enter-active {
+    opacity: 1;
+}
+
+.fade-exit {
+    opacity: 1;
+    transition: opacity 400ms ease-in;
+}
+
+.fade-exit-active {
+    opacity: 0.01;
 }

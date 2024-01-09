@@ -113,12 +113,18 @@ export class ProductService {
     ): Promise<Product[]> {
         const where: FindOptionsWhere<Product> = {};
 
+        // where: { name: ILike(`%${name}%`) },
+
         const { name } = searchInput;
 
-        where.name = ILike(`%${name}`);
+        where.name = ILike(`${name}%`);
+
+        console.log("name", name);
+        console.log("where condition", where.name);
 
         try {
             const products = await this.productRepository.find({ where });
+            console.log(products);
 
             return products;
         } catch (err: any) {

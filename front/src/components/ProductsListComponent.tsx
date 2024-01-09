@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import defaultImage from "./../assets/products/default.png";
 import verifyBase64 from "../utils/verifyBase64Image";
 export interface IProductProps {
-    id: number;
+    id: string;
     name: string;
     price: number;
     picture: string;
     available: boolean;
+    mostWanted: boolean;
 }
 
 const ProductsListComponent = ({
@@ -16,6 +17,7 @@ const ProductsListComponent = ({
     price,
     picture,
     available,
+    mostWanted,
 }: IProductProps) => {
     verifyBase64(picture)
         .then((res) => {
@@ -38,7 +40,9 @@ const ProductsListComponent = ({
     return (
         <div
             key={id}
-            className="component group relative border border-gray-300 hover:border-gray-500 rounded h-full pb-1"
+            className={`component group relative border ${
+                mostWanted ? " border-2 border-lightmain" : "border-gray-300"
+            } hover:border-gray-500 rounded h-full pb-1`}
         >
             <div className={backgroundColorImage}>
                 <div className="flex flex-col justify-center sm:w-10 md:w-32 lg:w-48 h-28 lg:h-36 overflow-hidden align-middle mx-auto rounded-md lg:aspect-none opacity-70 group-hover:opacity-100">
