@@ -7,6 +7,8 @@ import { Reservation } from "./reservation/entity/Reservation";
 import { ReservationDetail } from "./reservation/entity/ReservationDetail";
 import { User } from "./user/entity/User";
 import { UserProfile } from "./user/entity/UserProfile";
+import { UserBilling } from "./invoice/UserBilling";
+import { Invoice } from "./invoice/entity/Invoice";
 
 console.log("dataFixtureWipe", dataFixtureWipe);
 
@@ -22,11 +24,13 @@ const dataSource = new DataSource({
     entities: [
         User,
         UserProfile,
+        UserBilling,
         Lang,
         Product,
         Category,
         Reservation,
         ReservationDetail,
+        Invoice,
     ],
     dropSchema: dataFixtureWipe,
 });
