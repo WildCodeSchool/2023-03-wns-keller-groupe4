@@ -1,10 +1,10 @@
 import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
-import { UserBilling } from "./UserBilling";
+import { UserBilling } from "../userBilling/entity/UserBilling";
 import ReservationService from "../reservation/Reservation.Service";
 import { Invoice } from "./entity/Invoice";
 import createInvoiceInput from "./inputs/CreateInvoiceInput";
-import updateUserBillingInput from "./inputs/UpdateUserBillingInput";
+import updateUserBillingInput from "../userBilling/inputs/UpdateUserBillingInput";
 import dataSource from "../utils";
 
 
@@ -87,6 +87,22 @@ export default class InvoiceService {
             return await this.repository.findOneOrFail({
                 relations: this.relations,
                 where: { id },
+            });
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    /**
+     * Renvois une facture via son id de réservation
+     * @param idReservation - uuid de la réservation à rechercher
+     * @returns Invoice
+    */
+    async getOneInvoiceByIdReservation(idReservation: string): Promise<Invoice> {
+        try {
+            return await this.repository.findOneOrFail({
+                relations: this.relations,
+                where: { reservation: { id: idReservation } },
             });
         } catch (err: any) {
             throw new Error(err.message);

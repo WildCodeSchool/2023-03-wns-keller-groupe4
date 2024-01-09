@@ -96,3 +96,40 @@ export const UPDATE_RESERVATION_DATES = gql(`
     }
   }
 `);
+
+export const CREATE_INVOICE = gql(`
+  mutation createInvoice($updateUserBillingInput: UpdateUserBillingInput!, $createInvoiceInput: CreateInvoiceInput!) {
+    createInvoice(updateUserBillingInput: $updateUserBillingInput, createInvoiceInput: $createInvoiceInput) {
+      UserBilling {
+        id
+        firstname
+        lastname
+        street
+        postal_code
+        country
+        invoice {
+          id
+        }
+      }
+      user {
+        id
+      }
+      reservation {
+        id
+      }
+    }
+  }
+`);
+
+export const UPDATE_USER_BILLING_BY_ID = gql(`
+  mutation updateUserBillingById($updateUserBillingByIdId: String!, $updateUserBillingInput: UpdateUserBillingInput!) {
+    updateUserBillingById(id: $updateUserBillingByIdId, updateUserBillingInput: $updateUserBillingInput) {
+      id
+      firstname
+      lastname
+      street
+      postal_code
+      country
+    }
+  }
+`);
