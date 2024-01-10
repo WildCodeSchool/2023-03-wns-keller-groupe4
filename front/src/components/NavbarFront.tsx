@@ -73,17 +73,29 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
                         to="/"
                         className="  text-center font-bold cursor-pointer py-1.5  text-lg ml-8 md:ml-0 md:mr-24"
                     >
-                        <img src={wildRentIcon} className="w-16" alt="" />
+                        <img
+                            src={wildRentIcon}
+                            className="w-16"
+                            alt="Icone de wild rent"
+                        />
                         Wildrent
                     </Link>
                 </div>
                 {/* User */}
                 <div className="flex gap-4">
                     <Link to={getIDToken() ? "/profile" : "/connect"}>
-                        <img src={userProfileIcon} className="w-10" alt="" />
+                        <img
+                            src={userProfileIcon}
+                            className="w-10"
+                            alt="icone du profil utilisateur"
+                        />
                     </Link>
                     <Link to="/cart">
-                        <img src={shoppingCartIcon} className="w-10" alt="" />
+                        <img
+                            src={shoppingCartIcon}
+                            className="w-10"
+                            alt="icone du parier"
+                        />
                     </Link>
                 </div>
             </nav>
