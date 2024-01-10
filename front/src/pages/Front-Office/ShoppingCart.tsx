@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
 import { GET_INVOICE_BY_RESERVATION_ID, GET_USER, GET_USER_CART } from "../../utils/queries";
-import { REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES, CREATE_CART } from "../../utils/mutations";
+import { CREATE_INVOICE, REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES } from "../../utils/mutations";
 import { EnumStatusReservation } from "../../__generated__/graphql";
 import AddBillingAddress from "../../components/AddBillingAddress";
 import { toast } from "react-toastify";
@@ -37,14 +37,14 @@ interface IProduct {
     available: boolean,
 }
 
-export interface IuserBilling {
-    id: string|null,
-    firstname?: string|null,
-    lastname?: string|null,
-    street?: string|null,
-    postal_code?: string|null,
+export interface IUserBilling {
+    id?: string,
+    firstname: string,
+    lastname: string,
+    street: string,
+    postal_code: string,
     // city: string|null,
-    country?: string|null,
+    country: string,
 }
 
 const ShoppingCart = () => {
@@ -66,8 +66,7 @@ const ShoppingCart = () => {
     });
 
     const [getTemporaryInvoice, {data: temporaryInvoiceData, called: temporaryInvoiceCalled}] = useLazyQuery(GET_INVOICE_BY_RESERVATION_ID);
-
-    const [createCart] = useMutation(CREATE_CART);
+    const [createInvoice] = useMutation(CREATE_INVOICE);
     const [updateCart] = useMutation(UPDATE_RESERVATION_STATUS);
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
@@ -87,17 +86,18 @@ const ShoppingCart = () => {
     let totalTaxes = "0";
     let payingButton = "Panier vide";
 
-    // User billing address initialization
-    const userBillingObj:IuserBilling = {
-        id: null,
-        firstname: null,
-        lastname: null,
-        street: null,
-        postal_code: null,
+    // User billing object initialization
+    let userBilling = {
+        id: "",
+        firstname: "",
+        lastname: "",
+        street: "",
+        postal_code: "",
         // city: null,
-        country: null,
+        country: "",
     };
-    let userBilling:IuserBilling|null = null;
+
+    // let userBilling = {};
 
     // User billing address and cart reservation details
     if(userId && data?.getCartReservationOfUser) {
@@ -124,7 +124,7 @@ const ShoppingCart = () => {
         });
 
         // Get temporary invoice: This is not the definitive invoice.
-        // Only used to retrieve the custom user billing address not saved in its profile,
+        // Only used to retrieve an existing custom user billing address not saved in its profile,
         // But previously associated to the current cart
         const temporaryInvoice = async () => {
             await getTemporaryInvoice({
@@ -136,8 +136,15 @@ const ShoppingCart = () => {
             temporaryInvoice();
         }
 
+
         if(temporaryInvoiceData?.getInvoiceByIdReservation?.UserBilling) {
-            userBilling = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling;
+            userBilling.id = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.id;
+            userBilling.firstname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.firstname;
+            userBilling.lastname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.lastname;
+            userBilling.street = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.street;
+            userBilling.postal_code = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.postal_code;
+            // userBilling.city = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.city;
+            userBilling.country = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.country;
         }
 
         if(products) {
@@ -147,18 +154,46 @@ const ShoppingCart = () => {
 
     if(userData) {
         const userProfile = userData.getUserById.user_profile;
-        userBillingObj.id = userBilling?.id || null;
-        userBillingObj.firstname = userBilling?.firstname || userProfile.firstname;
-        userBillingObj.lastname = userBilling?.lastname || userProfile.lastname;
-        userBillingObj.postal_code = userBilling?.postal_code || userProfile.postal_code;
-        userBillingObj.street = userBilling?.street || userProfile.street;
-        // userBillingObj.city = 'Paris'; //userBilling?.city || userProfile.city;
-        userBillingObj.country = userBilling?.country || userProfile.country;
+        userBilling.id = userBilling.id || "";
+        userBilling.firstname = userBilling.firstname || userProfile.firstname || "";
+        userBilling.lastname = userBilling.lastname || userProfile.lastname || "";
+        userBilling.postal_code = userBilling.postal_code || userProfile.postal_code || "";
+        userBilling.street = userBilling.street || userProfile.street || "";
+        // userBilling.city = 'Paris'; //userBilling?.city || userProfile.city;
+        userBilling.country = userBilling.country || userProfile.country || "";
     }
 
     // Submit cart when payment is validated
     const submitCart = async () => {
         if(cartId) {
+            // Save user billing address
+            if (userBilling.id?.length === 0) {
+                console.log("TEST");
+                const updateUserBillingInput:IUserBilling = {
+                    firstname: userBilling.firstname,
+                    lastname: userBilling.lastname,
+                    street: userBilling.street,
+                    postal_code: userBilling.postal_code,
+                    // city: userBilling.city,
+                    country: userBilling.country,
+                };
+
+                const createInvoiceInput = {
+                    reservation_id: cartId,
+                    user_id: userId,
+                };
+    
+                const newInvoice = await createInvoice({ 
+                    variables: { updateUserBillingInput, createInvoiceInput } 
+                });
+    
+                if (newInvoice.data) {
+                    userBilling.id = newInvoice.data.createInvoice.UserBilling.id;
+                } else {
+                    toast.error("Erreur : Un problème est survenu lors de l'enregistrement de vos données de facturation.");
+                    return;
+                }
+            }
             await updateReservationDates({
                 variables: {
                     startAt: new Date(reservation_start_at).toISOString(),
@@ -173,7 +208,7 @@ const ShoppingCart = () => {
                         updateStatusOfReservationId: cartId,
                     } 
                 });
-                refetch();
+                // refetch();
                 toast.success(
                     "Votre réservation est validée.", { 
                     icon: <GrValidate size="2rem" />,
@@ -306,12 +341,12 @@ const ShoppingCart = () => {
                                             </div>
                                             <div className={ "w-full max-w-sm items-center mt-3 border rounded-lg shadow" + profileClass}>
                                                 <div className="flex flex-col items-center p-5 text-sm text-gray-600">
-                                                    { userBillingObj.firstname && userBillingObj.lastname && userBillingObj.street && userBillingObj.postal_code && userBillingObj.country ? (
+                                                    { userBilling.firstname && userBilling.lastname && userBilling.street && userBilling.postal_code && userBilling.country ? (
                                                         <>
-                                                            <h5 className="mb-1 text-xl font-medium text-gray-800">{ userBillingObj.firstname + ' ' + userBillingObj.lastname }</h5>
-                                                            <span>{ userBillingObj.street }</span>
-                                                            <span>{ userBillingObj.postal_code + ' // TODO' }</span>
-                                                            <span>{ userBillingObj.country }</span>
+                                                            <h5 className="mb-1 text-xl font-medium text-gray-800">{ userBilling.firstname + ' ' + userBilling.lastname }</h5>
+                                                            <span>{ userBilling.street }</span>
+                                                            <span>{ userBilling.postal_code + ' // TODO' }</span>
+                                                            <span>{ userBilling.country }</span>
                                                             <div className="flex mt-4 space-x-3 md:mt-6">
                                                                 <button 
                                                                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700"
@@ -433,7 +468,7 @@ const ShoppingCart = () => {
             <AddBillingAddress
                 userId = {userId}
                 cartId = {cartId}
-                userBillingObj = {userBillingObj}
+                userBilling = {userBilling}
                 openModal = {openModal}
                 setOpenModal = {setOpenModal}
             />                        

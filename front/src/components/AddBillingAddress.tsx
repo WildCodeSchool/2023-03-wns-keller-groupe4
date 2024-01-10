@@ -1,16 +1,16 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import { redirect, useNavigate } from "react-router-dom";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { CREATE_INVOICE, UPDATE_USER_BILLING_BY_ID } from "../utils/mutations";
+import { Fragment, useRef } from "react";
+import { redirect } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { CREATE_INVOICE, UPDATE_USER_BILLING_BY_ID, UPDATE_USER_PROFILE } from "../utils/mutations";
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from "react-toastify";
 import { TfiShoppingCartFull } from "react-icons/tfi";
-import { IuserBilling } from "../pages/Front-Office/ShoppingCart";
+import { IUserBilling } from "../pages/Front-Office/ShoppingCart";
 
 interface IUserCart {
     userId: string;
     cartId: string;
-    userBillingObj: IuserBilling;
+    userBilling: IUserBilling;
     openModal: boolean;
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -18,54 +18,45 @@ interface IUserCart {
 const AddBillingAddress = ({ 
     userId,
     cartId,
-    userBillingObj,
+    userBilling,
     openModal,
     setOpenModal
 }: IUserCart) => {
-
-    const navigate = useNavigate();
-
-    // Reset the form
-    const initForm = () => {
-        setOpenModal(false);
-    }
 
     const cancelButtonRef = useRef(null);
 
     const [createInvoice] = useMutation(CREATE_INVOICE);
     const [updateUserBillingById] = useMutation(UPDATE_USER_BILLING_BY_ID);
+    const [updateUserProfile] = useMutation(UPDATE_USER_PROFILE);
 
     const submitAddressForm = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if(!userId) {
             setOpenModal(false);
-            // TODO: Redirect to login page
             redirect('/login');
             return;
         }
-
-        // alert(e.target.firstname.value);
 
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
         const formEntries = formData.entries();
         const data = Object.fromEntries(formEntries);
 
-        const updateUserBillingInput = {
-            firstname: data.firstname,
-            lastname: data.lastname,
-            street: data.street,
-            postal_code: data.postcode,
-            // city: data.city,
-            country: data.country,
+        const updateUserBillingInput:IUserBilling = {
+            firstname: data.firstname as string,
+            lastname: data.lastname as string,
+            street: data.street as string,
+            postal_code: data.postcode as string,
+            // city: data.city as string,
+            country: data.country as string,
         };
 
         // Update user billing address
-        if(userBillingObj.id) {
+        if (userBilling.id && userBilling.id.length > 0) {
             const updateUserBilling = await updateUserBillingById({ 
                 variables: { 
-                    updateUserBillingByIdId: userBillingObj.id, 
+                    updateUserBillingByIdId: userBilling.id, 
                     updateUserBillingInput 
                 } 
             });
@@ -73,7 +64,8 @@ const AddBillingAddress = ({
             if (updateUserBilling.data) {
                 toast.success("Votre adresse de facturation a bien été mise à jour.");
                 setOpenModal(false);
-                initForm();
+            } else {
+                toast.error("Votre adresse de facturation n'a pas pu être mise à jour.");
             }
         } else {
             // or create new user billing address
@@ -86,20 +78,41 @@ const AddBillingAddress = ({
                 variables: { updateUserBillingInput, createInvoiceInput } 
             });
 
-            console.log(newInvoice.data);
             if (newInvoice.data) {
                 toast.success("Votre adresse de facturation a bien été enregistrée.");
                 setOpenModal(false);
-                initForm(); 
+            } else {
+                toast.error("Votre adresse de facturation n'a pas pu être enregistrée.");
             }
         }
 
-        // if(newInvoice.data) invoiceId = newInvoice.data.id;
+        // Save address in user profile
+        if (data.memorize) { 
+            const updateUserInput:IUserBilling = {
+                firstname: data.firstname as string,
+                lastname: data.lastname as string,
+                street: data.street as string,
+                postal_code: data.postcode as string,
+                // city: data.city as string,
+                country: data.country as string,
+            };
+
+            const userProfileUpdated = await updateUserProfile({ 
+                variables: { 
+                    updateUserId: userId, 
+                    updateUserInput 
+                } 
+            });
+
+            if (!userProfileUpdated.data) {
+                toast.error("La nouvelle adresse de facturation n'a pas pu être sauvegardée pour vos prochaines commandes");
+            }
+        }
     }
 
     return (
         <>
-            {/* Add billing address form in modal */}
+            {/* Billing address form */}
             <Transition.Root show={openModal} as={Fragment}>
                 <Dialog
                     as="div"
@@ -165,7 +178,7 @@ const AddBillingAddress = ({
                                                                     id="firstname"
                                                                     name="firstname" 
                                                                     type="text" 
-                                                                    defaultValue={ userBillingObj.firstname || "" }
+                                                                    defaultValue={ userBilling.firstname || "" }
                                                                     placeholder="Jean"
                                                                     required
                                                                 />
@@ -179,7 +192,7 @@ const AddBillingAddress = ({
                                                                     id="lastname"
                                                                     name="lastname" 
                                                                     type="text"
-                                                                    defaultValue={ userBillingObj.lastname || "" }
+                                                                    defaultValue={ userBilling.lastname || "" }
                                                                     placeholder="Dupont"
                                                                     required 
                                                                 />
@@ -195,13 +208,13 @@ const AddBillingAddress = ({
                                                                     id="street"
                                                                     name="street" 
                                                                     type="text" 
-                                                                    defaultValue={ userBillingObj.street || "" }
+                                                                    defaultValue={ userBilling.street || "" }
                                                                     placeholder="1 bis, rue de la Paix"
                                                                     required
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="flex flex-wrap -mx-3 mb-2">
+                                                        <div className="flex flex-wrap -mx-3 mb-6">
                                                             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                                                                 <label 
                                                                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
@@ -214,7 +227,7 @@ const AddBillingAddress = ({
                                                                     id="postcode"
                                                                     name="postcode" 
                                                                     type="text" 
-                                                                    defaultValue={ userBillingObj.postal_code || "" }
+                                                                    defaultValue={ userBilling.postal_code || "" }
                                                                     placeholder="75000"
                                                                     required
                                                                 />
@@ -231,7 +244,7 @@ const AddBillingAddress = ({
                                                                     id="city"
                                                                     name="city" 
                                                                     type="text" 
-                                                                    // defaultValue={ userBillingObj.city || "" }
+                                                                    // defaultValue={ userBilling.city || "" }
                                                                     placeholder="Paris"
                                                                     required
                                                                 />
@@ -247,7 +260,7 @@ const AddBillingAddress = ({
                                                                         className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
                                                                         id="country"
                                                                         name="country"
-                                                                        defaultValue={ userBillingObj.country || "" }
+                                                                        defaultValue={ userBilling.country || "" }
                                                                         required
                                                                     >
                                                                     <option value="France">France</option>
@@ -265,6 +278,23 @@ const AddBillingAddress = ({
                                                                         </svg>
                                                                     </div>
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="-mx-3 mb-6 sm:mt-5 md:mt-10">
+                                                            <div className="w-full px-3">
+                                                                <label className="flex font-semibold text-gray-700" htmlFor="memorize">
+                                                                    <div className="flex-initial">
+                                                                        <input 
+                                                                            className="appearance-none border-solid border-2 border-gray-900 checked:bg-gray-900 w-4 h-4 mr-2 leading-tight"
+                                                                            id="memorize" 
+                                                                            name="memorize"
+                                                                            type="checkbox"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="flex-initial text-sm">
+                                                                        Enregistrer cette adresse pour mes prochaines réservations
+                                                                    </div>
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>

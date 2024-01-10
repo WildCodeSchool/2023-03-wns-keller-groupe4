@@ -121,6 +121,12 @@ export const CREATE_INVOICE = gql(`
   }
 `);
 
+export const UPDATE_USER_PROFILE = gql(`
+  mutation updateUser($updateUserInput: UpdateUserInput!, $updateUserId: String!) {
+    updateUser(updateUserInput: $updateUserInput, id: $updateUserId)
+  }
+`);
+
 export const UPDATE_USER_BILLING_BY_ID = gql(`
   mutation updateUserBillingById($updateUserBillingByIdId: String!, $updateUserBillingInput: UpdateUserBillingInput!) {
     updateUserBillingById(id: $updateUserBillingByIdId, updateUserBillingInput: $updateUserBillingInput) {
