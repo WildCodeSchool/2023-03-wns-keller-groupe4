@@ -1,5 +1,5 @@
 import { Fragment, useRef } from "react";
-import { redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { CREATE_INVOICE, UPDATE_USER_BILLING_BY_ID, UPDATE_USER_PROFILE } from "../utils/mutations";
 import { Dialog, Transition } from '@headlessui/react';
@@ -34,8 +34,7 @@ const AddBillingAddress = ({
 
         if(!userId) {
             setOpenModal(false);
-            redirect('/login');
-            return;
+            return <Navigate to='/login'/>
         }
 
         const form = e.target as HTMLFormElement;

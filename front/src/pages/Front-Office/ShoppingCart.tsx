@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
 import { GET_INVOICE_BY_RESERVATION_ID, GET_USER, GET_USER_CART } from "../../utils/queries";
@@ -14,7 +14,7 @@ import { FaShippingFast } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { PrevButton } from "../../components/tools/PrevButton";
 
-interface ICartSummary {
+export interface ICartSummary {
     id: string,
     start_at?: Date,
     end_at?: Date,
@@ -48,6 +48,8 @@ export interface IUserBilling {
 }
 
 const ShoppingCart = () => {
+    const navigate = useNavigate();
+
     const userId = getIDToken() ? decodeToken(getIDToken()).userId : ""; 
     const [profileClass, setProfileClass] = useState("border-gray-200 dark:bg-gray-100 dark:border-gray-200");
     const [addressSelected, setAddressSelected] = useState(false);
@@ -168,7 +170,6 @@ const ShoppingCart = () => {
         if(cartId) {
             // Save user billing address
             if (userBilling.id?.length === 0) {
-                console.log("TEST");
                 const updateUserBillingInput:IUserBilling = {
                     firstname: userBilling.firstname,
                     lastname: userBilling.lastname,
@@ -202,17 +203,26 @@ const ShoppingCart = () => {
                 }
             })
             .then((res:any) => {
-                updateCart({ 
+                const checkout = updateCart({ 
                     variables: {
                         status: EnumStatusReservation.Paying,
                         updateStatusOfReservationId: cartId,
                     } 
                 });
                 // refetch();
-                toast.success(
-                    "Votre réservation est validée.", { 
-                    icon: <GrValidate size="2rem" />,
-                });
+                // toast.success(
+                //     "Votre réservation est validée.", { 
+                //     icon: <GrValidate size="2rem" />,
+                // });
+
+                return navigate(
+                    "/cart/checkout-confirmation", { 
+                        state: { 
+                            reservation: cartSummary, 
+                            userBilling: userBilling 
+                        } 
+                    }
+                );
             })
             .catch((err:any) => {
                 toast.error("Erreur : La réservation n'a pas pu être confirmée.");

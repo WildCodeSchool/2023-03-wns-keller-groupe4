@@ -9,5 +9,5 @@ export default class CreateInvoiceInput {
     @Field()
     user_id: string;
 
-    // user_billing: UserBilling;
+    user_billing: UserBilling;
 }
