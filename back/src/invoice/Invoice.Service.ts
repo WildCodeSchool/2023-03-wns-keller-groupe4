@@ -24,18 +24,22 @@ export default class InvoiceService {
         updateUserBillingInput: updateUserBillingInput
     ): Promise<Invoice> {
         try {
+            // Create the invoice
             let newInvoice = new Invoice();
             newInvoice = { ...newInvoice, ...createInvoiceInput }
             newInvoice.user = await this.userService.getOneUserById(createInvoiceInput.user_id);
-            newInvoice.reservation = await this.reservationService.getOneReservationById(createInvoiceInput.reservation_id);    
-            let userBilling = new UserBilling();
-            userBilling = { ...userBilling, ...updateUserBillingInput };
+            newInvoice.reservation = await this.reservationService.getOneReservationById(createInvoiceInput.reservation_id);
+            // Save the user billing informations
+            newInvoice.UserBilling = new UserBilling();
+            newInvoice.UserBilling = { ...newInvoice.UserBilling, ...updateUserBillingInput };
             let invoiceCreated = await this.repository.save(newInvoice);
-            userBilling.invoice = invoiceCreated;
-            let userBillingCreated = await dataSource.getRepository(UserBilling).save(userBilling);
-            if(!userBillingCreated) {
-                throw new Error("Erreur lors de la création de l'adresse de facturation");
-            }
+            // let userBilling = new UserBilling();
+            // userBilling = { ...userBilling, ...updateUserBillingInput };
+            // userBilling.invoice = invoiceCreated;
+            // let userBillingCreated = await dataSource.getRepository(UserBilling).save(userBilling);
+            // if(!userBillingCreated) {
+            //     throw new Error("Erreur lors de la création de l'adresse de facturation");
+            // }
             return invoiceCreated;
         } catch (err: any) {
             throw new Error(err.message);
