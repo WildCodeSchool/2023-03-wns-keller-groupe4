@@ -59,7 +59,7 @@ const ProductsListComponent = ({
                 </div>
                 {mostWanted && (
                     <span className="absolute top-0 left-0 m-2 rounded-full bg-black px-2 text-center text-sm font-medium text-white">
-                        Most Wanted
+                        Meilleure vente
                     </span>
                 )}
             </Link>
@@ -72,7 +72,7 @@ const ProductsListComponent = ({
                 <div className="mt-2 mb-5 flex items-center justify-between">
                     <p>
                         <span className="text-3xl font-bold text-slate-900">
-                            {price} €/day
+                            {price} €/jour
                         </span>
                     </p>
                     {/* Add rating or other elements here */}

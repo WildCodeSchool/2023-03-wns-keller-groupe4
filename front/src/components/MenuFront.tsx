@@ -95,7 +95,7 @@ function MenuFront({ setOpenNav }: INavbarFrontProps) {
     return (
         <div className="menuFront">
             <label htmlFor="searchMenu" className="sr-only">
-                Toute nos catégories
+                Toutes nos catégories
             </label>
             <input
                 type="text"
