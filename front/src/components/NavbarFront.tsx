@@ -24,7 +24,7 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
                         className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
                         onClick={() => setOpenNav(!openNav)}
                     >
-                        Tous nos matériels
+                        Toute nos catégories
                     </button>
                     <button
                         type="button"

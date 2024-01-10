@@ -60,8 +60,6 @@ function HomePage() {
             setSearchState(ProductRequestState.IN_PROGRESS);
             // setTransitionState(true);
             submitSearch().then((result) => {
-                const newSearchData =
-                    result.data?.getProductBySearchFilter || [];
                 setSearchState(
                     result.data &&
                         result.data.getProductBySearchFilter.length > 0
@@ -94,10 +92,10 @@ function HomePage() {
     const mostWantedOrSearchResultRender = () => {
         return (
             <TransitionGroup
-                className="flex sm:flex-row sm:flex-wrap gap-2"
+                className="flex sm:flex-row justify-center sm:flex-wrap gap-2"
                 // appear={transitionState}
             >
-                <div className="flex sm:flex-row flex-wrap gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 items-center">
                     {searchState === ProductRequestState.SUCCESS &&
                         searchProductData?.getProductBySearchFilter.map(
                             (product: any) => (
@@ -107,10 +105,7 @@ function HomePage() {
                                     timeout={300}
                                     classNames="fade"
                                 >
-                                    <div
-                                        key={product.id}
-                                        className="sm:basis-1/12"
-                                    >
+                                    <div key={product.id} className="">
                                         <ProductsListComponent
                                             id={product.id}
                                             name={product.name}
@@ -131,7 +126,7 @@ function HomePage() {
                                 timeout={300}
                                 classNames="fade"
                             >
-                                <div key={product.id} className="sm:basis-1/12">
+                                <div key={product.id} className="">
                                     <ProductsListComponent
                                         id={product.id}
                                         name={product.name}
@@ -149,12 +144,20 @@ function HomePage() {
     };
 
     return (
-        <div className="flex items-center justify-center ">
+        <div className="flex items-center justify-center mt-32 ">
             <div className="flex flex-col items-center gap-10">
+                <div className="flex flex-col basis-1/4 items-center  border-main border-4 rounded-xl shadow-sm py-8 mb-36 sm:w-80 sm-height:mb-0">
+                    <h1 className="text-4xl font-bold mb-4">Wildrent</h1>
+                    <p className="text-xl text-center ">
+                        {searchState === ProductRequestState.NOT_SEARCHING
+                            ? "Nos produits les plus demandés"
+                            : "recherchez parmi tout nos produits"}
+                    </p>
+                </div>
                 {/* <div className="relative flex flex-col items-center justify-around w-4/5 mx-auto"> */}
-                <div className="basis-1/4">
+                <div className="w-3/5">
                     <Combobox value={selected} onChange={setSelected}>
-                        <div className="relative mt-1">
+                        <div className="relative mt-1 w-full">
                             <Combobox.Label className="opacity-50">
                                 Trouvez votre matériel
                             </Combobox.Label>
@@ -215,17 +218,8 @@ function HomePage() {
                         </div>
                     </Combobox>
                 </div>
-                <div className="flex flex-col basis-1/4 items-center  border-main border-4 rounded-xl shadow-sm py-8 mb-36 sm:w-80 sm-height:mb-0">
-                    <h1 className="text-4xl font-bold mb-4">Wildrent</h1>
-                    <p className="text-xl text-center ">
-                        {searchState === ProductRequestState.NOT_SEARCHING
-                            ? "Nos produits les plus demandés"
-                            : "recherchez parmi tout nos produits"}
-                    </p>
-                </div>
-                {/* <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 border-blue-900 border-8"> */}
+
                 {mostWantedOrSearchResultRender()}
-                {/* </div> */}
             </div>
         </div>
     );
