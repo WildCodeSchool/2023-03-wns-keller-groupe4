@@ -146,7 +146,7 @@ function HomePage() {
     return (
         <div className="flex items-center justify-center mt-32 ">
             <div className="flex flex-col items-center gap-10">
-                <div className="flex flex-col basis-1/4 items-center  border-main border-4 rounded-xl shadow-sm py-8 mb-36 sm:w-80 sm-height:mb-0">
+                <div className="flex flex-col items-center  border-main border-2 rounded-xl shadow-sm py-8 mb-36 sm:w-80 sm-height:mb-0">
                     <h1 className="text-4xl font-bold mb-4">Wildrent</h1>
                     <p className="text-xl text-center ">
                         {searchState === ProductRequestState.NOT_SEARCHING
@@ -155,13 +155,13 @@ function HomePage() {
                     </p>
                 </div>
                 {/* <div className="relative flex flex-col items-center justify-around w-4/5 mx-auto"> */}
-                <div className="w-3/5">
+                <div className="flex flex-col justify-center, items-center ">
                     <Combobox value={selected} onChange={setSelected}>
-                        <div className="relative mt-1 w-full">
+                        <div className="relative mt-1 w-96 sm:w-[40rem]">
                             <Combobox.Label className="opacity-50">
                                 Trouvez votre matériel
                             </Combobox.Label>
-                            <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+                            <div className="w-full relative cursor-default overflow-hidden rounded-lg bg-white text-left shadow-sm shadow-main focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
                                 <Combobox.Input
                                     value={productSearchInput.name}
                                     className="w-full border-none py-2 pl-3 pr-10 text-sm rounded-lg leading-5 text-gray-900 focus:outline-main"

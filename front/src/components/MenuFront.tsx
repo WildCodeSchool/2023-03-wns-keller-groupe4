@@ -3,6 +3,7 @@ import { useLazyQuery, useQuery } from "@apollo/client";
 import { GET_CATEGORIES, GET_CATEGORY_BY_SEARCH } from "../utils/queries";
 import { useEffect, useState } from "react";
 import { useDebounce } from "../utils/hooks/useDebounce.hook";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 interface INavbarFrontProps {
     setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
@@ -106,8 +107,9 @@ function MenuFront({ setOpenNav }: INavbarFrontProps) {
                 placeholder="Chercher un matériel"
             />
 
-            <nav className="overflow-x-hidden">
-                <div className="text-center grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-y-3 gap-x-2 sm:gap-2 pt-3 pb-2">
+            <nav className="overflow-x-hidden sticky inset-0 z-10">
+                {/* <div className="text-center grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-y-3 gap-x-2 sm:gap-2 pt-3 pb-2"> */}
+                <TransitionGroup className="text-center grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-y-3 gap-x-2 sm:gap-2 pt-3 pb-2">
                     <Link
                         to={"products/list/all"}
                         key="0"
@@ -119,18 +121,29 @@ function MenuFront({ setOpenNav }: INavbarFrontProps) {
                         </div>
                     </Link>
                     {categories?.map((category) => (
-                        <Link
-                            to={`products/list/${category.name?.toLowerCase()}`}
+                        <CSSTransition
                             key={category.id}
-                            className="bg-orange-600 hover:bg-orange-700  text-white  block rounded-md  text-base font-medium"
-                            onClick={() => setOpenNav(false)}
+                            in={true}
+                            timeout={300}
+                            classNames="fade"
                         >
-                            <div className="flex items-center h-full px-2 ">
-                                <div className="w-full">{category.name}</div>
-                            </div>
-                        </Link>
+                            <Link
+                                to={`products/list/${category.name?.toLowerCase()}`}
+                                key={category.id}
+                                className="bg-orange-600 hover:bg-orange-700  text-white  block rounded-md  text-base font-medium"
+                                onClick={() => setOpenNav(false)}
+                            >
+                                <div className="flex items-center h-full px-2 ">
+                                    <div className="w-full">
+                                        {category.name}
+                                    </div>
+                                </div>
+                            </Link>
+                        </CSSTransition>
                     ))}
-                </div>
+                </TransitionGroup>
+
+                {/* </div> */}
             </nav>
         </div>
     );

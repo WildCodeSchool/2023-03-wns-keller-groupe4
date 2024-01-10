@@ -28,7 +28,7 @@ function Layout({ isFrontOffice }: ILayoutFrontProps) {
                     as="div"
                     enter="transition-all duration-100"
                     enterFrom="opacity-0 px-2"
-                    enterTo="opacity-80  p-2 shadow-md"
+                    enterTo="opacity-80  p-2 shadow-md opacity-100 p-2 shadow-md  "
                     leave="transition-all duration-150"
                     leaveFrom="opacity-80  p-2 shadow-md"
                     leaveTo="opacity-0 px-2"

@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { GoPerson } from "react-icons/go";
 import { FaShoppingCart } from "react-icons/fa";
 import { getIDToken } from "../utils/jwtHandler";
-
+import wildRentIcon from "../assets/icons/wildRentIcon.png";
+import userProfileIcon from "../assets/icons/userProfileIcon.png";
+import shoppingCartIcon from "../assets/icons/shoppingCartIcon.png";
 interface INavbarFrontProps {
     openNav: boolean;
     setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,7 +14,7 @@ interface INavbarFrontProps {
 function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
     return (
         <header className="sticky inset-0 z-10 h-max max-w-full rounded-none py-2 px-4 shadow-sm lg:px-8 lg:py-4 border-gray-200 bg-gray-100">
-            <nav className="flex items-center justify-between">
+            <nav className="flex items-center justify-between h-12">
                 {/* Open Menu Toggle */}
                 <div className="flex items-center gap-4">
                     {/* <Link to={"/"}>
@@ -64,30 +66,29 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
                         )}
                     </button>
                 </div>
+                <div>
+                    {/* Logo */}
 
-                {/* Logo */}
-                <Link
-                    to="/"
-                    className="cursor-pointer py-1.5 text-lg ml-8 md:ml-0 md:mr-24"
-                >
-                    Wildrent
-                </Link>
-
+                    <Link
+                        to="/"
+                        className="  text-center font-bold cursor-pointer py-1.5  text-lg ml-8 md:ml-0 md:mr-24"
+                    >
+                        <img src={wildRentIcon} className="w-16" alt="" />
+                        Wildrent
+                    </Link>
+                </div>
                 {/* User */}
                 <div className="flex gap-4">
                     <Link to={getIDToken() ? "/profile" : "/connect"}>
-                        <GoPerson
+                        {/* <GoPerson
                             aria-label="Go to profile page"
                             className="cursor-pointer"
                             size="1.5rem"
-                        />
+                        /> */}
+                        <img src={userProfileIcon} className="w-10" alt="" />
                     </Link>
                     <Link to="/cart">
-                        <FaShoppingCart
-                            aria-label="Go to cart page"
-                            className="cursor-pointer"
-                            size="1.5rem"
-                        />
+                        <img src={shoppingCartIcon} className="w-10" alt="" />
                     </Link>
                 </div>
             </nav>
