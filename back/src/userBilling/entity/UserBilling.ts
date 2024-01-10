@@ -15,27 +15,27 @@ export class UserBilling {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Field({ nullable: true })
-    @Column({ nullable: true })
+    @Field()
+    @Column()
     firstname: string;
 
-    @Field({ nullable: true })
-    @Column({ nullable: true })
+    @Field()
+    @Column()
     lastname: string;
 
-    @Field({ nullable: true })
-    @Column({ nullable: true })
+    @Field()
+    @Column()
     street: string;
 
-    @Field({ nullable: true })
-    @Column({ nullable: true })
+    @Field()
+    @Column()
     postal_code: string;
 
-    @Field({ nullable: true })
-    @Column({ nullable: true })
+    @Field()
+    @Column()
     country: string;
 
-    @Field(() => Invoice, { nullable: true })
+    @Field(() => Invoice)
     @OneToOne((type) => Invoice, (invoice) => invoice.reservation)
     @JoinColumn()
     invoice: Invoice;
