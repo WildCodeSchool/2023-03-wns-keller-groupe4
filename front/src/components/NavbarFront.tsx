@@ -80,11 +80,6 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
                 {/* User */}
                 <div className="flex gap-4">
                     <Link to={getIDToken() ? "/profile" : "/connect"}>
-                        {/* <GoPerson
-                            aria-label="Go to profile page"
-                            className="cursor-pointer"
-                            size="1.5rem"
-                        /> */}
                         <img src={userProfileIcon} className="w-10" alt="" />
                     </Link>
                     <Link to="/cart">

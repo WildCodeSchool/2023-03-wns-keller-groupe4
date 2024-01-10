@@ -35,23 +35,9 @@ function HomePage() {
         GET_PRODUCTS_BY_SEARCH_FILTER,
     );
 
-    const { data } = useQuery(GET_CATEGORIES);
-
-    const sortedData =
-        data?.getCategories &&
-        Array.from(data?.getCategories).sort((a, b) =>
-            a.name.localeCompare(b.name),
-        );
-
-    const filteredProduct =
-        query === ""
-            ? sortedData
-            : sortedData?.filter((product) =>
-                  product.name
-                      .toLowerCase()
-                      .replace(/\s+/g, "")
-                      .includes(query.toLowerCase().replace(/\s+/g, "")),
-              );
+    const { data: mostWantedData } = useQuery(GET_PRODUCTS_BY_SEARCH_FILTER, {
+        variables: { searchProductInput: { mostWanted: true } },
+    });
 
     useEffect(() => {
         console.log("in use effect");
@@ -91,10 +77,7 @@ function HomePage() {
 
     const mostWantedOrSearchResultRender = () => {
         return (
-            <TransitionGroup
-                className="flex sm:flex-row justify-center sm:flex-wrap gap-2"
-                // appear={transitionState}
-            >
+            <TransitionGroup className="flex sm:flex-row justify-center sm:flex-wrap gap-2">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 items-center">
                     {searchState === ProductRequestState.SUCCESS &&
                         searchProductData?.getProductBySearchFilter.map(
@@ -102,7 +85,7 @@ function HomePage() {
                                 <CSSTransition
                                     key={product.id}
                                     in={true}
-                                    timeout={300}
+                                    timeout={500}
                                     classNames="fade"
                                 >
                                     <div key={product.id} className="">
@@ -119,25 +102,27 @@ function HomePage() {
                             ),
                         )}
                     {searchState === ProductRequestState.NOT_SEARCHING &&
-                        mostWantedProductDataArray.map((product) => (
-                            <CSSTransition
-                                key={product.id}
-                                in={true}
-                                timeout={300}
-                                classNames="fade"
-                            >
-                                <div key={product.id} className="">
-                                    <ProductsListComponent
-                                        id={product.id}
-                                        name={product.name}
-                                        price={product.price}
-                                        picture={product.picture}
-                                        available={product.available}
-                                        mostWanted={true}
-                                    />
-                                </div>
-                            </CSSTransition>
-                        ))}
+                        mostWantedData?.getProductBySearchFilter.map(
+                            (product) => (
+                                <CSSTransition
+                                    key={product.id}
+                                    in={true}
+                                    timeout={500}
+                                    classNames="fade"
+                                >
+                                    <div key={product.id} className="">
+                                        <ProductsListComponent
+                                            id={product.id}
+                                            name={product.name}
+                                            price={product.price}
+                                            picture={product.picture}
+                                            available={product.available}
+                                            mostWanted={true}
+                                        />
+                                    </div>
+                                </CSSTransition>
+                            ),
+                        )}
                 </div>
             </TransitionGroup>
         );
@@ -154,7 +139,6 @@ function HomePage() {
                             : "recherchez parmi tout nos produits"}
                     </p>
                 </div>
-                {/* <div className="relative flex flex-col items-center justify-around w-4/5 mx-auto"> */}
                 <div className="flex flex-col justify-center, items-center ">
                     <Combobox value={selected} onChange={setSelected}>
                         <div className="relative mt-1 w-96 sm:w-[40rem]">
@@ -178,43 +162,6 @@ function HomePage() {
                                     />
                                 </div>
                             </div>
-                            {/* <Transition
-                                as={Fragment}
-                                leave="transition ease-in duration-100"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                                afterLeave={() => setQuery("")}
-                            >
-                                <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    {filteredProduct?.length === 0 &&
-                                    query !== "" ? (
-                                        <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                                            Aucun produit ne correspond à votre
-                                            recherche
-                                        </div>
-                                    ) : (
-                                        filteredProduct?.map((product) => (
-                                            <Combobox.Option
-                                                key={product.id}
-                                                className={({ active }) =>
-                                                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                                        active
-                                                            ? "bg-main text-white"
-                                                            : "text-gray-900"
-                                                    }`
-                                                }
-                                                value={product}
-                                            >
-                                                <span
-                                                    className={`block truncate font-normal`}
-                                                >
-                                                    {product.name}
-                                                </span>
-                                            </Combobox.Option>
-                                        ))
-                                    )}
-                                </Combobox.Options>
-                            </Transition> */}
                         </div>
                     </Combobox>
                 </div>

@@ -115,12 +115,18 @@ export class ProductService {
 
         // where: { name: ILike(`%${name}%`) },
 
-        const { name } = searchInput;
+        const { name, mostWanted } = searchInput;
 
-        where.name = ILike(`${name}%`);
+        if (name) {
+            where.name = ILike(`${name}%`);
+        }
 
+        if (mostWanted) {
+            where.mostWanted = true;
+        }
         console.log("name", name);
         console.log("where condition", where.name);
+        console.log("where condition most wanted", where.mostWanted);
 
         try {
             const products = await this.productRepository.find({ where });
@@ -160,6 +166,7 @@ export class ProductService {
                 description,
                 picture,
                 category,
+                mostWanted,
             } = createCategoryInput;
 
             const newProduct = this.productRepository.create({
@@ -169,6 +176,7 @@ export class ProductService {
                 available,
                 description,
                 picture,
+                mostWanted,
             });
 
             // We check if the category sent by the client exists in DB

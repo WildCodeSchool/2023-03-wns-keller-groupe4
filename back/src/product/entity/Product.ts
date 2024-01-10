@@ -60,6 +60,10 @@ export class Product {
     @Column({ nullable: true })
     updated_by?: string;
 
+    @Field()
+    @Column({ nullable: true })
+    mostWanted?: boolean;
+
     @Field(() => [Category])
     @ManyToMany(() => Category, (category) => category.products, {
         cascade: true,
