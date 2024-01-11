@@ -42,21 +42,21 @@ const AddBillingAddress = ({
         const formEntries = formData.entries();
         const data = Object.fromEntries(formEntries);
 
-        const updateUserBillingInput:IUserBilling = {
-            firstname: data.firstname as string,
-            lastname: data.lastname as string,
-            street: data.street as string,
-            postal_code: data.postcode as string,
-            // city: data.city as string,
-            country: data.country as string,
-        };
-
-        // Update user billing address
+        // Update user billing address if one already exists
         if (userBilling.id && userBilling.id.length > 0) {
+            const updateUserBillingInput = {
+                id: userBilling.id,
+                firstname: data.firstname as string,
+                lastname: data.lastname as string,
+                street: data.street as string,
+                postal_code: data.postcode as string,
+                // city: data.city as string,
+                country: data.country as string,
+            };
+            
             const updateUserBilling = await updateUserBillingById({ 
                 variables: { 
-                    updateUserBillingByIdId: userBilling.id, 
-                    updateUserBillingInput 
+                    updateUserBillingInput
                 } 
             });
 
@@ -68,13 +68,22 @@ const AddBillingAddress = ({
             }
         } else {
             // or create new user billing address
+            const createUserBillingInput:IUserBilling = {
+                firstname: data.firstname as string,
+                lastname: data.lastname as string,
+                street: data.street as string,
+                postal_code: data.postcode as string,
+                // city: data.city as string,
+                country: data.country as string,
+            };
+
             const createInvoiceInput = {
                 reservation_id: cartId,
                 user_id: userId,
             };
 
             const newInvoice = await createInvoice({ 
-                variables: { updateUserBillingInput, createInvoiceInput } 
+                variables: { createUserBillingInput, createInvoiceInput } 
             });
 
             if (newInvoice.data) {
@@ -243,7 +252,7 @@ const AddBillingAddress = ({
                                                                     id="city"
                                                                     name="city" 
                                                                     type="text" 
-                                                                    // defaultValue={ userBilling.city || "" }
+                                                                    defaultValue="Paris" 
                                                                     placeholder="Paris"
                                                                     required
                                                                 />

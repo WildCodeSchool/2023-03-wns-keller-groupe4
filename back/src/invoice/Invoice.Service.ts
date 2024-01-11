@@ -2,15 +2,17 @@ import { ProductService } from "../product/Product.Service";
 import UserService from "../user/User.Service";
 import { UserBilling } from "../userBilling/entity/UserBilling";
 import ReservationService from "../reservation/Reservation.Service";
+import UserBillingService from "../userBilling/UserBilling.Service";
 import { Invoice } from "./entity/Invoice";
 import createInvoiceInput from "./inputs/CreateInvoiceInput";
-import updateUserBillingInput from "../userBilling/inputs/UpdateUserBillingInput";
+import createUserBillingInput from "../userBilling/inputs/CreateUserBillingInput";
 import dataSource from "../utils";
 
 
 export default class InvoiceService {
     repository = dataSource.getRepository(Invoice);
     userService = new UserService();
+    userBillingService = new UserBillingService();
     reservationService = new ReservationService();
     relations = ["user", "reservation", "UserBilling"]
 
@@ -21,7 +23,7 @@ export default class InvoiceService {
     */
     async createOneInvoice(
         createInvoiceInput: createInvoiceInput, 
-        updateUserBillingInput: updateUserBillingInput
+        createUserBillingInput: createUserBillingInput
     ): Promise<Invoice> {
         try {
             // Create the invoice
@@ -29,18 +31,10 @@ export default class InvoiceService {
             newInvoice = { ...newInvoice, ...createInvoiceInput }
             newInvoice.user = await this.userService.getOneUserById(createInvoiceInput.user_id);
             newInvoice.reservation = await this.reservationService.getOneReservationById(createInvoiceInput.reservation_id);
-            // Save the user billing informations
-            newInvoice.UserBilling = new UserBilling();
-            newInvoice.UserBilling = { ...newInvoice.UserBilling, ...updateUserBillingInput };
-            let invoiceCreated = await this.repository.save(newInvoice);
-            // let userBilling = new UserBilling();
-            // userBilling = { ...userBilling, ...updateUserBillingInput };
-            // userBilling.invoice = invoiceCreated;
-            // let userBillingCreated = await dataSource.getRepository(UserBilling).save(userBilling);
-            // if(!userBillingCreated) {
-            //     throw new Error("Erreur lors de la création de l'adresse de facturation");
-            // }
-            return invoiceCreated;
+            let userBilling = await this.userBillingService.createUserBilling(createUserBillingInput);
+            newInvoice.UserBilling = userBilling;
+            await this.repository.save(newInvoice)
+            return newInvoice;
         } catch (err: any) {
             throw new Error(err.message);
         }

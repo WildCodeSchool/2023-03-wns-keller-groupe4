@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
@@ -73,6 +73,17 @@ const ShoppingCart = () => {
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
 
+    // Update billing address in the view when modal is closed
+    useEffect(() => {
+        if(openModal === false && data?.getCartReservationOfUser) {
+            getTemporaryInvoice(
+                {
+                    variables: { idReservation: cartId }
+                }
+            )
+        }
+    }, [openModal]);
+
     if (loading) return <p className="text-center p-10">Chargement du panier en cours...</p>;
 
     // Cart initialization
@@ -98,8 +109,6 @@ const ShoppingCart = () => {
         // city: null,
         country: "",
     };
-
-    // let userBilling = {};
 
     // User billing address and cart reservation details
     if(userId && data?.getCartReservationOfUser) {
@@ -139,6 +148,7 @@ const ShoppingCart = () => {
         }
 
 
+        // Get user billing address if already exists
         if(temporaryInvoiceData?.getInvoiceByIdReservation?.UserBilling) {
             userBilling.id = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.id;
             userBilling.firstname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.firstname;
@@ -154,6 +164,7 @@ const ShoppingCart = () => {
         }
     }
 
+    // Get user billing address from its profile
     if(userData) {
         const userProfile = userData.getUserById.user_profile;
         userBilling.id = userBilling.id || "";
@@ -168,9 +179,9 @@ const ShoppingCart = () => {
     // Submit cart when payment is validated
     const submitCart = async () => {
         if(cartId) {
-            // Save user billing address
+            // Save user billing address if not already saved before
             if (userBilling.id?.length === 0) {
-                const updateUserBillingInput:IUserBilling = {
+                const createUserBillingInput:IUserBilling = {
                     firstname: userBilling.firstname,
                     lastname: userBilling.lastname,
                     street: userBilling.street,
@@ -185,7 +196,7 @@ const ShoppingCart = () => {
                 };
     
                 const newInvoice = await createInvoice({ 
-                    variables: { updateUserBillingInput, createInvoiceInput } 
+                    variables: { createUserBillingInput, createInvoiceInput } 
                 });
     
                 if (newInvoice.data) {
@@ -209,11 +220,7 @@ const ShoppingCart = () => {
                         updateStatusOfReservationId: cartId,
                     } 
                 });
-                // refetch();
-                // toast.success(
-                //     "Votre réservation est validée.", { 
-                //     icon: <GrValidate size="2rem" />,
-                // });
+                refetch();
 
                 return navigate(
                     "/cart/checkout-confirmation", { 
@@ -274,6 +281,7 @@ const ShoppingCart = () => {
                                     
                                     // Products list
                                     products.map((product:any) => (
+                                        // reservation dates: start_at = date min from all products, end_at = date max from all products
                                         reservation_start_at = reservation_start_at > product.start_at.getTime() ? product.start_at.getTime() : reservation_start_at,
                                         reservation_end_at = reservation_end_at < product.end_at.getTime() ? product.end_at.getTime() : reservation_end_at,
                                         

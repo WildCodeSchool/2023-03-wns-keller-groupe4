@@ -1,10 +1,7 @@
 import { Field, InputType } from "type-graphql";
 
 @InputType()
-export default class UpdateUserBillingInput {
-    @Field()
-    id: string;
-    
+export default class CreateUserBillingInput {
     @Field()
     firstname: string;
 
