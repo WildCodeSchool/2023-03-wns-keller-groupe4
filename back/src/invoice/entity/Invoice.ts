@@ -21,9 +21,11 @@ export class Invoice {
     user: User;
 
     @Field(() => UserBilling)
-    @OneToOne(() => UserBilling, (userBilling) => userBilling.invoice, {
+    @OneToOne(() => UserBilling, {
         cascade: true,
+        onDelete: "CASCADE",
     })
+    @JoinColumn()
     UserBilling: UserBilling;
 
     @Field()

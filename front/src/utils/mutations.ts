@@ -98,8 +98,9 @@ export const UPDATE_RESERVATION_DATES = gql(`
 `);
 
 export const CREATE_INVOICE = gql(`
-  mutation createInvoice($updateUserBillingInput: UpdateUserBillingInput!, $createInvoiceInput: CreateInvoiceInput!) {
-    createInvoice(updateUserBillingInput: $updateUserBillingInput, createInvoiceInput: $createInvoiceInput) {
+  mutation createInvoice($createUserBillingInput: CreateUserBillingInput!, $createInvoiceInput: CreateInvoiceInput!) {
+    createInvoice(createUserBillingInput: $createUserBillingInput, createInvoiceInput: $createInvoiceInput) {
+      id
       UserBilling {
         id
         firstname
@@ -107,9 +108,6 @@ export const CREATE_INVOICE = gql(`
         street
         postal_code
         country
-        invoice {
-          id
-        }
       }
       user {
         id
@@ -128,8 +126,8 @@ export const UPDATE_USER_PROFILE = gql(`
 `);
 
 export const UPDATE_USER_BILLING_BY_ID = gql(`
-  mutation updateUserBillingById($updateUserBillingByIdId: String!, $updateUserBillingInput: UpdateUserBillingInput!) {
-    updateUserBillingById(id: $updateUserBillingByIdId, updateUserBillingInput: $updateUserBillingInput) {
+  mutation updateUserBillingById($updateUserBillingInput: UpdateUserBillingInput!) {
+    updateUserBillingById(updateUserBillingInput: $updateUserBillingInput) {
       id
       firstname
       lastname

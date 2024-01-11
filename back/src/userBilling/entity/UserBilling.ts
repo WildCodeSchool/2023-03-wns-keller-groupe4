@@ -34,9 +34,4 @@ export class UserBilling {
     @Field()
     @Column()
     country: string;
-
-    @Field(() => Invoice)
-    @OneToOne((type) => Invoice, (invoice) => invoice.reservation)
-    @JoinColumn()
-    invoice: Invoice;
 }

@@ -22,9 +22,8 @@ export default class UserBillingResolver {
     // Update
     @Mutation(() => UserBilling)
     async updateUserBillingById(
-        @Arg("id") id: string,
         @Arg("updateUserBillingInput") updateUserBillingInput: UpdateUserBillingInput,
     ): Promise<UserBilling> {
-        return await this.service.updateOneUserBillingById(id, updateUserBillingInput);
+        return await this.service.updateOneUserBillingById(updateUserBillingInput);
     }
 }
