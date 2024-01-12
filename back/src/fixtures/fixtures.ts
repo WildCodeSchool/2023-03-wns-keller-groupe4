@@ -53,7 +53,7 @@ export const dataFixture = async (): Promise<void> => {
         // This is getting all the categories previously created so we can bind them to the products
         const categories = await categoryRepository.find();
 
-        const poductsWithCategories: IMockProduct[] = [];
+        const productsWithCategories: IMockProduct[] = [];
 
         mockProducts.forEach((product) => {
             const foundMatchingCategory = categories.find((category) => {
@@ -77,14 +77,14 @@ export const dataFixture = async (): Promise<void> => {
 
             // we push the formated product in an array.
 
-            poductsWithCategories.push(product);
+            productsWithCategories.push(product);
         });
 
         // At this stage our products have categories so we can insert them in our database using a method from our productService
 
         const allDbProducts = await productService.getAllProducts();
 
-        for (const productsToInsert of poductsWithCategories) {
+        for (const productsToInsert of productsWithCategories) {
             const {
                 name,
                 price,
@@ -108,6 +108,8 @@ export const dataFixture = async (): Promise<void> => {
                     description,
                     picture,
                     category: categories,
+                    mostWanted:
+                        Math.floor(Math.random() * 63) < 12 ? true : false,
                 });
             }
         }

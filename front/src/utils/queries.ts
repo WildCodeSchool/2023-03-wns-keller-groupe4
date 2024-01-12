@@ -76,6 +76,14 @@ export const GET_PRODUCTS_BY_CATEGORY = gql(`
   }
 `);
 
+export const GET_CATEGORY_BY_SEARCH =
+    gql(`query GetCategoriesBySearch($searchCategoryInput: String!) {
+  getCategoriesBySearch(searchCategoryInput: $searchCategoryInput) {
+    name
+    id
+  }
+}`);
+
 export const GET_ALL_PRODUCTS = gql(`
   query ExampleQuery {
     getProducts {
@@ -103,6 +111,18 @@ export const GET_PRODUCTS = gql(`
       available
     }
   }
+`);
+
+export const GET_PRODUCTS_BY_SEARCH_FILTER = gql(`
+query GetProductBySearchFilter($searchProductInput: SearchProductInput!) {
+  getProductBySearchFilter(searchProductInput: $searchProductInput) {
+    name
+    id
+    picture
+    price
+    available
+  }
+}
 `);
 
 export const GET_PRODUCT_COUNT = gql(`

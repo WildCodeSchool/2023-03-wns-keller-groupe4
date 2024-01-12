@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   categoryText: {
+    color: "white",
     fontSize: 20,
     fontFamily: "Rubik",
     textAlign: "center",

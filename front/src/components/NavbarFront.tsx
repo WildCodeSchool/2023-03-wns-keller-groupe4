@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
-
-import { GoPerson } from "react-icons/go";
-import { FaShoppingCart } from "react-icons/fa";
 import { getIDToken } from "../utils/jwtHandler";
-
+import wildRentIcon from "../assets/icons/wildRentIcon.png";
+import userProfileIcon from "../assets/icons/userProfileIcon.png";
+import shoppingCartIcon from "../assets/icons/shoppingCartIcon.png";
 interface INavbarFrontProps {
     openNav: boolean;
     setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,19 +11,14 @@ interface INavbarFrontProps {
 function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
     return (
         <header className="sticky inset-0 z-10 h-max max-w-full rounded-none py-2 px-4 shadow-sm lg:px-8 lg:py-4 border-gray-200 bg-gray-100">
-            <nav className="flex items-center justify-between">
+            <nav className="flex items-center justify-between h-12">
                 {/* Open Menu Toggle */}
                 <div className="flex items-center gap-4">
-                    {/* <Link to={"/"}>
-                        <button className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block">
-                            Accueil
-                        </button>
-                    </Link> */}
                     <button
                         className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
                         onClick={() => setOpenNav(!openNav)}
                     >
-                        Tous nos matériels
+                        Toutes nos catégories
                     </button>
                     <button
                         type="button"
@@ -64,29 +58,37 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
                         )}
                     </button>
                 </div>
+                <div>
+                    {/* Logo */}
 
-                {/* Logo */}
-                <Link
-                    to="/"
-                    className="cursor-pointer py-1.5 text-lg ml-8 md:ml-0 md:mr-24"
-                >
-                    Wildrent
-                </Link>
-
+                    <Link
+                        to="/"
+                        className="  text-center font-bold cursor-pointer py-1.5  text-lg ml-8 md:ml-0 md:mr-24"
+                    >
+                        <img
+                            src={wildRentIcon}
+                            className="w-16"
+                            alt="Icone de wild rent"
+                        />
+                        Wildrent
+                    </Link>
+                </div>
                 {/* User */}
                 <div className="flex gap-4">
                     <Link to={getIDToken() ? "/profile" : "/connect"}>
-                        <GoPerson
+                        <img
+                            src={userProfileIcon}
+                            className="w-10"
+                            alt="Go to profile page"
                             aria-label="Go to profile page"
-                            className="cursor-pointer"
-                            size="1.5rem"
                         />
                     </Link>
                     <Link to="/cart">
-                        <FaShoppingCart
+                        <img
+                            src={shoppingCartIcon}
+                            className="w-10"
+                            alt="Go to cart page"
                             aria-label="Go to cart page"
-                            className="cursor-pointer"
-                            size="1.5rem"
                         />
                     </Link>
                 </div>

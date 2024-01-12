@@ -4,6 +4,7 @@ import { ProductService } from "./Product.Service";
 import { CreateProductInput } from "./inputs/CreateProductInput";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
 import { GetProductsInput } from "./inputs/GetProductsInput";
+import { SearchProductInput } from "./inputs/SearchProductInput";
 
 @Resolver()
 export default class ProductResolver {
@@ -47,6 +48,13 @@ export default class ProductResolver {
         @Arg("productsIds", (type) => [String]) ProductsIds: string[],
     ): Promise<Product[]> {
         return await this.service.getProductsById(ProductsIds);
+    }
+
+    @Query(() => [Product])
+    async getProductBySearchFilter(
+        @Arg("searchProductInput") searchProductInput: SearchProductInput,
+    ): Promise<Product[]> {
+        return await this.service.getProductBySearchFilter(searchProductInput);
     }
 
     @Mutation(() => Product)
