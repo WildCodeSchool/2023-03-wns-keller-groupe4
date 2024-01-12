@@ -1,9 +1,8 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { Invoice } from "./entity/Invoice";
-import { UserBilling } from "./UserBilling";
 import InvoiceService from "./Invoice.Service";
 import CreateInvoiceInput from "./inputs/CreateInvoiceInput";
-import UpdateUserBillingInput from "./inputs/UpdateUserBillingInput";
+import CreateUserBillingInput from "../userBilling/inputs/CreateUserBillingInput";
 
 @Resolver()
 export default class InvoiceResolver {
@@ -15,9 +14,9 @@ export default class InvoiceResolver {
     @Mutation(() => Invoice)
     async createInvoice(
         @Arg("createInvoiceInput") createInvoiceInput: CreateInvoiceInput,
-        @Arg("updateUserBillingInput") updateUserBillingInput: UpdateUserBillingInput
+        @Arg("createUserBillingInput") createUserBillingInput: CreateUserBillingInput
     ): Promise<Invoice> {
-        return await this.service.createOneInvoice(createInvoiceInput, updateUserBillingInput);
+        return await this.service.createOneInvoice(createInvoiceInput, createUserBillingInput);
     }
 
     // pour activer l'autorisation par token
@@ -32,6 +31,13 @@ export default class InvoiceResolver {
     @Query(() => Invoice)
     async getInvoiceById(@Arg("id") id: string): Promise<Invoice> {
         return await this.service.getOneInvoiceById(id);
+    }
+
+    // pour activer l'autorisation par token
+    // @Authorized()
+    @Query(() => Invoice)
+    async getInvoiceByIdReservation(@Arg("idReservation") idReservation: string): Promise<Invoice> {
+        return await this.service.getOneInvoiceByIdReservation(idReservation);
     }
 
     // pour activer l'autorisation par token

@@ -15,6 +15,7 @@ import Profile from "./pages/Front-Office/Profile";
 import AdminProductsDetails from "./pages/Back-Office/AdminProductsDetails";
 import Stock from "./pages/Back-Office/Stock";
 import AdminReservationList from "./pages/Back-Office/AdminReservationList";
+import CheckoutConfirmation from "./pages/Front-Office/CheckoutConfirmation";
 
 function App() {
     const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/connect" element={<ConnectFront />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/cart" element={<ShoppingCart />} />
+                <Route path="/cart/checkout-confirmation" element={<CheckoutConfirmation />} />
                 <Route path="*" element={<h1>404</h1>} />
                 <Route path="/products/list/:categorySlug" element={<ProductsListPage />} />
                 <Route path="/product/:id/:name" element={<ProductDetails />} />

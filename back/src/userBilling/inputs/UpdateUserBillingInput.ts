@@ -3,6 +3,9 @@ import { Field, InputType } from "type-graphql";
 @InputType()
 export default class UpdateUserBillingInput {
     @Field()
+    id: string;
+    
+    @Field()
     firstname: string;
 
     @Field()

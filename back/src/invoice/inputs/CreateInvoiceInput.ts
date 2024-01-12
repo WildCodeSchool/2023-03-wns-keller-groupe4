@@ -1,5 +1,5 @@
 import { Field, InputType } from "type-graphql";
-import { UserBilling } from "../UserBilling";
+import { UserBilling } from "../../userBilling/entity/UserBilling";
 
 @InputType()
 export default class CreateInvoiceInput {

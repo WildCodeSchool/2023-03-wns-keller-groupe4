@@ -242,3 +242,33 @@ query GetReservationsBySearchFilter($searchReservationInput: SearchReservationIn
   }
 }
 `);
+
+export const GET_INVOICE_BY_RESERVATION_ID = gql(`
+  query getInvoiceByIdReservation($idReservation: String!) {
+    getInvoiceByIdReservation(idReservation: $idReservation) {
+      id
+      created_at
+      reservation {
+        id
+        start_at
+        end_at
+        status
+        created_at
+        updated_at
+      }
+      user {
+        id
+        email
+        role
+      }
+      UserBilling {
+        id
+        firstname
+        lastname
+        street
+        postal_code
+        country
+      }
+    }
+  }
+`);
