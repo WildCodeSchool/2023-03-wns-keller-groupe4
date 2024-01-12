@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
 import { useLazyQuery } from "@apollo/client";
-import { LOGIN_GUERY } from "../utils/queries";
 import { setIDToken } from "../utils/jwtHandler";
+import { LOGIN_GUERY } from "../constants/queries";
 import Colors from "../constants/Colors";
 
 interface IErrorsValidation {
@@ -22,8 +22,8 @@ const LoginForm = ({ setIsLogged }: ILoginForm) => {
     const validateForm = () => {
         const errors: IErrorsValidation = {};
 
-        if (!email) errors.email = 'Email incorrecte';
-        if (!password) errors.password = 'Password incorrecte';
+        if (!email) errors.email = 'Email incorrect';
+        if (!password) errors.password = 'Mot de passe incorrect';
 
         setErrors(errors);
 
@@ -32,7 +32,6 @@ const LoginForm = ({ setIsLogged }: ILoginForm) => {
 
 
     const handleSubmit = async () => {
-        console.log("soumission formulaire connexion")
         if (validateForm()) {
 
             await login({

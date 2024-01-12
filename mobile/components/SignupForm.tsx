@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
 import { useMutation } from "@apollo/client";
 import Colors from "../constants/Colors";
-import { SIGNUP_MUTATION } from '../utils/mutations';
+import { SIGNUP_MUTATION } from '../constants/mutations';
 
 interface IErrorsValidation {
     email?: string;
@@ -51,7 +51,6 @@ const SignupForm = ({ setIsRegister }: ISignupForm) => {
     });
 
     const handleSubmit = async () => {
-        console.log("soumission formulaire inscription")
         if (validateForm()) {
             try {
                 await signup({

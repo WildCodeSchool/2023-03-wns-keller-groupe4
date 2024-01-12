@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import LoginForm from '../../components/LoginForm';
 import SignupForm from '../../components/SignupForm';
 import { getIDToken, setIDToken } from '../../utils/jwtHandler';
-import { LOGOUT } from '../../utils/mutations';
+import { LOGOUT } from '../../constants/mutations';
 
 export default function TabProfileScreen() {
   const [isRegister, setIsRegister] = useState(false);
