@@ -8,6 +8,8 @@ import { User } from "../user/entity/User";
 import { UserProfile } from "../user/entity/UserProfile";
 import { Reservation } from "../reservation/entity/Reservation";
 import { ReservationDetail } from "../reservation/entity/ReservationDetail";
+import { Invoice } from "../invoice/entity/Invoice";
+import { UserBilling } from "../invoice/UserBilling";
 
 const sqlite3 = require("sqlite3").verbose();
 
@@ -26,6 +28,8 @@ export function testDbSetup(): DataSource {
             Product,
             Reservation,
             ReservationDetail,
+            Invoice,
+            UserBilling,
         ],
         synchronize: true,
         logging: ["error", "query"],
