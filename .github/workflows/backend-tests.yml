@@ -24,7 +24,7 @@ jobs:
           echo "REFRESH_JWT_SECRET_KEY=${REFRESH_JWT_SECRET_KEY}" >> vars.env
       - name: Start Docker Compose
         run: |
-          docker compose up --build -d
+          ALL_DATA_FIXTURES=true docker compose up --build -d
       - name: Wait for frontend container to be healthy
         run: |
           until docker compose logs frontend 2>&1 | grep -q "No issues found."; do sleep 5; done
