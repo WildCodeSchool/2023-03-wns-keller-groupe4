@@ -8,6 +8,16 @@ import AddressForm from "../../components/AddressForm";
 import { IUserBilling } from "../../pages/Front-Office/ShoppingCart";
 import { toast } from "react-toastify";
 
+export interface IUserProfile {
+    id: string;
+    firstname?: string;
+    lastname?: string;
+    street?: string;
+    postal_code?: string;
+    country?: string;
+    birthday?: any;
+    lang?: any;
+}
 interface IReservation {
     id: string;
     status: string;
@@ -80,11 +90,33 @@ const Profile = () => {
 
     if (loading) return (<p className="text-center font-bold">Chargement...</p>);
     if (error) return (<p className="text-center font-bold text-red-800">Une erreur est survenue : Votre profile n'a pas pu être chargé. Veuillez réessayer.</p>);
+    
+    let user = null;
+    // User billing object initialization
+    let userProfile = {
+        id: "",
+        firstname: "",
+        lastname: "",
+        street: "",
+        postal_code: "",
+        // city: null,
+        country: "",
+    };
 
-    const user = data?.getUserById;
-    const userBilling = user?.user_profile;
+    if (data?.getUserById) {
+        user = data?.getUserById;
+    
+        userProfile.id = user.user_profile.id;
+        userProfile.firstname = user.user_profile.firstname || "";
+        userProfile.lastname = user.user_profile.lastname || "";
+        userProfile.street = user.user_profile.street || "";
+        userProfile.postal_code = user.user_profile.postal_code || "";
+        // userProfile.city = user.user_profile.city;
+        userProfile.country = user.user_profile.country || "";
+    }
+
     const registrationDate = new Date(user?.created_at).toLocaleDateString("fr-FR");
-    const orders = user?.reservations ? user.reservations.filter((order:any) => order.status === "paying") : [];
+    const orders = user?.reservations ? user?.reservations.filter((order:any) => order.status === "paying") : [];
     const lastOrder = orders.sort((a:IReservation, b:IReservation) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0];
     const lastOrderUpdatedDate = new Date(lastOrder?.updated_at).toLocaleDateString("fr-FR");
     const lastOrderStartAt = new Date(lastOrder?.start_at as string).toLocaleDateString("fr-FR");
@@ -99,7 +131,7 @@ const Profile = () => {
                     "/cart/checkout-confirmation", { 
                         state: { 
                             reservation: res.data?.getReservationById, 
-                            userBilling: userBilling 
+                            userBilling: userProfile 
                         } 
                     }
                 );
@@ -118,7 +150,7 @@ const Profile = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3">    
                         <div className="space-x-8 flex flex-grow justify-between mt-32 md:mt-0 md:justify-center">
                             <div className="text-gray-400 text-center py-2 px-4 uppercase rounded border-2 border-gray-400">        
-                                <p className="font-bold text-gray-700 text-xl">{ orders.length }</p>
+                                <p className="font-bold text-gray-700 text-xl">{ orders?.length }</p>
                                 <p>réservations effectuées</p>
                             </div>
                             
@@ -126,8 +158,8 @@ const Profile = () => {
                                 Voir mes réservations
                             </button>  
                         </div>    
-                        <div className="relative">      
-                            <div className="w-40 h-40 bg-orange-300 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-20 flex items-center justify-center text-orange-500">
+                        <div className="md:relative sm:block">      
+                            <div className="w-40 h-40 bg-orange-300 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 md:-mt-20 sm:mt-36 flex items-center justify-center text-orange-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20" viewBox="0 0 20 20" fill="currentColor">  
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                                 </svg>      
@@ -207,10 +239,10 @@ const Profile = () => {
                             <div className="pb-5 mb-5 text-center border-b">
                                 <h2 className="font-bold text-orange-600 py-3">MES INFORMATIONS PERSONNELLES</h2> 
                                 { 
-                                    user?.user_profile.firstname && user?.user_profile.lastname ? 
+                                    userProfile?.firstname && userProfile?.lastname ? 
                                     (  
                                         <span className="text-3xl font-medium text-blue-700">
-                                            {user?.user_profile.firstname} {user?.user_profile.lastname}
+                                            {userProfile?.firstname} {userProfile?.lastname}
                                         </span>
                                     ) : (
                                         <div className="bg-yellow-200 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
@@ -225,12 +257,12 @@ const Profile = () => {
                             <div className="mt-5 text-center">
                                 <h2 className="text-center font-bold text-orange-600 py-3">MON ADRESSE DE FACTURATION</h2>
                                 {
-                                    user?.user_profile.street && user?.user_profile.postal_code && user?.user_profile.country ? 
+                                    userProfile?.street && userProfile?.postal_code && userProfile?.country ? 
                                     (
                                         <>
-                                            <p className="mt-5 text-gray-500"><span className="font-bold">Numéro, rue :</span> {user?.user_profile.street}</p>    
-                                            <p className="mt-2 text-gray-500"><span className="font-bold">Code postal, ville :</span> {user?.user_profile.postal_code}, Paris</p>
-                                            <p className="mt-2 text-gray-500"><span className="font-bold">Pays :</span> {user?.user_profile.country}</p>  
+                                            <p className="mt-5 text-gray-500"><span className="font-bold">Numéro, rue :</span> {userProfile?.street}</p>    
+                                            <p className="mt-2 text-gray-500"><span className="font-bold">Code postal, ville :</span> {userProfile?.postal_code}, Paris</p>
+                                            <p className="mt-2 text-gray-500"><span className="font-bold">Pays :</span> {userProfile?.country}</p>  
                                         </>
                                     ) : (
                                         <>
@@ -248,10 +280,10 @@ const Profile = () => {
                 </div>
             </div>
             <AddressForm 
-                userBilling={userBilling}
+                userBilling={userProfile}
                 openModal = {openModal}
                 setOpenModal = {setOpenModal} 
-                submitAddressForm = {submitAddressForm}
+                submitAddressFormEvent = {submitAddressForm}
             />
         </>
     );

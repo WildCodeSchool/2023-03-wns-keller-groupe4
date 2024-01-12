@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { decodeToken, getIDToken } from "../../utils/jwtHandler";
 import { GET_INVOICE_BY_RESERVATION_ID, GET_USER, GET_USER_CART } from "../../utils/queries";
-import { CREATE_INVOICE, REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, UPDATE_RESERVATION_DATES } from "../../utils/mutations";
+import { 
+    CREATE_INVOICE, REMOVE_PRODUCT_FROM_RESERVATION, UPDATE_RESERVATION_STATUS, 
+    UPDATE_RESERVATION_DATES, UPDATE_USER_BILLING_BY_ID, UPDATE_USER_PROFILE 
+} from "../../utils/mutations";
 import { EnumStatusReservation } from "../../__generated__/graphql";
-import AddBillingAddress from "../../components/AddBillingAddress";
+import AddressForm from "../../components/AddressForm";
 import { toast } from "react-toastify";
 import { BsBox2Fill, BsCartCheckFill } from "react-icons/bs";
 import { GrValidate } from "react-icons/gr";
@@ -72,6 +75,8 @@ const ShoppingCart = () => {
     const [updateCart] = useMutation(UPDATE_RESERVATION_STATUS);
     const [updateReservationDates] = useMutation(UPDATE_RESERVATION_DATES);
     const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
+    const [updateUserBillingById] = useMutation(UPDATE_USER_BILLING_BY_ID);
+    const [updateUserProfile] = useMutation(UPDATE_USER_PROFILE);
 
     // Update billing address in the view when modal is closed
     useEffect(() => {
@@ -174,6 +179,96 @@ const ShoppingCart = () => {
         userBilling.street = userBilling.street || userProfile.street || "";
         // userBilling.city = 'Paris'; //userBilling?.city || userProfile.city;
         userBilling.country = userBilling.country || userProfile.country || "";
+    }
+
+    // Submit billing address form
+    const submitAddressForm = async (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if(!userId) {
+            setOpenModal(false);
+            return <Navigate to='/login'/>
+        }
+
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const formEntries = formData.entries();
+        const data = Object.fromEntries(formEntries);
+
+        // Update user billing address if one already exists
+        if (userBilling.id && userBilling.id.length > 0) {
+            const updateUserBillingInput = {
+                id: userBilling.id,
+                firstname: data.firstname as string,
+                lastname: data.lastname as string,
+                street: data.street as string,
+                postal_code: data.postcode as string,
+                // city: data.city as string,
+                country: data.country as string,
+            };
+            
+            const updateUserBilling = await updateUserBillingById({ 
+                variables: { 
+                    updateUserBillingInput
+                } 
+            });
+
+            if (updateUserBilling.data) {
+                toast.success("Votre adresse de facturation a bien été mise à jour.");
+                setOpenModal(false);
+            } else {
+                toast.error("Votre adresse de facturation n'a pas pu être mise à jour.");
+            }
+        } else {
+            // or create new user billing address
+            const createUserBillingInput:IUserBilling = {
+                firstname: data.firstname as string,
+                lastname: data.lastname as string,
+                street: data.street as string,
+                postal_code: data.postcode as string,
+                // city: data.city as string,
+                country: data.country as string,
+            };
+
+            const createInvoiceInput = {
+                reservation_id: cartId,
+                user_id: userId,
+            };
+
+            const newInvoice = await createInvoice({ 
+                variables: { createUserBillingInput, createInvoiceInput } 
+            });
+
+            if (newInvoice.data) {
+                toast.success("Votre adresse de facturation a bien été enregistrée.");
+                setOpenModal(false);
+            } else {
+                toast.error("Votre adresse de facturation n'a pas pu être enregistrée.");
+            }
+        }
+
+        // Save address in user profile
+        if (data.memorize) { 
+            const updateUserInput:IUserBilling = {
+                firstname: data.firstname as string,
+                lastname: data.lastname as string,
+                street: data.street as string,
+                postal_code: data.postcode as string,
+                // city: data.city as string,
+                country: data.country as string,
+            };
+
+            const userProfileUpdated = await updateUserProfile({ 
+                variables: { 
+                    updateUserId: userId, 
+                    updateUserInput 
+                } 
+            });
+
+            if (!userProfileUpdated.data) {
+                toast.error("La nouvelle adresse de facturation n'a pas pu être sauvegardée pour vos prochaines commandes");
+            }
+        }
     }
 
     // Submit cart when payment is validated
@@ -483,13 +578,12 @@ const ShoppingCart = () => {
             </div>
 
             {/* Billing address form */}
-            <AddBillingAddress
-                userId = {userId}
-                cartId = {cartId}
+            <AddressForm 
                 userBilling = {userBilling}
                 openModal = {openModal}
                 setOpenModal = {setOpenModal}
-            />                        
+                submitAddressFormEvent = {submitAddressForm}
+            />                       
         </>
     );
 }

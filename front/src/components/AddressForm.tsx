@@ -1,12 +1,21 @@
 import { Fragment, useRef } from "react";
 import { Dialog, Transition } from '@headlessui/react';
+import { IUserBilling } from "../pages/Front-Office/ShoppingCart";
+import { IUserProfile } from "../pages/Front-Office/Profile";
+
+interface IAddressForm {
+    userBilling: IUserBilling | IUserProfile;
+    openModal: boolean;
+    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+    submitAddressFormEvent: (e:React.FormEvent<HTMLFormElement>) => void;
+}
 
 const AddressForm = ({
     userBilling,
     openModal,
     setOpenModal,
-    submitAddressForm
-}:any) => {
+    submitAddressFormEvent
+}:IAddressForm) => {
     
     const cancelButtonRef = useRef(null);
 
@@ -44,7 +53,7 @@ const AddressForm = ({
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
                                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                                    <form id="form-address" onSubmit={e => submitAddressForm(e)}>
+                                    <form id="form-address" onSubmit={e => submitAddressFormEvent(e)}>
                                         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                             <div className="sm:flex sm:items-start">
                                                 <div className="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-15 sm:w-15">
