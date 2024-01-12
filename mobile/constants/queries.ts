@@ -44,3 +44,40 @@ export const GET_ONE_PRODUCT = gql`
     }
   }
 `;
+
+export const GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT = gql`
+  query GetProductReservationQuantityByDates(
+    $getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput
+  ) {
+    getProductReservationQuantityByDates(
+      getProductReservationQuantityByDatesInput: $getProductReservationQuantityByDatesInput
+    )
+  }
+`;
+
+export const GET_USER_CART = gql`
+  query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
+    getCartReservationOfUser(id: $getCartReservationOfUserId) {
+      id
+      start_at
+      end_at
+      status
+      reservationsDetails {
+        start_at
+        end_at
+        quantity
+        product {
+          id
+          name
+          picture
+          price
+          stock
+          available
+        }
+      }
+      user {
+        email
+      }
+    }
+  }
+`;
