@@ -34,3 +34,15 @@ export const UPDATE_CART = gql`
     }
   }
 `;
+
+export const SIGNUP_MUTATION = gql`
+  mutation Signup($signupUserInput: SignupUserInput!) {
+    signup(signupUserInput: $signupUserInput)
+  }
+`;
+
+export const LOGOUT = gql`
+  mutation Mutation {
+    logout
+  }
+`;
