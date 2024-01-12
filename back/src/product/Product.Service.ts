@@ -124,13 +124,9 @@ export class ProductService {
         if (mostWanted) {
             where.mostWanted = true;
         }
-        console.log("name", name);
-        console.log("where condition", where.name);
-        console.log("where condition most wanted", where.mostWanted);
 
         try {
             const products = await this.productRepository.find({ where });
-            console.log(products);
 
             return products;
         } catch (err: any) {

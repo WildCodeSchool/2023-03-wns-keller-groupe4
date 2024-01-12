@@ -1,14 +1,9 @@
-import { Combobox, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Combobox } from "@headlessui/react";
+import { useEffect, useState } from "react";
 import { RxMagnifyingGlass } from "react-icons/rx";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
-import {
-    GET_CATEGORIES,
-    GET_PRODUCTS,
-    GET_PRODUCTS_BY_SEARCH_FILTER,
-} from "../../utils/queries";
-import { mostWantedProductDataArray } from "../../utils/mostWantedProductDataArray";
+import { GET_PRODUCTS_BY_SEARCH_FILTER } from "../../utils/queries";
 import ProductsListComponent from "../../components/ProductsListComponent";
 import { useDebounce } from "../../utils/hooks/useDebounce.hook";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -24,7 +19,6 @@ function HomePage() {
     const navigate = useNavigate();
 
     const [selected, setSelected] = useState({});
-    const [query, setQuery] = useState("");
     const [productSearchInput, setProductSearchInput] = useState({ name: "" });
     const debouncedSearchInput = useDebounce(productSearchInput.name, 600);
 
@@ -65,6 +59,7 @@ function HomePage() {
         if (selected && "name" in selected) {
             navigate(`/products/list/${selected.name}`);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigate, selected, debouncedSearchInput]);
 
     async function submitSearch() {

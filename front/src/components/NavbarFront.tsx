@@ -1,7 +1,4 @@
 import { Link } from "react-router-dom";
-
-import { GoPerson } from "react-icons/go";
-import { FaShoppingCart } from "react-icons/fa";
 import { getIDToken } from "../utils/jwtHandler";
 import wildRentIcon from "../assets/icons/wildRentIcon.png";
 import userProfileIcon from "../assets/icons/userProfileIcon.png";
@@ -17,16 +14,11 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
             <nav className="flex items-center justify-between h-12">
                 {/* Open Menu Toggle */}
                 <div className="flex items-center gap-4">
-                    {/* <Link to={"/"}>
-                        <button className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block">
-                            Accueil
-                        </button>
-                    </Link> */}
                     <button
                         className="hidden border border-main px-4 py-1 rounded-md active:bg-yellow-400 md:block"
                         onClick={() => setOpenNav(!openNav)}
                     >
-                        Toute nos catégories
+                        Toutes nos catégories
                     </button>
                     <button
                         type="button"
@@ -87,14 +79,16 @@ function NavbarFront({ openNav, setOpenNav }: INavbarFrontProps) {
                         <img
                             src={userProfileIcon}
                             className="w-10"
-                            alt="icone du profil utilisateur"
+                            alt="Go to profile page"
+                            aria-label="Go to profile page"
                         />
                     </Link>
                     <Link to="/cart">
                         <img
                             src={shoppingCartIcon}
                             className="w-10"
-                            alt="icone du parier"
+                            alt="Go to cart page"
+                            aria-label="Go to cart page"
                         />
                     </Link>
                 </div>
