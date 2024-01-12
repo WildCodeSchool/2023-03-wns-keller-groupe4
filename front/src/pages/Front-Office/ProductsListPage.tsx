@@ -151,6 +151,7 @@ const ProductsListPage = () => {
                                 price={product.price}
                                 picture={product.picture}
                                 available={product.available}
+                                mostWanted={product.mostWanted}
                             />
                         ))
                         .reverse()}
