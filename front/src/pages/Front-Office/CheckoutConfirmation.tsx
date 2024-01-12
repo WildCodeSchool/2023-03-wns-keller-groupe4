@@ -21,9 +21,6 @@ const CheckoutConfirmation = () => {
     let totalTaxes = "";
     let totalSubtotal = 0;
 
-    console.log(reservation);
-    console.log(userBilling);
-
     return(
         <main className="container mx-auto p-20">
             <h1 className="text-center font-bold pb-10 text-green-700 text-2xl">
