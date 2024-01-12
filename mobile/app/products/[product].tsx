@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Image,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,6 +14,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useQuery } from "@apollo/client";
 import Colors from "../../constants/Colors";
 import { GET_ONE_PRODUCT } from "../../constants/queries";
+import ReservationModal from "./ReservationModal";
 
 interface IProductFromAPI {
   id: string;
@@ -28,6 +30,7 @@ const Product = () => {
   const { product: productID } = useLocalSearchParams();
   const navigation = useNavigation();
   const [product, setProduct] = useState<IProductFromAPI>();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { loading, error, data } = useQuery(GET_ONE_PRODUCT, {
     variables: { getProductId: productID },
@@ -38,7 +41,7 @@ const Product = () => {
   };
 
   const handleReservation = () => {
-    console.log("Reservation");
+    setModalVisible(true);
   };
 
   useEffect(() => {
@@ -61,56 +64,76 @@ const Product = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Back button */}
-      <Pressable onPress={handleBack} style={styles.backButton}>
-        <AntDesign name="arrowleft" size={34} color="black" />
-      </Pressable>
-      {/* Product image */}
-      <View style={styles.imageBox}>
-        <Image source={{ uri: product?.picture }} style={styles.image} />
-      </View>
-      {/* Product details */}
-      <View style={styles.detailsContainer}>
-        {/* Name */}
-        <Text style={styles.name}>{product?.name}</Text>
-        <View style={styles.separator} />
-        {/* Availability and price */}
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text
-            style={[
-              styles.availability,
-              { color: product?.available ? "green" : "red" },
-            ]}
-          >
-            {product?.available ? "Disponible" : "Non Disponible"}
-          </Text>
-          <Text style={styles.price}>{product?.price}€/jour</Text>
+    <>
+      <ScrollView style={styles.container}>
+        {/* Back button */}
+        <Pressable onPress={handleBack} style={styles.backButton}>
+          <AntDesign name="arrowleft" size={34} color="black" />
+        </Pressable>
+        {/* Product image */}
+        <View style={styles.imageBox}>
+          <Image source={{ uri: product?.picture }} style={styles.image} />
         </View>
-        <View style={styles.separator} />
-        {/* Description */}
-        <Text style={styles.description}>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium,
-          voluptas minus quibusdam quis vel velit corrupti magnam totam placeat
-          ullam similique dignissimos asperiores numquam reiciendis esse. Sunt
-          voluptas maiores id incidunt, debitis officia facilis ipsum!
-        </Text>
-        {/* Reservation button */}
-        <TouchableOpacity
-          style={[
-            styles.reservationButton,
-            {
-              backgroundColor: product?.available
-                ? Colors.light.orange
-                : Colors.light.lightGray,
-            },
-          ]}
-          onPress={handleReservation}
-        >
-          <Text style={styles.reservationButtonText}>Réservation</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Product details */}
+        <View style={styles.detailsContainer}>
+          {/* Name */}
+          <Text style={styles.name}>{product?.name}</Text>
+          <View style={styles.separator} />
+          {/* Availability and price */}
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text
+              style={[
+                styles.availability,
+                { color: product?.available ? "green" : "red" },
+              ]}
+            >
+              {product?.available ? "Disponible" : "Non Disponible"}
+            </Text>
+            <Text style={styles.price}>{product?.price}€/jour</Text>
+          </View>
+          <View style={styles.separator} />
+          {/* Description */}
+          <Text style={styles.description}>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Laudantium, voluptas minus quibusdam quis vel velit corrupti magnam
+            totam placeat ullam similique dignissimos asperiores numquam
+            reiciendis esse. Sunt voluptas maiores id incidunt, debitis officia
+            facilis ipsum!
+          </Text>
+          {/* Reservation button */}
+          <TouchableOpacity
+            style={[
+              styles.reservationButton,
+              {
+                backgroundColor: product?.available
+                  ? Colors.light.orange
+                  : Colors.light.lightGray,
+              },
+            ]}
+            onPress={handleReservation}
+          >
+            <Text style={styles.reservationButtonText}>Réservation</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <ReservationModal
+          setModalVisible={setModalVisible}
+          modalVisible={modalVisible}
+          productId={productID as string}
+          stock={product?.stock as number}
+        />
+      </Modal>
+    </>
   );
 };
 
