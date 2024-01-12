@@ -12,7 +12,6 @@ import { CategoryService } from "../category/Category.Service";
 import { Category } from "../category/entity/Category";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
 import { CreateProductInput } from "./inputs/CreateProductInput";
-import dataSource from "../utils";
 
 jest.mock("../category/Category.Service");
 
@@ -83,10 +82,7 @@ describe("ProductService", () => {
                 products: testCategory.products,
             });
             // Why spy on the real implementation productRepository.save
-            const repoSpy = jest.spyOn(
-                productService.productRepository,
-                "save",
-            );
+            const repoSpy = jest.spyOn(productRepository, "save");
 
             // We call the createNewProduct method that we want to test
             createdProduct = await productService.createNewProduct(
@@ -162,7 +158,9 @@ describe("ProductService", () => {
 
             const updatedProduct = await productService.updateOneProduct(
                 testProduct.id,
-                { name: "updatedName" },
+                {
+                    name: "updatedName",
+                },
             );
             expect(updatedProduct.id).toEqual(testProduct.id);
             expect(updatedProduct.name).toEqual("updatedName");

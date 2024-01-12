@@ -13,20 +13,22 @@ import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
 import LangResolver from "./lang/Lang.Resolver";
 import UserResolver from "./user/User.Resolver";
+import InvoiceResolver from "./invoice/Invoice.Resolver";
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
 import { User } from "./user/entity/User";
 import cors from "cors";
 import whitelistCORS from "./whitelistCORS";
-
 import ReservationResolver from "./reservation/Reservation.Resolver";
 import {
     dataFixture,
+    resetAllMockData,
     resetMockCategories,
     resetMockProducts,
     resetMockUsers,
 } from "./fixtures/fixtures";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -35,6 +37,8 @@ export interface MyContext {
     res: Response;
     payload?: { email: string };
 }
+
+dotenv.config();
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY as string;
 
@@ -54,6 +58,7 @@ const start = async (): Promise<void> => {
         }),
     );
 
+    app.use(bodyParser.json({ limit: "50 mb" }));
     app.use(cookieParser());
 
     app.get("/", (req: Request, res: Response) => res.send("hello"));
@@ -115,6 +120,7 @@ const start = async (): Promise<void> => {
             ProductResolver,
             LangResolver,
             ReservationResolver,
+            InvoiceResolver,
         ],
         authChecker: ({ context }, roles) => {
             const { email, role } = context.payload;
@@ -159,7 +165,12 @@ const start = async (): Promise<void> => {
         console.log("express server OPEN");
     });
 
-    if (resetMockCategories || resetMockProducts || resetMockUsers) {
+    if (
+        resetMockCategories ||
+        resetMockProducts ||
+        resetMockUsers ||
+        resetAllMockData
+    ) {
         void dataFixture();
     } else {
         console.log("data fixture off");

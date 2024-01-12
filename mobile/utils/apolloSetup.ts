@@ -10,7 +10,7 @@ import { onError } from "@apollo/client/link/error";
 import { getIDToken, refreshToken } from "./jwtHandler";
 
 const httpLink = createHttpLink({
-  uri: `https://keller4.wns.wilders.dev/graphql/graphql`,
+  uri: `https://staging.keller4.wns.wilders.dev/graphql/graphql`,
   credentials: "include",
 });
 
@@ -60,5 +60,7 @@ const errorLink = onError(
 
 export default new ApolloClient({
   link: ApolloLink.from([errorLink, authLink, httpLink]),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 });

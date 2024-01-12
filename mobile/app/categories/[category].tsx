@@ -1,0 +1,178 @@
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Link, useLocalSearchParams, useNavigation } from "expo-router";
+import { useQuery } from "@apollo/client";
+import { AntDesign } from "@expo/vector-icons";
+
+import {
+  GET_CATEGORY_NAME,
+  GET_PRODUCTS_BY_CATEGORY,
+} from "../../constants/queries";
+import Colors from "../../constants/Colors";
+
+interface IProductFromAPI {
+  id: number;
+  name: string;
+  price: number;
+  available: boolean;
+  picture: string;
+}
+
+type Props = {};
+
+const ProductListByCategory = ({}: Props) => {
+  const { category: categoryID } = useLocalSearchParams();
+  const navigation = useNavigation();
+  const [products, setProducts] = useState<IProductFromAPI[]>([]);
+
+  const { data: dataCategory } = useQuery(GET_CATEGORY_NAME, {
+    variables: { getCategoryId: categoryID },
+  });
+
+  const {
+    data: dataProducts,
+    loading,
+    error,
+  } = useQuery(GET_PRODUCTS_BY_CATEGORY, {
+    variables: { idCategory: categoryID },
+  });
+
+  useEffect(() => {
+    if (dataProducts) {
+      setProducts(dataProducts.getProductsByCategory);
+    }
+  }, [dataProducts]);
+
+  useEffect(() => {
+    navigation.setOptions({ title: dataCategory?.getCategory.name });
+  }, [navigation, dataCategory]);
+
+  if (loading || error) {
+    const message = loading ? "Loading..." : "Error :(";
+    return (
+      <View style={styles.container}>
+        <Text>{message}</Text>
+      </View>
+    );
+  }
+
+  if (!products.length) {
+    return (
+      <View style={styles.container}>
+        <View
+          style={{
+            width: "90%",
+            backgroundColor: "#ffedd5",
+            borderColor: "#f97316",
+            borderLeftWidth: 4,
+            alignItems: "center",
+            padding: 10,
+          }}
+        >
+          <Text style={{ fontFamily: "Rubik", fontSize: 18 }}>
+            Aucun produit pour la catégorie{" "}
+            <Text style={{ fontFamily: "RubikBold" }}>
+              {dataCategory?.getCategory.name}
+            </Text>
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <ScrollView style={{ width: "90%" }}>
+        {products.map((product) => (
+          <View key={product.id} style={styles.product}>
+            <View style={styles.productLeft}>
+              <Image
+                source={{ uri: product.picture }}
+                style={styles.productImage}
+              />
+            </View>
+            <View style={styles.productRight}>
+              <Text style={styles.productName}>{product.name}</Text>
+              <Text style={styles.productPrice}>{product.price}€/jour</Text>
+              <Link href={`/products/${product.id}`} asChild>
+                <Pressable style={styles.productDetailsButton}>
+                  <Text style={styles.productDetailsButtonText}>Details</Text>
+                  <AntDesign name="pluscircleo" size={18} color="white" />
+                </Pressable>
+              </Link>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
+
+export default ProductListByCategory;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.light.background,
+  },
+  product: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    // width: "90%",
+    borderWidth: 1,
+    borderColor: Colors.light.orange,
+    marginVertical: 10,
+    padding: 10,
+    borderRadius: 5,
+  },
+  productLeft: {
+    width: "50%",
+    height: 150,
+  },
+  productRight: {
+    width: "50%",
+    height: 150,
+    borderLeftWidth: 1,
+    borderLeftColor: Colors.light.lightGray,
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  productImage: {
+    height: "100%",
+    width: "100%",
+    objectFit: "contain",
+  },
+  productName: {
+    fontFamily: "Rubik",
+    fontSize: 18,
+  },
+  productPrice: {
+    fontFamily: "RubikBold",
+    fontSize: 18,
+    color: Colors.light.orange,
+  },
+  productDetailsButton: {
+    backgroundColor: Colors.light.gray,
+    padding: 10,
+    borderRadius: 5,
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+  },
+  productDetailsButtonText: {
+    fontFamily: "Rubik",
+    fontSize: 16,
+    color: "#fff",
+  },
+});

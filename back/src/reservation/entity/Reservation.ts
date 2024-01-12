@@ -4,11 +4,14 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
+
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { User } from "../../user/entity/User";
 import { ReservationDetail } from "./ReservationDetail";
+import { Invoice } from "../../invoice/entity/Invoice";
 
 export enum EnumStatusReservation {
     IN_CART = "in_cart",
@@ -60,7 +63,10 @@ export class Reservation {
     // relations :
 
     @Field(() => User)
-    @ManyToOne((type) => User, (user) => user.reservations)
+    @ManyToOne((type) => User, (user) => user.reservations, {
+        onDelete: "CASCADE",
+        orphanedRowAction: "delete",
+    })
     @JoinColumn()
     user: User;
 
@@ -69,4 +75,8 @@ export class Reservation {
         cascade: true,
     })
     reservationsDetails: ReservationDetail[];
+
+    @Field(() => Invoice)
+    @OneToOne(() => Invoice, (invoice) => invoice.reservation)
+    invoice: Invoice;
 }

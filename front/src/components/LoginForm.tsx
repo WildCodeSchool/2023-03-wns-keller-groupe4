@@ -52,6 +52,7 @@ const LoginForm = () => {
                 <div>
                     <label htmlFor="email">Email</label>
                     <input
+                        id="email"
                         type="email"
                         className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
                         {...register("email", {
@@ -69,6 +70,7 @@ const LoginForm = () => {
                 <div>
                     <label htmlFor="password">Mot de passe</label>
                     <input
+                        id="password"
                         type="password"
                         className="w-full border border-gray-300 rounded-md px-2 py-1 focus:outline-main focus:border-transparent"
                         {...register("password", {
@@ -86,6 +88,7 @@ const LoginForm = () => {
                 <button
                     type="submit"
                     className="border border-main rounded-md mt-6 px-2 py-1"
+                    disabled={formState.isSubmitting}
                 >
                     Se connecter
                 </button>

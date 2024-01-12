@@ -9,6 +9,7 @@ import {
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 import { UserProfile } from "./UserProfile";
 import { Reservation } from "../../reservation/entity/Reservation";
+import { Invoice } from "../../invoice/entity/Invoice";
 
 export enum EnumRoles {
     SUPERADMIN = "superAdmin",
@@ -18,7 +19,7 @@ export enum EnumRoles {
 
 registerEnumType(EnumRoles, {
     name: "EnumRoles",
-    description: "Liste des roles possible pour un utilisateurrrr",
+    description: "Liste des roles possible pour un utilisateur",
 });
 
 @ObjectType()
@@ -50,15 +51,27 @@ export class User {
     @Field(() => [Reservation], { nullable: true })
     @OneToMany((type) => Reservation, (reservation) => reservation.user, {
         nullable: true,
+        cascade: true,
     })
     @JoinColumn()
     reservations: Reservation[];
 
+    @Field(() => [Invoice], { nullable: true })
+    @OneToMany((type) => Invoice, (invoice) => invoice.user, {
+        nullable: true,
+    })
+    @JoinColumn()
+    invoices: Invoice[];
+
     @Field()
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     @Column({ default: () => "CURRENT_TIMESTAMP" })
     created_at: Date;
 
     @Field()
+    // commented out because of non supported type "timestamptz" by test sqlite db
+    // @Column({ type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     @Column({ default: () => "CURRENT_TIMESTAMP" })
     updated_at: Date;
 

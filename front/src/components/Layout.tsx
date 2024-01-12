@@ -34,7 +34,7 @@ function Layout({ isFrontOffice }: ILayoutFrontProps) {
                     leaveTo="opacity-0 px-2"
                 >
                     {isFrontOffice ? (
-                        <MenuFront openNav={openNav} setOpenNav={setOpenNav} />
+                        <MenuFront setOpenNav={setOpenNav} />
                     ) : (
                         <MenuBack setOpenNav={setOpenNav} />
                     )}

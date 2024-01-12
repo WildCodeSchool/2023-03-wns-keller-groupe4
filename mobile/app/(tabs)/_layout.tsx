@@ -38,7 +38,7 @@ export default function TabLayout() {
           title: "Accueil",
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
-            <Link href="/modal" asChild>
+            <Link href="/ListCategories" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome

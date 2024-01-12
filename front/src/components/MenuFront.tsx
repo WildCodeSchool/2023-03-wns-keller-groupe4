@@ -3,11 +3,10 @@ import { useQuery } from "@apollo/client";
 import { GET_CATEGORIES } from "../utils/queries";
 
 interface INavbarFrontProps {
-    openNav: boolean;
     setOpenNav: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function MenuFront({ openNav, setOpenNav }: INavbarFrontProps) {
+function MenuFront({ setOpenNav }: INavbarFrontProps) {
     // Categories from API
     const { loading, error, data } = useQuery(GET_CATEGORIES);
     if (loading) return <p>Loading...</p>;
