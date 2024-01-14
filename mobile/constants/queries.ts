@@ -1,5 +1,16 @@
 import { gql } from "@apollo/client";
 
+export const LOGIN_GUERY = gql`
+  query LoginQuery(
+    $email: String!
+    $password: String!
+  ) {
+    login(password: $password, email: $email) {
+      IDToken
+  }
+  }
+`;
+
 export const GET_CATEGORIES = gql`
   query GetCategories {
     getCategories {
@@ -41,6 +52,43 @@ export const GET_ONE_PRODUCT = gql`
       available
       description
       picture
+    }
+  }
+`;
+
+export const GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT = gql`
+  query GetProductReservationQuantityByDates(
+    $getProductReservationQuantityByDatesInput: GetProductReservationQuantityByDatesInput
+  ) {
+    getProductReservationQuantityByDates(
+      getProductReservationQuantityByDatesInput: $getProductReservationQuantityByDatesInput
+    )
+  }
+`;
+
+export const GET_USER_CART = gql`
+  query GetCartReservationOfUser($getCartReservationOfUserId: String!) {
+    getCartReservationOfUser(id: $getCartReservationOfUserId) {
+      id
+      start_at
+      end_at
+      status
+      reservationsDetails {
+        start_at
+        end_at
+        quantity
+        product {
+          id
+          name
+          picture
+          price
+          stock
+          available
+        }
+      }
+      user {
+        email
+      }
     }
   }
 `;

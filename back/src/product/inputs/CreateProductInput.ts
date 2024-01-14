@@ -24,6 +24,8 @@ export class CreateProductInput implements Partial<Product> {
     @Field()
     picture: string;
 
+    mostWanted?: boolean = false;
+
     // Since a product can have many categories we expect an array of category ID here.
     @Field((type) => [String])
     category?: string[];

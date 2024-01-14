@@ -1,10 +1,11 @@
-import { ILike, In, Repository } from "typeorm";
+import { FindOptionsWhere, ILike, In, Repository } from "typeorm";
 import { CategoryService } from "../category/Category.Service";
 import dataSource from "../utils";
 import { Product } from "./entity/Product";
 import { CreateProductInput } from "./inputs/CreateProductInput";
 import { GetProductsInput } from "./inputs/GetProductsInput";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
+import { SearchProductInput } from "./inputs/SearchProductInput";
 
 export class ProductService {
     productRepository;
@@ -107,6 +108,32 @@ export class ProductService {
         }
     }
 
+    async getProductBySearchFilter(
+        searchInput: SearchProductInput,
+    ): Promise<Product[]> {
+        const where: FindOptionsWhere<Product> = {};
+
+        // where: { name: ILike(`%${name}%`) },
+
+        const { name, mostWanted } = searchInput;
+
+        if (name) {
+            where.name = ILike(`${name}%`);
+        }
+
+        if (mostWanted) {
+            where.mostWanted = true;
+        }
+
+        try {
+            const products = await this.productRepository.find({ where });
+
+            return products;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
     async getProductsCount(name: string | undefined): Promise<number> {
         try {
             if (name === undefined) {
@@ -135,6 +162,7 @@ export class ProductService {
                 description,
                 picture,
                 category,
+                mostWanted,
             } = createCategoryInput;
 
             const newProduct = this.productRepository.create({
@@ -144,6 +172,7 @@ export class ProductService {
                 available,
                 description,
                 picture,
+                mostWanted,
             });
 
             // We check if the category sent by the client exists in DB

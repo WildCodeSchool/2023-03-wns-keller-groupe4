@@ -7,4 +7,7 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
 });
 
+config.resolver.assetExts.push("hcscript");
+config.transformer.assetPlugins = ["expo-asset/tools/hashAssetFiles"];
+
 module.exports = config;

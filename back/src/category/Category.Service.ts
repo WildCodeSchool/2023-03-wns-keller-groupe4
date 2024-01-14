@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { ILike, Repository } from "typeorm";
 import dataSource from "../utils";
 import { Category } from "./entity/Category";
 import { CreateCategoryInput } from "./inputs/CreateCategoryInput";
@@ -28,6 +28,19 @@ export class CategoryService {
                 where: { id },
             });
             return category;
+        } catch (err: any) {
+            throw new Error(err.message);
+        }
+    }
+
+    async getCategoriesBySearch(
+        searchCategoryInput: string,
+    ): Promise<Category[]> {
+        try {
+            const foundCategories = await this.categoryRepository.find({
+                where: { name: ILike(`${searchCategoryInput}%`) },
+            });
+            return foundCategories;
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -69,8 +82,6 @@ export class CategoryService {
                 where: { id },
             });
 
-            // TODO check the UpdateResult Obj to verify that the update took place before returning Category
-
             return foundCategory;
         } catch (err: any) {
             throw new Error(err.message);
@@ -80,7 +91,6 @@ export class CategoryService {
     async deleteOneCategory(id: string): Promise<boolean> {
         try {
             await this.categoryRepository.delete({ id });
-            // TODO check the DeleteResult Obj to verify that the deletion took place before returning true
 
             return true;
         } catch (err: any) {
