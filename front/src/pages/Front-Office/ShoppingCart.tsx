@@ -202,56 +202,6 @@ const ShoppingCart = () => {
             await getTemporaryInvoice({
                 variables: { idReservation: cartId },
             });
-        }
-
-        if(!temporaryInvoiceCalled) {
-            temporaryInvoice();
-        }
-
-
-        // Get user billing address if already exists
-        if(temporaryInvoiceData?.getInvoiceByIdReservation?.UserBilling) {
-            userBilling.id = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.id;
-            userBilling.firstname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.firstname;
-            userBilling.lastname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.lastname;
-            userBilling.street = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.street;
-            userBilling.postal_code = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.postal_code;
-            // userBilling.city = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.city;
-            userBilling.country = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.country;
-        }
-
-        // Get temporary invoice: This is not the definitive invoice.
-        // Only used to retrieve an existing custom user billing address not saved in its profile,
-        // But previously associated to the current cart
-        const temporaryInvoice = async () => {
-            await getTemporaryInvoice({
-                variables: { idReservation: cartId },
-            });
-        }
-
-        if(!temporaryInvoiceCalled) {
-            temporaryInvoice();
-        }
-
-
-        // Get user billing address if already exists
-        if(temporaryInvoiceData?.getInvoiceByIdReservation?.UserBilling) {
-            userBilling.id = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.id;
-            userBilling.firstname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.firstname;
-            userBilling.lastname = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.lastname;
-            userBilling.street = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.street;
-            userBilling.postal_code = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.postal_code;
-            // userBilling.city = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.city;
-            userBilling.country = temporaryInvoiceData.getInvoiceByIdReservation.UserBilling.country;
-        }
-
-        // Get temporary invoice: This is not the definitive invoice.
-        // Only used to retrieve an existing custom user billing address not saved in its profile,
-        // But previously associated to the current cart
-        const temporaryInvoice = async () => {
-            await getTemporaryInvoice({
-                variables: { idReservation: cartId },
-            });
         };
 
         if (!temporaryInvoiceCalled) {
