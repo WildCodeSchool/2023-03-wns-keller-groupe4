@@ -155,7 +155,10 @@ const Profile = () => {
                                 <p className="inline md:block">réservations effectuées</p>
                             </div>
                             
-                            <button  className="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 w-full md:w-auto mb-2 md:mb-0">
+                            <button 
+                                className="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 w-full md:w-auto mb-2 md:mb-0"
+                                onClick={() => navigate("/profile/reservations")}
+                            >
                                 Voir mes réservations
                             </button>  
                         </div>    
@@ -215,7 +218,7 @@ const Profile = () => {
                                             <p className="mt-2 text-gray-500"><span className="font-bold">Date de retour :</span>{lastOrderEndAt}</p> 
                                             <button 
                                                 className="text-white py-2 px-4 uppercase rounded bg-orange-500 hover:bg-orange-600 shadow hover:shadow-lg font-medium mt-10"
-                                                onClick={() => showOrder(lastOrder?.id)}
+                                                onClick={() => showOrder(lastOrder.id)}
                                             >
                                                 Afficher le détail
                                             </button>

@@ -202,7 +202,7 @@ export const GET_RESERVED_QUANTITIES_OF_ONE_PRODUCT = gql(`
   }
 `);
 export const GET_RESERVATIONS_BY_ID = gql(`
-query GetReservationsByUserId($getReservationByIdId: String!) {
+query GetReservationsById($getReservationByIdId: String!) {
   getReservationById(id: $getReservationByIdId) {
     id
     user {
@@ -212,6 +212,28 @@ query GetReservationsByUserId($getReservationByIdId: String!) {
     start_at
   }
 }
+`);
+
+export const GET_RESERVATIONS_BY_USER_ID = gql(`
+  query GetReservationsByUserId($getReservationsByUserIdId: String!) {
+    getReservationsByUserId(id: $getReservationsByUserIdId) {
+      end_at
+      id
+      start_at
+      status
+      user {
+        email
+        user_profile {
+          id
+          firstname
+          lastname
+          street
+          postal_code
+          country
+        }
+      }
+    }
+  }
 `);
 
 export const GET_RESERVATION_BY_ID = gql(`

@@ -6,7 +6,6 @@ function Footer() {
     let [showFooter, setShowFooter] = useState(true);
     
     useEffect(() => {
-        console.log(slug);
         if (slug === "cart") 
             setShowFooter(false);
         else

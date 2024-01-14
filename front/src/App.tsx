@@ -12,6 +12,7 @@ import ConnectFront from "./pages/Front-Office/ConnectFront";
 import ShoppingCart from "./pages/Front-Office/ShoppingCart";
 import CreateProduct from "./pages/Back-Office/CreateProduct";
 import Profile from "./pages/Front-Office/Profile";
+import UserReservations from "./pages/Front-Office/UserReservations";
 import AdminProductsDetails from "./pages/Back-Office/AdminProductsDetails";
 import Stock from "./pages/Back-Office/Stock";
 import AdminReservationList from "./pages/Back-Office/AdminReservationList";
@@ -45,6 +46,7 @@ function App() {
                 <Route index element={<HomePage />} />
                 <Route path="/connect" element={<ConnectFront />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/reservations" element={<UserReservations />} />
                 <Route path="/cart" element={<ShoppingCart />} />
                 <Route path="/cart/checkout-confirmation" element={<CheckoutConfirmation />} />
                 <Route path="*" element={<h1>404</h1>} />
