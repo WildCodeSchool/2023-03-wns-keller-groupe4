@@ -145,29 +145,30 @@ const Profile = () => {
 
     return (
         <>
-            <div className="p-16">
-                <div className="p-8 shadow-md shadow-orange-200 border-orange-400 border mt-5">
+            <div className="p-2 md:p-16">
+                <div className="p-0 md:p-8 shadow-none md:shadow-md md:shadow-orange-200 border-none md:border md:border-orange-400 mt-5">
+                    <div className="block md:hidden text-center my-7"><h1 className="text-xl font-bold">Mon espace client</h1></div> 
                     <div className="grid grid-cols-1 md:grid-cols-3">    
-                        <div className="space-x-8 flex flex-grow justify-between mt-32 md:mt-0 md:justify-center">
-                            <div className="text-gray-400 text-center py-2 px-4 uppercase rounded border-2 border-gray-400">        
-                                <p className="font-bold text-gray-700 text-xl">{ orders?.length }</p>
-                                <p>réservations effectuées</p>
+                        <div className="sm:space-x-0 sm:space-y-2 md:space-x-8 md:space-y-0 sm:block md:flex md:flex-grow justify-between mt-0 md:mt-0 md:justify-center">
+                            <div className="text-center py-2 px-4 uppercase rounded border-2 border-gray-500 w-full md:w-auto mb-2 md:mb-0">        
+                                <p className="inline-block md:block pr-2 md:pr-0 text-sm md:text-xl font-bold border-none md:border-4 border-gray-500 rounded md:rounded-none">{ orders?.length }</p>
+                                <p className="inline md:block">réservations effectuées</p>
                             </div>
                             
-                            <button  className="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
+                            <button  className="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 w-full md:w-auto mb-2 md:mb-0">
                                 Voir mes réservations
                             </button>  
                         </div>    
-                        <div className="md:relative sm:block">      
-                            <div className="w-40 h-40 bg-orange-300 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 md:-mt-20 sm:mt-36 flex items-center justify-center text-orange-500">
+                        <div className="static md:relative">      
+                            <div className="hidden flex-none w-40 h-40 bg-orange-300 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 md:-mt-20 sm:mt-36 md:flex items-center justify-center text-orange-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20" viewBox="0 0 20 20" fill="currentColor">  
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                                 </svg>      
-                            </div>    
+                            </div>   
                         </div>    
-                        <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
+                        <div className="sm:space-x-0 sm:space-y-2 md:space-x-8 md:space-y-0 sm:block md:flex justify-between mt-0 md:mt-0 md:justify-center">
                             <button 
-                                className="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+                                className="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 w-full md:w-auto mb-2 md:mb-0"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     setOpenModal(true);
@@ -176,14 +177,14 @@ const Profile = () => {
                                 Editer mes informations
                             </button>
                             <button  
-                                className="text-white py-2 px-4 uppercase rounded bg-red-400 hover:bg-red-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+                                className="text-white py-2 px-4 uppercase rounded bg-red-400 hover:bg-red-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 w-full md:w-auto mb-2 md:mb-0"
                                 onClick={handleLogout}
                             >  
                                 Déconnexion
                             </button>    
                         </div>  
                     </div>
-                    <div className="flex gap-20 mt-10">
+                    <div className="flex-none md:flex gap-20 mt-10">
                         <div className="flex-1 border-2 border-orange-300 shadow rounded px-5 py-7">
                             <div className="text-center">
                                 <h2 className="font-bold text-orange-600 py-3">MA DERNIERE RESERVATION</h2>
@@ -216,7 +217,7 @@ const Profile = () => {
                                                 className="text-white py-2 px-4 uppercase rounded bg-orange-500 hover:bg-orange-600 shadow hover:shadow-lg font-medium mt-10"
                                                 onClick={() => showOrder(lastOrder?.id)}
                                             >
-                                                Voir la commande
+                                                Afficher le détail
                                             </button>
                                         </>
                                     ) : (
@@ -235,7 +236,7 @@ const Profile = () => {
                                 }
                             </div>  
                         </div>
-                        <div className="flex-1 border-2 border-orange-300 shadow rounded px-5 py-7">
+                        <div className="flex-1 border-2 border-orange-300 shadow rounded px-5 py-7 mt-5 md:mt-0">
                             <div className="pb-5 mb-5 text-center border-b">
                                 <h2 className="font-bold text-orange-600 py-3">MES INFORMATIONS PERSONNELLES</h2> 
                                 { 
