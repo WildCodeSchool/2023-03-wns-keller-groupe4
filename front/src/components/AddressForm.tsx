@@ -1,4 +1,5 @@
 import { Fragment, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Dialog, Transition } from '@headlessui/react';
 import { IUserBilling } from "../pages/Front-Office/ShoppingCart";
 import { IUserProfile } from "../pages/Front-Office/Profile";
@@ -17,6 +18,11 @@ const AddressForm = ({
     submitAddressFormEvent
 }:IAddressForm) => {
     
+    let showPermanentSaveButton = "";
+    const slug = useLocation().pathname.split("/")[1];
+    if (slug === "profile") 
+        showPermanentSaveButton = "hidden";
+
     const cancelButtonRef = useRef(null);
 
     return (
@@ -189,7 +195,7 @@ const AddressForm = ({
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="-mx-3 mb-6 sm:mt-5 md:mt-10">
+                                                        <div className={"-mx-3 mb-6 sm:mt-5 md:mt-10 " + showPermanentSaveButton}>
                                                             <div className="w-full px-3">
                                                                 <label className="flex font-semibold text-gray-700" htmlFor="memorize">
                                                                     <div className="flex-initial">
