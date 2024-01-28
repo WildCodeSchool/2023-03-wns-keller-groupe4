@@ -14,7 +14,7 @@ import {
   REMOVE_PRODUCT_FROM_RESERVATION,
 } from "../../constants/mutations";
 import Colors from "../../constants/Colors";
-import { useFocusEffect } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 
 export interface ICartSummary {
   id: string;
@@ -213,9 +213,8 @@ export default function TabCartScreen() {
           €
         </Text>
       </View>
-      <Pressable onPress={() => console.log("coucou")} style={styles.validateCart}>
-        <Text style={styles.validateText}>Valider le panier</Text>
-      </Pressable>
+      <Link href="/thanks" style={styles.validateCart}>Valider le panier
+      </Link>
     </View>
   );
 }
@@ -303,10 +302,13 @@ const styles = StyleSheet.create({
     width: "50%",
     padding: 10,
     borderRadius: 10,
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "RubikBold",
   },
   validateText: {
     fontSize: 16,
     fontFamily: "RubikBold",
-    textAlign: "center",
   },
 });
