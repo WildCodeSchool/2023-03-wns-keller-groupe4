@@ -29,7 +29,6 @@ export default function TabProfileScreen() {
 
   const [logout] = useMutation(LOGOUT, {
     onCompleted: () => {
-      console.log("Déconnexion...")
       setIDToken("");
       setIsLogged(false)
     },
@@ -42,9 +41,6 @@ export default function TabProfileScreen() {
   const showlogout = () => {
     return (
       <View>
-        <Text>
-          Une fois loggé, tu peux pas te déloggé, tu vas être séquestrer a vie :)
-        </Text>
         <Button
           onPress={() => handleLogout()}
           title="Se déconnecter"

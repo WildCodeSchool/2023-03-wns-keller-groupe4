@@ -36,7 +36,7 @@ const LoginForm = ({ setIsLogged }: ILoginForm) => {
 
             await login({
                 variables: {
-                    email: email,
+                    email: email.trim(),
                     password: password,
                 },
             });
@@ -48,7 +48,6 @@ const LoginForm = ({ setIsLogged }: ILoginForm) => {
 
     const [login] = useLazyQuery(LOGIN_GUERY, {
         onCompleted: async ({ login }) => {
-            console.log("loginnn =>", login)
             setIDToken(login.IDToken);
             setIsLogged(true);
         },
@@ -88,7 +87,6 @@ const LoginForm = ({ setIsLogged }: ILoginForm) => {
                 {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
                 <Button title="Se connecter" onPress={() => {
                     handleSubmit()
-                    console.log("saluts")
                 }}
                 />
             </View>

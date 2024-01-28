@@ -17,6 +17,7 @@ import {
 import { CREATE_CART, UPDATE_CART } from "../../constants/mutations";
 import Colors from "../../constants/Colors";
 import { CUSTOM_LOCALE } from "../../constants/customLocal";
+import { decodeToken, getIDToken } from "../../utils/jwtHandler";
 
 interface Props {
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,7 +40,7 @@ const ReservationModal = ({
     setDate(undefined);
   };
 
-  const userId = "60a7b4b3c9b7c40015f1b3b5"; // TODO: get user id from context
+  const userId = decodeToken(getIDToken()).userId || "";
 
   const [date, setDate] = useState<any>();
   const [selectedQuantity, setSelectedQuantity] = useState(0);
@@ -54,8 +55,7 @@ const ReservationModal = ({
   // User cart
   const GetUserCart = useQuery(GET_USER_CART, {
     variables: { getCartReservationOfUserId: userId },
-    skip: userId === "60a7b4b3c9b7c40015f1b3b5",
-    // skip: userId === "", // TODO: uncomment this line when user context will be implemented
+    skip: userId === "",
   });
 
   const [createCart] = useMutation(CREATE_CART);
@@ -149,6 +149,25 @@ const ReservationModal = ({
       initForm();
     }
   };
+
+  if (userId === "") {
+    return (
+      <View style={styles.container}>
+        <View style={styles.modalView}>
+          <Pressable
+            style={styles.close}
+            onPress={() => setModalVisible(!modalVisible)}
+          >
+            <AntDesign name="close" size={28} color="black" />
+          </Pressable>
+          <Text style={styles.title}>Dates de réservations souhaitées</Text>
+          <Text style={styles.subtitle}>
+            Veuillez vous connecter pour pouvoir réserver un produit.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <>
