@@ -64,7 +64,7 @@ const start = async (): Promise<void> => {
 
     app.get("/", (req: Request, res: Response) => res.send("hello"));
 
-    app.post("/refresh_token", async (req: Request, res: Response) => {
+    app.get("/refresh_token", async (req: Request, res: Response) => {
         const token = req.cookies?.jid;
 
         if (token === undefined || token === "") {
@@ -122,7 +122,7 @@ const start = async (): Promise<void> => {
             LangResolver,
             ReservationResolver,
             InvoiceResolver,
-            UserBillingResolver
+            UserBillingResolver,
         ],
         authChecker: ({ context }, roles) => {
             const { email, role } = context.payload;

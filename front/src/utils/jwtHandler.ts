@@ -25,7 +25,7 @@ export const refreshToken = async () => {
         const response = await fetch(
             `${process.env.REACT_APP_API_URL}/refresh_token`,
             {
-                method: "POST",
+                method: "GET",
                 credentials: "include",
             },
         );
