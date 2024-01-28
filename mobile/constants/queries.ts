@@ -11,6 +11,69 @@ export const LOGIN_GUERY = gql`
   }
 `;
 
+export const GET_USER = gql`
+  query getUserById($getUserByIdId: String!) {
+    getUserById(id: $getUserByIdId) {
+      id
+      email
+      role
+      user_profile {
+        id
+        firstname
+        lastname
+        birthday
+        street
+        postal_code
+        country
+        lang {
+          id
+          name
+        }
+      }
+      reservations {
+        id
+        start_at
+        end_at
+        status
+        created_at
+        updated_at
+      }
+      created_at
+      updated_at
+    }
+  }
+`;
+
+export const GET_INVOICE_BY_RESERVATION_ID = gql`
+  query getInvoiceByIdReservation($idReservation: String!) {
+    getInvoiceByIdReservation(idReservation: $idReservation) {
+      id
+      created_at
+      reservation {
+        id
+        start_at
+        end_at
+        status
+        created_at
+        updated_at
+      }
+      user {
+        id
+        email
+        role
+      }
+      UserBilling {
+        id
+        firstname
+        lastname
+        street
+        postal_code
+        country
+      }
+    }
+  }
+`;
+
 export const GET_CATEGORIES = gql`
   query GetCategories {
     getCategories {
