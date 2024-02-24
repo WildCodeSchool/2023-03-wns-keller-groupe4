@@ -15,9 +15,17 @@ import SignupUserInput from "./inputs/SignupUserInput";
 import { MyContext } from "..";
 
 @ObjectType()
-export class LoginResponse {
+export class Tokens {
     @Field()
     IDToken: string;
+    @Field()
+    accessToken: string;
+}
+
+@ObjectType()
+export class LoginResponse {
+    @Field()
+    tokens: Tokens;
 }
 
 @Resolver()

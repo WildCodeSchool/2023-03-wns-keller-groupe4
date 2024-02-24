@@ -1,6 +1,7 @@
 import * as argon2 from "argon2";
 import dataSource from "../utils";
 import {
+    createAccessToken,
     createIDToken,
     createRefreshToken,
     sendRefreshToken,
@@ -76,7 +77,7 @@ export default class UserService {
                 ),
             );
 
-            return {
+            const tokens = {
                 IDToken: createIDToken(
                     email,
                     user.id,
@@ -84,7 +85,12 @@ export default class UserService {
                     user.user_profile?.lastname,
                     user.role,
                 ),
+                accessToken: createAccessToken(user.id, user.role),
             };
+
+            console.log("ACCESS TOKEN BACK END", tokens.accessToken);
+
+            return { tokens };
         } catch (err: any) {
             throw new Error(err.message);
         }
