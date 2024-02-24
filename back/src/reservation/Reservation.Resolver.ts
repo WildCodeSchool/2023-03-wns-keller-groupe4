@@ -5,6 +5,8 @@ import CreateReservationInput from "./inputs/CreateReservationInput";
 import DetailReservationInput from "./inputs/DetailReservationInput";
 import GetProductReservationQuantityByDatesInput from "./inputs/GetProductReservationQuantityByDatesInput";
 import { SearchReservationInput } from "./inputs/SearchReservationInput";
+import { AuthCheck } from "../authCustomerDecorator";
+import { EnumRoles } from "../user/entity/User";
 
 @Resolver()
 export default class ReservationResolver {
@@ -12,7 +14,7 @@ export default class ReservationResolver {
     constructor() {
         this.service = new ReservationService();
     }
-
+    @AuthCheck(EnumRoles.USER)
     @Mutation(() => Reservation)
     async createReservation(
         @Arg("createReservationInput")
@@ -22,12 +24,13 @@ export default class ReservationResolver {
     }
 
     // pour activer l'autorisation par token
-    // @Authorized()
+    @AuthCheck(EnumRoles.ADMIN)
     @Query(() => [Reservation])
     async getReservations(): Promise<Reservation[]> {
         return await this.service.getAllReservations();
     }
 
+    @AuthCheck(EnumRoles.ADMIN)
     @Query(() => Number)
     async getReservationCountBySearchInput(
         @Arg("searchReservationInput", { nullable: true })
@@ -38,7 +41,7 @@ export default class ReservationResolver {
         );
     }
     // pour activer l'autorisation par token
-    // @Authorized()
+    @AuthCheck(EnumRoles.ADMIN, EnumRoles.USER)
     @Query(() => [Reservation])
     async getReservationsByUserId(
         @Arg("id") id: string,
@@ -47,6 +50,7 @@ export default class ReservationResolver {
     }
 
     @Query(() => [Reservation])
+    @AuthCheck(EnumRoles.ADMIN)
     async getReservationsBySearchFilter(
         @Arg("searchReservationInput", { nullable: true })
         searchReservationInput: SearchReservationInput,
@@ -58,6 +62,7 @@ export default class ReservationResolver {
 
     // pour activer l'autorisation par token
     // @Authorized()
+    @AuthCheck(EnumRoles.USER)
     @Query(() => Reservation)
     async getCartReservationOfUser(
         @Arg("id") id: string,
@@ -67,6 +72,7 @@ export default class ReservationResolver {
 
     // pour activer l'autorisation par token
     // @Authorized()
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Query(() => Reservation)
     async getReservationById(@Arg("id") id: string): Promise<Reservation> {
         return await this.service.getOneReservationById(id);
@@ -74,6 +80,7 @@ export default class ReservationResolver {
 
     // pour activer l'autorisation par token
     // @Authorized()
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Query(() => Number)
     async getProductReservationQuantityByDates(
         @Arg("getProductReservationQuantityByDatesInput", { nullable: true })
@@ -84,11 +91,13 @@ export default class ReservationResolver {
         );
     }
 
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Boolean)
     async deleteReservationById(@Arg("id") id: string): Promise<Boolean> {
         return await this.service.deleteOneReservationById(id);
     }
 
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Reservation)
     async updateDateOfReservation(
         @Arg("id") id: string,
@@ -102,6 +111,7 @@ export default class ReservationResolver {
         );
     }
 
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Reservation)
     async updateStatusOfReservation(
         @Arg("id") id: string,
@@ -111,6 +121,7 @@ export default class ReservationResolver {
         return await this.service.updateStatusOfOneReservation(id, status);
     }
 
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Reservation)
     async updateDetailFromReservation(
         @Arg("id") id: string,
@@ -120,6 +131,7 @@ export default class ReservationResolver {
         return await this.service.updateDetailFromOneReservation(id, detail);
     }
 
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Reservation)
     async removeProductsFromReservation(
         @Arg("id") id: string,
@@ -131,6 +143,7 @@ export default class ReservationResolver {
         );
     }
 
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Reservation)
     async removeAllProductsFromReservation(
         @Arg("id") id: string,

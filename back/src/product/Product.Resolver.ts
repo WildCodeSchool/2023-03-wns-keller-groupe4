@@ -5,6 +5,8 @@ import { CreateProductInput } from "./inputs/CreateProductInput";
 import { UpdateProductInput } from "./inputs/UpdateProductInput";
 import { GetProductsInput } from "./inputs/GetProductsInput";
 import { SearchProductInput } from "./inputs/SearchProductInput";
+import { AuthCheck } from "../authCustomerDecorator";
+import { EnumRoles } from "../user/entity/User";
 
 @Resolver()
 export default class ProductResolver {
@@ -21,7 +23,7 @@ export default class ProductResolver {
         // TODO Write validation classes for the queries input
         return await this.service.getAllProducts(getProductsInput);
     }
-
+    @AuthCheck(EnumRoles.ADMIN)
     @Query(() => Number)
     async getProductsCount(
         @Arg("name", { nullable: true }) name: string,
@@ -57,6 +59,7 @@ export default class ProductResolver {
         return await this.service.getProductBySearchFilter(searchProductInput);
     }
 
+    @AuthCheck(EnumRoles.ADMIN)
     @Mutation(() => Product)
     async createProduct(
         @Arg("createProductInput") createProductInput: CreateProductInput,
@@ -64,6 +67,7 @@ export default class ProductResolver {
         return await this.service.createNewProduct(createProductInput);
     }
 
+    @AuthCheck(EnumRoles.ADMIN)
     @Mutation(() => Product)
     async updateProduct(
         @Arg("id") id: string,
@@ -72,6 +76,7 @@ export default class ProductResolver {
         return await this.service.updateOneProduct(id, updateProductInput);
     }
 
+    @AuthCheck(EnumRoles.ADMIN)
     @Mutation(() => Boolean)
     async deleteProduct(@Arg("id") id: string): Promise<boolean> {
         return await this.service.deleteOneProduct(id);
