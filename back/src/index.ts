@@ -3,12 +3,13 @@ import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
 import dataSource from "./utils";
 import {
+    createAccessToken,
     createIDToken,
     createRefreshToken,
     sendRefreshToken,
 } from "./tokenGeneration";
 import { buildSchema } from "type-graphql";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer, AuthenticationError } from "apollo-server-express";
 import CategoryResolver from "./category/Category.Resolver";
 import ProductResolver from "./product/Product.Resolver";
 import LangResolver from "./lang/Lang.Resolver";
@@ -30,18 +31,24 @@ import {
     resetMockUsers,
 } from "./fixtures/fixtures";
 import bodyParser from "body-parser";
+import { log } from "console";
 
 dotenv.config();
 
 export interface MyContext {
     req: Request;
     res: Response;
-    payload?: { email: string };
+    payload?: { email: string; role: string; iss: string; aud: string };
 }
 
 dotenv.config();
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY as string;
+export const API_KEY = process.env.API_KEY as string;
+// export const EXPECTED_ISSER = "Wild_Rent_API";
+export const EXPECTED_ISSER = "Wild_Rent_API";
+export const EXPECTED_AUDIENCE = "Wild_Rent_Client";
+// export const EXPECTED_AUDIENCE = "Wild_Rent_Client";
 
 if (JWT_SECRET === undefined) {
     throw Error("JWT secret undefined");
@@ -68,7 +75,7 @@ const start = async (): Promise<void> => {
         const token = req.cookies?.jid;
 
         if (token === undefined || token === "") {
-            return res.send({ ok: false, IDToken: "" });
+            return res.send({ ok: false, tokens: {} });
         }
 
         try {
@@ -82,7 +89,7 @@ const start = async (): Promise<void> => {
                 .findOneBy({ email: payload.email });
 
             if (user === null || user.tokenVersion !== payload.tokenVersion) {
-                return res.send({ ok: false, IDToken: "" });
+                return res.send({ ok: false, tokens: {} });
             }
 
             sendRefreshToken(
@@ -97,19 +104,24 @@ const start = async (): Promise<void> => {
                 ),
             );
 
-            return res.send({
-                ok: true,
+            const tokens = {
                 IDToken: createIDToken(
-                    payload.email,
+                    user.email,
                     user.id,
-                    user.user_profile?.firstname || "",
-                    user.user_profile?.lastname || "",
+                    user.user_profile?.firstname,
+                    user.user_profile?.lastname,
                     user.role,
                 ),
+                accessToken: createAccessToken(user.id, user.role),
+            };
+
+            return res.send({
+                tokens,
             });
         } catch (err) {
             console.error(err);
-            return res.send({ ok: false, IDToken: "" });
+
+            return res.send({ ok: false, tokens: {} });
         }
     });
 
@@ -122,40 +134,54 @@ const start = async (): Promise<void> => {
             LangResolver,
             ReservationResolver,
             InvoiceResolver,
-            UserBillingResolver
+            UserBillingResolver,
         ],
-        authChecker: ({ context }, roles) => {
-            const { email, role } = context.payload;
-
-            if (email !== undefined) {
-                if (roles.length === 0 || roles.includes(role)) {
-                    return true; // Authorized
-                }
-            }
-
-            return false; // Not authorized
-        },
     });
 
     const server = new ApolloServer({
         schema: typeGraphQLgeneratedSchema,
         context: ({ req, res }) => {
-            const { authorization } = req.headers;
+            const headers = req.headers;
+
             if (
-                authorization === undefined ||
-                !authorization.startsWith("Bearer ")
+                headers.authorization &&
+                headers.authorization.startsWith("Bearer ")
             ) {
-                return { req, res, payload: { email: undefined } };
-            } else {
-                const token = authorization.split(" ")[1];
+                const token = headers.authorization.split(" ")[1];
+                console.log(token);
+
                 try {
-                    const payload = jwt.verify(token, JWT_SECRET);
+                    const payload = jwt.verify(
+                        token,
+                        JWT_SECRET,
+                    ) as jwt.JwtPayload;
+
+                    if (
+                        payload.iss !== EXPECTED_ISSER ||
+                        payload.aud !== EXPECTED_AUDIENCE
+                    ) {
+                        console.log("here");
+
+                        throw new Error("jwt expired or not valid");
+                    }
+
                     return { req, res, payload };
-                } catch (err) {
-                    console.error(err);
-                    return { req, res, payload: { email: undefined } };
+                } catch (err: any) {
+                    if (err.message.includes("jwt expired"))
+                        throw new AuthenticationError(
+                            "jwt expired or not valid",
+                        );
                 }
             }
+
+            if (headers["x-api-key"]) {
+                const isApiKeyValid = headers["x-api-key"] === API_KEY;
+
+                return { req, res, isApiKeyValid };
+            }
+            console.log("here but should be throwing");
+
+            return { req, res };
         },
     });
 

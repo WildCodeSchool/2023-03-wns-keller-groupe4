@@ -23,8 +23,21 @@ export const createIDToken = (
     role: string,
 ): string => {
     return sign({ email, userId, firstname, lastname, role }, JWT_SECRET, {
-        expiresIn: "15m",
+        expiresIn: "24h",
     });
+};
+
+export const createAccessToken = (userId: string, role: string): string => {
+    return sign(
+        {
+            sub: userId,
+            role: role,
+            iss: "Wild_Rent_API",
+            aud: "Wild_Rent_Client",
+        },
+        JWT_SECRET,
+        { expiresIn: "24h" },
+    );
 };
 
 /**
@@ -41,13 +54,16 @@ export const createRefreshToken = (
     role: string,
     tokenVersion: number,
 ): string => {
-    return sign(
+    const refreshToken = sign(
         { email, userId, firstname, lastname, role, tokenVersion },
         REFRESH_JWT_SECRET,
         {
             expiresIn: "7d",
         },
     );
+    console.log("refreshing token", refreshToken);
+
+    return refreshToken;
 };
 /**
  *
