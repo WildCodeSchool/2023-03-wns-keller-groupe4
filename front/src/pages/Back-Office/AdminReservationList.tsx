@@ -106,11 +106,9 @@ const AdminReservationList = () => {
             e.preventDefault();
         }
 
-        const searchReservationInput = generateReservationInput();
-
         await searchReservationByFilters({
             variables: {
-                searchReservationInput,
+                searchReservationInput: generateReservationInput(),
             },
         });
 

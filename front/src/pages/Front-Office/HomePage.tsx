@@ -18,7 +18,6 @@ enum ProductRequestState {
 function HomePage() {
     const navigate = useNavigate();
 
-    const [selected, setSelected] = useState({});
     const [productSearchInput, setProductSearchInput] = useState({ name: "" });
     const debouncedSearchInput = useDebounce(productSearchInput.name, 600);
 
@@ -56,11 +55,8 @@ function HomePage() {
             // setTransitionState(true);
         }
 
-        if (selected && "name" in selected) {
-            navigate(`/products/list/${selected.name}`);
-        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [navigate, selected, debouncedSearchInput]);
+    }, [navigate, debouncedSearchInput]);
 
     async function submitSearch() {
         return await searchProduct({
@@ -135,7 +131,7 @@ function HomePage() {
                     </p>
                 </div>
                 <div className="flex flex-col justify-center, items-center ">
-                    <Combobox value={selected} onChange={setSelected}>
+                    <Combobox>
                         <div className="relative mt-1 w-96 sm:w-[40rem]">
                             <Combobox.Label className="opacity-50">
                                 Trouvez votre matériel
