@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useMutation } from "@apollo/client";
-import { setIDToken } from "../../utils/jwtHandler";
+import { setAccessToken, setIDToken } from "../../utils/jwtHandler";
 import { LOGOUT } from "../../utils/mutations";
 
 const Profile = () => {
@@ -10,6 +10,7 @@ const Profile = () => {
     const [logout] = useMutation(LOGOUT, {
         onCompleted: () => {
             setIDToken("");
+            setAccessToken("");
             navigate("/");
         },
     });
