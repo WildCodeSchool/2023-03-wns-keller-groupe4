@@ -11,13 +11,22 @@ interface IPayload {
 }
 
 let IDToken = "";
+let accessToken = "";
 
 export const setIDToken = (token: string) => {
     IDToken = token;
 };
 
+export const setAccessToken = (token: string) => {
+    accessToken = token;
+};
+
 export const getIDToken = () => {
     return IDToken;
+};
+
+export const getAccessToken = () => {
+    return accessToken;
 };
 
 export const refreshToken = async () => {
@@ -30,9 +39,10 @@ export const refreshToken = async () => {
             },
         );
 
-        const { IDToken } = await response.json();
+        const { tokens } = await response.json();
 
-        setIDToken(IDToken);
+        setIDToken(tokens.IDToken);
+        setAccessToken(tokens.accessToken);
     } catch (error: any) {
         throw Error(error);
     }

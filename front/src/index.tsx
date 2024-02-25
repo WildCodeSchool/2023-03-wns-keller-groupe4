@@ -16,7 +16,7 @@ import App from "./App";
 
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
-import { getIDToken, refreshToken } from "./utils/jwtHandler";
+import { getAccessToken, getIDToken, refreshToken } from "./utils/jwtHandler";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement,
@@ -28,7 +28,9 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_, { headers }) => {
-    const token = getIDToken();
+    const token = getAccessToken();
+    console.log(token);
+
     return {
         headers: {
             ...headers,
@@ -41,7 +43,9 @@ const errorLink = onError(
     ({ graphQLErrors, networkError, operation, forward }) => {
         if (graphQLErrors) {
             for (const error of graphQLErrors) {
-                if (error.message.includes("Access denied")) {
+                if (error.message.includes("jwt expired")) {
+                    console.log("are we here");
+
                     return new Observable((observer) => {
                         (async () => {
                             try {
@@ -70,6 +74,40 @@ const errorLink = onError(
         }
     },
 );
+// let refreshTokenPromise: Promise<any> | null = null;
+
+// const errorLink = onError(({ graphQLErrors, operation, forward }) => {
+//     if (
+//         graphQLErrors &&
+//         graphQLErrors.some(
+//             (error) =>
+//                 error.message.includes("Access denied") ||
+//                 error.message.includes("token expired"),
+//         )
+//     ) {
+//         if (!refreshTokenPromise) {
+//             refreshTokenPromise = refreshToken().finally(() => {
+//                 refreshTokenPromise = null;
+//             });
+//         }
+
+//         return new Observable((observer) => {
+//             refreshTokenPromise!
+//                 .then(() => {
+//                     const subscriber = {
+//                         next: observer.next.bind(observer),
+//                         error: observer.error.bind(observer),
+//                         complete: observer.complete.bind(observer),
+//                     };
+//                     // Retry the request after the token has been refreshed
+//                     forward(operation).subscribe(subscriber);
+//                 })
+//                 .catch((error) => {
+//                     observer.error(error);
+//                 });
+//         });
+//     }
+// });
 
 const client = new ApolloClient({
     link: ApolloLink.from([errorLink, authLink, httpLink]),
