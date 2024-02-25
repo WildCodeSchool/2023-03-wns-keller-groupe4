@@ -22,8 +22,6 @@ export function AuthCheck(...roles: EnumRoles[]) {
         const isApiKeyValid = context.isApiKeyValid;
         const isValidRole = roles.includes(claims.role as EnumRoles);
 
-        console.log("role validity", isValidRole);
-
         if (!isApiKeyValid && (!claims || (roles.length && !isValidRole))) {
             throw new AuthenticationError(
                 "Not authorized! Insufficient permissions.",

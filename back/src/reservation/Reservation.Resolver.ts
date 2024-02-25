@@ -14,7 +14,7 @@ export default class ReservationResolver {
     constructor() {
         this.service = new ReservationService();
     }
-    @AuthCheck(EnumRoles.USER)
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Mutation(() => Reservation)
     async createReservation(
         @Arg("createReservationInput")
@@ -62,7 +62,7 @@ export default class ReservationResolver {
 
     // pour activer l'autorisation par token
     // @Authorized()
-    @AuthCheck(EnumRoles.USER)
+    @AuthCheck(EnumRoles.USER, EnumRoles.ADMIN)
     @Query(() => Reservation)
     async getCartReservationOfUser(
         @Arg("id") id: string,
