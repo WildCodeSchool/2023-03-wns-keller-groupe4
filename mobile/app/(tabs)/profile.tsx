@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import LoginForm from '../../components/LoginForm';
 import SignupForm from '../../components/SignupForm';
-import { getIDToken, setIDToken } from '../../utils/jwtHandler';
 import { LOGOUT } from '../../constants/mutations';
+import { useAuth } from '../../utils/AuthContext';
+import { removeTokenFromStorage } from '../../utils/secureStore';
 
 export default function TabProfileScreen() {
+  const auth = useAuth();
   const [isRegister, setIsRegister] = useState(false);
-  const [isLogged, setIsLogged] = useState<Boolean>(getIDToken() != "");
+  const [isLogged, setIsLogged] = useState<Boolean>(auth.isConnected);
 
   const showForm = () => {
     let form: React.JSX.Element = <></>;
@@ -29,7 +31,7 @@ export default function TabProfileScreen() {
 
   const [logout] = useMutation(LOGOUT, {
     onCompleted: () => {
-      setIDToken("");
+      removeTokenFromStorage();
       setIsLogged(false)
     },
   });

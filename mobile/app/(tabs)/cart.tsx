@@ -1,20 +1,13 @@
 import { Image, Pressable, ScrollView, StyleSheet } from "react-native";
 import { Text, View } from "../../components/Themed";
-import { decodeToken, getIDToken } from "../../utils/jwtHandler";
+import { decodeToken } from "../../utils/jwtHandler";
 import { useCallback } from "react";
-import {
-  useMutation,
-  useQuery,
-} from "@apollo/client";
-import {
-  GET_USER,
-  GET_USER_CART,
-} from "../../constants/queries";
-import {
-  REMOVE_PRODUCT_FROM_RESERVATION,
-} from "../../constants/mutations";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_USER_CART } from "../../constants/queries";
+import { REMOVE_PRODUCT_FROM_RESERVATION } from "../../constants/mutations";
 import Colors from "../../constants/Colors";
 import { Link, useFocusEffect } from "expo-router";
+import { useAuth } from "../../utils/AuthContext";
 
 export interface ICartSummary {
   id: string;
@@ -50,53 +43,45 @@ export interface IUserBilling {
 }
 
 export default function TabCartScreen() {
-  // const navigate = useNavigate();
+  const auth = useAuth();
 
-  const userId = getIDToken() ? decodeToken(getIDToken()).userId : "";
+  const userId = auth?.userToken ? decodeToken(auth.userToken).userId : "";
 
-  const { loading, data, refetch } = useQuery(GET_USER_CART, {
+  const { data, refetch } = useQuery(GET_USER_CART, {
     variables: { getCartReservationOfUserId: userId },
     skip: userId === "",
   });
 
-  const { data: userData } = useQuery(GET_USER, {
-    variables: { getUserByIdId: userId },
-    skip: userId === "",
-  });
-
-  const [removeProductFromCart] = useMutation(
-    REMOVE_PRODUCT_FROM_RESERVATION,
-);
+  const [removeProductFromCart] = useMutation(REMOVE_PRODUCT_FROM_RESERVATION);
 
   const removeProduct = async (product: string) => {
     const cartId = data?.getCartReservationOfUser?.id;
-  
+
     if (data.getCartReservationOfUser.id) {
-        const removedProduct = await removeProductFromCart({
-            variables: {
-                productsIds: [product],
-                removeProductsFromReservationId: cartId,
-            },
-        });
+      const removedProduct = await removeProductFromCart({
+        variables: {
+          productsIds: [product],
+          removeProductsFromReservationId: cartId,
+        },
+      });
 
-        if (removedProduct) {
-            refetch();
-        }
+      if (removedProduct) {
+        refetch();
+      }
     }
-};
+  };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Votre panier de réservation</Text>
-        <View style={styles.cartContainer}>
-          <Text style={styles.detailText}>Chargement...</Text>
-        </View>
-      </View>
-    );
-  }
+  useFocusEffect(
+    useCallback(() => {
+      auth.loadUserToken();
+      if (auth.isConnected === false) {
+        return;
+      }
+      refetch();
+    }, [])
+  );
 
-  if (!userId) {
+  if (auth.isConnected === false) {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Votre panier de réservation</Text>
@@ -108,12 +93,6 @@ export default function TabCartScreen() {
       </View>
     );
   }
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [])
-  );
 
   return (
     <View style={styles.container}>
@@ -163,7 +142,7 @@ export default function TabCartScreen() {
                   </View>
                   <Pressable
                     onPress={() => {
-                      removeProduct(reservation.product.id)
+                      removeProduct(reservation.product.id);
                     }}
                   >
                     {({ pressed }) => (
@@ -213,7 +192,8 @@ export default function TabCartScreen() {
           €
         </Text>
       </View>
-      <Link href="/thanks" style={styles.validateCart}>Valider le panier
+      <Link href="/thanks" style={styles.validateCart}>
+        Valider le panier
       </Link>
     </View>
   );

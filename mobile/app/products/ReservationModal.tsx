@@ -17,7 +17,8 @@ import {
 import { CREATE_CART, UPDATE_CART } from "../../constants/mutations";
 import Colors from "../../constants/Colors";
 import { CUSTOM_LOCALE } from "../../constants/customLocal";
-import { decodeToken, getIDToken } from "../../utils/jwtHandler";
+import { decodeToken } from "../../utils/jwtHandler";
+import { useAuth } from "../../utils/AuthContext";
 
 interface Props {
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,6 +33,8 @@ const ReservationModal = ({
   stock,
   productId,
 }: Props) => {
+  const auth = useAuth();
+
   // Reset the form
   const initForm = () => {
     setModalVisible(false);
@@ -40,7 +43,7 @@ const ReservationModal = ({
     setDate(undefined);
   };
 
-  const userId = decodeToken(getIDToken()).userId || "";
+  const userId = decodeToken(auth.userToken).userId || "";
 
   const [date, setDate] = useState<any>();
   const [selectedQuantity, setSelectedQuantity] = useState(0);

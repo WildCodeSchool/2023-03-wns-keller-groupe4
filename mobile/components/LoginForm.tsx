@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import { useState } from 'react';
 import { useLazyQuery } from "@apollo/client";
-import { setIDToken } from "../utils/jwtHandler";
 import { LOGIN_GUERY } from "../constants/queries";
 import Colors from "../constants/Colors";
+import { saveTokenToStorage } from '../utils/secureStore';
 
 interface IErrorsValidation {
     email?: string;
@@ -48,7 +48,7 @@ const LoginForm = ({ setIsLogged }: ILoginForm) => {
 
     const [login] = useLazyQuery(LOGIN_GUERY, {
         onCompleted: async ({ login }) => {
-            setIDToken(login.IDToken);
+            saveTokenToStorage(login.IDToken);
             setIsLogged(true);
         },
         onError: (err) => {
