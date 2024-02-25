@@ -45,7 +45,7 @@ export interface IUserBilling {
 export default function TabCartScreen() {
   const auth = useAuth();
 
-  const userId = auth?.userToken ? decodeToken(auth.userToken).userId : "";
+  const userId = auth.userToken ? decodeToken(auth.userToken).userId : "";
 
   const { data, refetch } = useQuery(GET_USER_CART, {
     variables: { getCartReservationOfUserId: userId },

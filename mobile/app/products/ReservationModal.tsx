@@ -43,7 +43,7 @@ const ReservationModal = ({
     setDate(undefined);
   };
 
-  const userId = decodeToken(auth.userToken).userId || "";
+  const userId = auth.userToken ? decodeToken(auth.userToken).userId : "";
 
   const [date, setDate] = useState<any>();
   const [selectedQuantity, setSelectedQuantity] = useState(0);
