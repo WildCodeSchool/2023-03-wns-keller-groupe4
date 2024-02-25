@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { LOGIN_GUERY } from "../utils/queries";
-import { setIDToken } from "../utils/jwtHandler";
+import { setAccessToken, setIDToken } from "../utils/jwtHandler";
 
 interface IFormLogin {
     email: string;
@@ -17,7 +17,9 @@ const LoginForm = () => {
 
     const [login] = useLazyQuery(LOGIN_GUERY, {
         onCompleted: async ({ login }) => {
-            setIDToken(login.IDToken);
+            setIDToken(login.tokens.IDToken);
+            setAccessToken(login.tokens.accessToken);
+
             navigate("/");
         },
         onError: (err) => {
