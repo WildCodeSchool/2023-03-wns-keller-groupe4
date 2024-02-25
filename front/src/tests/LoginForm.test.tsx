@@ -21,7 +21,10 @@ const mocks = [
         result: {
             data: {
                 login: {
-                    IDToken: "mockedToken",
+                    tokens: {
+                        IDToken: "mockedToken",
+                        accessToken: "mockedToken",
+                    },
                 },
             },
         },
@@ -50,6 +53,7 @@ const mocks = [
 
 jest.mock("../utils/jwtHandler", () => ({
     setIDToken: jest.fn(),
+    setAccessToken: jest.fn(),
 }));
 
 describe("LoginForm", () => {
@@ -104,6 +108,12 @@ describe("LoginForm", () => {
             await waitFor(() => {
                 expect(
                     require("../utils/jwtHandler").setIDToken,
+                ).toHaveBeenCalledWith("mockedToken");
+            });
+
+            await waitFor(() => {
+                expect(
+                    require("../utils/jwtHandler").setAccessToken,
                 ).toHaveBeenCalledWith("mockedToken");
             });
 
