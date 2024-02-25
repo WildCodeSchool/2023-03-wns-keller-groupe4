@@ -61,7 +61,6 @@ export const createRefreshToken = (
             expiresIn: "7d",
         },
     );
-    console.log("refreshing token", refreshToken);
 
     return refreshToken;
 };

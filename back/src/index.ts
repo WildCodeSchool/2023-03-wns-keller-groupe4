@@ -45,10 +45,8 @@ dotenv.config();
 
 export const JWT_SECRET = process.env.JWT_SECRET_KEY as string;
 export const API_KEY = process.env.API_KEY as string;
-// export const EXPECTED_ISSER = "Wild_Rent_API";
-export const EXPECTED_ISSER = "Wild_Rent_API";
-export const EXPECTED_AUDIENCE = "Wild_Rent_Client";
-// export const EXPECTED_AUDIENCE = "Wild_Rent_Client";
+export const EXPECTED_ISSUER = process.env.EXPECTED_ISSUER;
+export const EXPECTED_AUDIENCE = process.env.EXPECTED_AUDIENCE;
 
 if (JWT_SECRET === undefined) {
     throw Error("JWT secret undefined");
@@ -157,11 +155,9 @@ const start = async (): Promise<void> => {
                     ) as jwt.JwtPayload;
 
                     if (
-                        payload.iss !== EXPECTED_ISSER ||
+                        payload.iss !== EXPECTED_ISSUER ||
                         payload.aud !== EXPECTED_AUDIENCE
                     ) {
-                        console.log("here");
-
                         throw new Error("jwt expired or not valid");
                     }
 
@@ -179,7 +175,6 @@ const start = async (): Promise<void> => {
 
                 return { req, res, isApiKeyValid };
             }
-            console.log("here but should be throwing");
 
             return { req, res };
         },
