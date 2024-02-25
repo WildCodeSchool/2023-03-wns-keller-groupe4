@@ -14,7 +14,7 @@ export default function TabOneScreen() {
       </View>
       <Link href="/ListCategories" asChild>
         <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Trouvez votre matériel V0</Text>
+          <Text style={styles.buttonText}>Trouvez votre matériel</Text>
           <FontAwesome name="search" size={25} color="#000" />
         </Pressable>
       </Link>
